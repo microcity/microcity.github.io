@@ -1,0 +1,190 @@
+/* 清除浏览器默认边距，
+使边框和内边距的值包含在元素的width和height内 */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 使用flex布局，让内容垂直和水平居中 */
+
+section {
+    /* 相对定位 */
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    /* linear-gradient() 函数用于创建一个表示两种或多种颜色线性渐变的图片 */
+    background: linear-gradient(to bottom, #f1f4f9, #dff1ff);
+}
+
+/* 背景颜色 */
+
+section .color {
+    /* 绝对定位 */
+    position: absolute;
+    /* 使用filter(滤镜) 属性，给图像设置高斯模糊*/
+    filter: blur(200px);
+}
+
+/* :nth-child(n) 选择器匹配父元素中的第 n 个子元素 */
+
+section .color:nth-child(1) {
+    top: -350px;
+    width: 600px;
+    height: 600px;
+    background: #3172ff;
+}
+
+section .color:nth-child(2) {
+    bottom: -150px;
+    left: 100px;
+    width: 500px;
+    height: 500px;
+    background: #b9fff0;
+}
+
+section .color:nth-child(3) {
+    bottom: 50px;
+    right: 100px;
+    width: 500px;
+    height: 500px;
+    background: #40a3ff;
+}
+
+.box {
+    position: relative;
+}
+
+/* 框样式 */
+
+.container {
+    position: relative;
+    width: 400px;
+    min-height: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.form {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 50px;
+}
+
+/* 标题样式 */
+
+.form h2 {
+    position: relative;
+    color: #ffffff;
+	font-style: Serif;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 5px;
+    margin-bottom: 30px;
+    cursor: pointer;
+}
+
+.form h2:hover:before {
+    width: 53px;
+}
+
+.form .inputBox1 {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* 输入框样式 */
+
+.form .inputBox1 input {
+    width: 100%;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    border: none;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 16px;
+    letter-spacing: 1px;
+    color: #555555;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.form .inputBox1 input::placeholder {
+    color: #ffffff;
+}
+
+/* 输入框样式 */
+
+.form .inputBox2 input {
+    width: 100%;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    border: none;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 16px;
+    letter-spacing: 1px;
+    color: #555555;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.form h3 {
+    position: relative;
+    color: #757575;
+	font-style: Serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 5px;
+    margin-bottom: 10px;
+	margin-top: 100px;
+}
+
+.form h4 {
+    position: relative;
+    color: #757575;
+	margin-top: 10px;
+	font-style: Serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 5px;
+    margin-bottom: 10px;
+}
+
+/* 按钮样式 */
+
+.form .inputBox1 input[type="button"] {
+    background: #fff;
+    color: #666;
+    width: 120px;
+	margin-bottom: 20px;
+    font-weight: 600;
+    cursor: pointer;
+	float: left;
+}
+
+.form .inputBox1 input[type="reset"] {
+    background: #fff;
+    color: #666;
+    width: 120px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    cursor: pointer;
+	float: right;
+}
