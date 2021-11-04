@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<link rel="stylesheet" href="style.css">
+		
+		<title>船舶转速计算</title>	
+	</head>
+	
+	<body>
+		<section>
+			<div class="color"></div>
+			<div class="color"></div>
+			<div class="color"></div>
+			<div class="box"></div>
+				<div class="container">
+					<div class="form">
+						<h2>船舶转速计算</h2>
+						<form name="myform">
+							<div class="inputBox1">
+								<input type="text" placeholder="输入航行里程（海里）：" name="name" id="firstname">
+							</div>
+							<div class="inputBox1">
+								<input type="text" placeholder="输入限定时间（小时）：" name="name1" id="lastname">
+							</div>
+							<div class="inputBox1">
+								<input type="button" onclick="runrun()" value="查询">
+							</div>
+							<div class="inputBox1">
+								<input type="reset" value="重置">
+							</div>
+							<div class="inputBox2">
+							<h3>最低油耗（吨）：</h3>
+							<input type="text" name="name2" id="firstname" value="将显示最低航次油耗"><br>
+							<h4>建议转速（rpm)：</h4>
+							<input type="text" name="name3" id="lastname" value="将显示建议转速"><br>
+						    </div>
+						</form>
+					</div>
+				</div>
+		</section>
+		
+		<script type="text/javascript">
+			function runrun(){
+				
+				var distance = myform.name.value; //航程
+				var ME_time=[0,0,0,0,0,0];//主机时间
+				var shipSpeed = [13.58,13.58,15,16,16.2,16.5];   //六种航速
+				var limitingTime = myform.name1.value;   //限定时间
+				var ME_sailingUnitFOC = [0.917,0.938,1.113,1.321,1.383,1.513];  //主机单位油耗
+				var ME_sailingFOC = [0,0,0,0,0,0]; //主机油耗  
+				var Aux_sailingUnitFOC = [0.063,0.058,0.054,0.050,0.046,0.042];  //副机航行单位油耗
+				var Aux_sailingFOC = [0,0,0,0,0,0];  //副机航行油耗
+				var berthTime = [0,0,0,0,0,0];//停泊时间
+				var Aux_berthFOC = [0,0,0,0,0,0];//副机停泊油耗
+				var Aux_berthUnitFOC = [0.083,0.083,0.083,0.083,0.083,0.083];  //副机停泊单位油耗
+				var onceFOC = [0,0,0,0,0,0];//航次油耗
+				var engineVelocity = [102,104,115.6,122.6,124.2,127.1]; //转速
+				var min_index=0;
+				
+				for (var i=0;i<6;i++){
+					ME_time[i] = distance / shipSpeed[i];//计算六个主机时间
+					if (ME_time[i]<limitingTime) 
+					{	
+						ME_sailingFOC[i] = ME_sailingUnitFOC[i] * ME_time[i];
+						
+						Aux_sailingFOC[i] = Aux_sailingUnitFOC[i] * ME_time[i];
+						
+						berthTime[i] = limitingTime - ME_time[i];
+						
+						Aux_berthFOC[i] = Aux_berthUnitFOC[i] * berthTime[i];
+						onceFOC[i] = ME_sailingFOC[i] + Aux_sailingFOC[i] + Aux_berthFOC[i];
+						
+					}
+					else 
+					{	
+						ME_sailingFOC[i] = -1;
+						Aux_sailingFOC[i] = -1;
+						berthTime[i] = -1;
+						Aux_berthFOC[i] = -1;
+						onceFOC[i] = 9999;
+					}		
+				}
+				for(var j=0;j<6;j++){
+					if(onceFOC[min_index]>onceFOC[j])
+					{
+						min_index = j;
+					}
+				} //循环取最小值
+				
+				if (onceFOC[min_index]<9999)
+				{
+					myform.name2.value = onceFOC[min_index].toFixed(3); //保留三位小数
+					myform.name3.value = engineVelocity[min_index]; 
+				}
+				else
+				{
+					myform.name2.value = "N/A";
+					myform.name3.value = "N/A"; 
+				}
+				
+				
+			}
+		</script>
+	
+	</body>
+
+</html>
