@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <style>
+    .container {  
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 50px 1fr 36px;
+      gap: 0px 0px;
+      grid-auto-flow: row;
+      grid-template-areas:
+        "header header"
+        "left right"
+        "footer footer";
+    }
+
+    .header { grid-area: header; background-color: #999; display: flex;}
+    .left { grid-area: left; position: relative; font-size:16px;}
+    .right { grid-area: right; position: relative;}
+    .footer { 
+    	grid-area: footer; 
+    	background-color: #999; 
+    	overflow-y: auto;
+    	font-size: 14px;
+    	padding-left:5px;
+    }
+	a {
+		color: unset;
+		text-decoration: none;
+	}
+    html, body , .container {
+      height: 100%;
+      margin: 0;
+    }
+    
+	.logo {
+	    color: white;
+	    font-size: 20px;
+	    line-height: 50px;
+	    padding-left: 20px;
+	    width: 180px;
+	}
+    
+    #commandbar{
+    	height : 100%;
+    	width : fit-content;
+    	margin: 0 auto;
+    	display:flex;
+    }
+    
+    .button{
+    	height: 100%;
+	    cursor: pointer;
+	    width: 55px;
+	    align-content: center;
+	    justify-content: center;
+	    display: grid;
+	    filter: invert(100%);
+    }
+    
+    .button:hover{
+   		filter: invert(0%);
+    	background-color: white;
+    }
+    
+	#examples{
+		float: right;
+		margin-right: 0px;
+		margin-left: 145px;
+	}
+	
+	.offcanvas {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+	}
+	</style>
+	<title>MicroDES</title>
+    <script src = "./js/supabase-js@2.js"></script>
+	<script src = "./js/ace.min.js"></script>
+	<script src = "./js/theme-nord_dark.js"></script>
+	<script src = "./js/mode-lua.js"></script>
+	<script src = "./js/ext-language_tools.js"></script>
+	<script type="module">
+		
+		
+		const _supabase = supabase.createClient(
+		'https://vvbgfpuqexloiavpkout.supabase.co',
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c'
+		);
+		
+		self.ToggleCode = function (){
+			const btn = document.getElementById('code');
+			if(btn.dataset.active == "false"){
+				btn.style['background-color'] = 'white';
+				btn.style['filter'] = 'invert(0%)';
+				btn.dataset.active = "true";
+				document.getElementById("new").removeAttribute('style');
+				document.getElementById("open").removeAttribute('style');
+				document.getElementById("save").removeAttribute('style');
+				document.getElementById("publish").removeAttribute('style');
+				document.getElementById("editor").removeAttribute('style');
+				document.getElementById("canvas").removeAttribute('style');
+				self.dispatchEvent(new Event('resize'));
+			}else if(btn.dataset.active == "true"){
+				btn.removeAttribute('style');
+				btn.dataset.active = "false";
+				document.getElementById("new").style['filter'] = 'invert(50%)';
+				document.getElementById("open").style['filter'] = 'invert(50%)';
+				document.getElementById("save").style['filter'] = 'invert(50%)';
+				document.getElementById("publish").style['filter'] = 'invert(50%)';
+				document.getElementById("editor").style['display'] = 'none';
+				document.getElementById("canvas").style['grid-column'] = '1 / -1';
+				self.dispatchEvent(new Event('resize'));
+			}
+		}
+		
+
+		self.editor = ace.edit("editor");
+		editor.setOptions({theme: 'ace/theme/nord_dark', mode: 'ace/mode/lua', showPrintMargin: false, enableLiveAutocompletion: true, fontSize: 16, useWorker: false});
+		
+		
+		var canvas = document.querySelector('#offcanvas');
+		if (!canvas.transferControlToOffscreen) {
+			alert("This browser does not support offscreen canvas!");
+		}
+		var offscreen = canvas.transferControlToOffscreen();
+		
+		self.worker = new Worker('./js/woker.js');
+		self.state = 'stopped';
+		worker.onmessage = (e) => {self[e.data.fn](e.data);};
+		worker.postMessage({fn: 'Init', canvas: offscreen}, [offscreen]);
+		function SendSize() {
+			worker.postMessage({
+			  fn: 'Resize',
+			  width: canvas.clientWidth,
+			  height: canvas.clientHeight,
+			});
+		}
+		self.addEventListener('resize', SendSize);
+		SendSize();
+	
+		
+		self.RunLua = function (){
+			if(state == 'stopped'){
+				state = 'running';
+				worker.postMessage({fn: 'SetState', state: state});
+				worker.postMessage({fn: 'RunLua', code: editor.getValue()});
+				Print({color:'white', text:`The current lua code is runned!`});
+			}else if(state == 'paused'){
+				state = 'running';
+				worker.postMessage({fn: 'SetState', state: state});
+				Print({color:'white', text:`The current paused lua code is continued!`});
+			}else if(state == 'terminated'){
+				state = 'running';
+				worker.postMessage({fn: 'SetState', state: state});
+				worker.postMessage({fn: 'RunLua', code: editor.getValue()});
+				Print({color:'white', text:`The current lua code is runned in a new thread!`});
+			}
+//			ActivatePlayBtn(true);
+		}
+		
+		self.PauseLua = function (){
+			if(state == 'running'){
+				state = 'paused';
+				worker.postMessage({fn: 'SetState', state: state});
+				Print({color:'white', text:`The current running lua code is paused!`});
+			}
+		}
+		
+		self.StopLua = function (){
+			if(state == 'running' || state == 'paused'){
+				state = 'stopped';
+				worker.postMessage({fn: 'SetState', state: state});
+				Print({color:'white', text:`The current lua code is stopped!`});
+			}else if(state == 'stopped'){
+				state = 'terminated';
+				worker.terminate();
+				canvas.remove();
+				canvas = document.getElementById('canvas').appendChild(document.createElement('canvas'));
+				canvas.className = "offcanvas";
+				offscreen = canvas.transferControlToOffscreen();
+				worker = new Worker('./js/woker.js');
+				worker.onmessage = (e) => {self[e.data.fn](e.data);};
+				worker.postMessage({fn: 'Init', canvas: offscreen}, [offscreen]);
+				SendSize();
+				Print({color:'white', text:`The current lua thread is terminated!`});
+			}
+		}
+		
+		function SetState (data){
+//			LuaState = data.state;
+		}
+		
+		self.Print = function(data){
+			if(data.color == 'red')
+				alert(data.text);
+			const footer = document.getElementById('footer');
+			footer.insertAdjacentHTML("beforeend", `<span style="color:silver;">[${new Date().toISOString().replace(/T/, '/').replace(/\..+/, '')}]</span> <span style="color:${data.color};">${data.text}</span><br>`);
+			footer.scrollTop = footer.scrollHeight;			
+		}
+		
+		self.luafile = null;
+		
+		self.NewFile = async function (){
+			if(document.getElementById('code').dataset.active == "false")
+				return;
+			if(window.confirm("Discard all changes and create a new lua file?")){
+				editor.setValue('');
+				Print({color:'white', text:'A new lua file has been created!'});
+				luafile = null;
+				localStorage.clear();
+			}
+		}
+		
+		self.OpenFile = async function (){
+			if(document.getElementById('code').dataset.active == "false")
+				return;
+				
+			const pickerOpts = {types: [{description: 'Lua File', accept: {'lua/*': ['.lua', '.txt']}},], excludeAcceptAllOption: false, multiple: false};
+			try{
+				[luafile] = await showOpenFilePicker(pickerOpts);
+				const file = await luafile.getFile();
+				const contents = await file.text();
+				editor.setValue(contents, 1);
+				Print({color:'white', text:`The ${luafile.name} has been opened!`});
+				localStorage.setItem('luacode', contents);
+//				await set('file', luafile);
+
+			}catch(err){
+				console.log(luafile);
+			}
+		}
+		
+		self.SaveFile = async function (as){
+			if(document.getElementById('code').dataset.active == "false")
+				return;
+
+			if(!luafile || as){
+				try{
+					const pickerOpts = {suggestedName: 'untitled.lua', types: [{description: 'Lua File', accept: {'lua/*': ['.lua']}},], excludeAcceptAllOption: false};
+					luafile = await self.showSaveFilePicker(pickerOpts);
+				}catch(err){
+					return;
+				}
+			}
+			const writable = await luafile.createWritable();
+			await writable.write(editor.getValue());
+			await writable.close();			
+			Print({color:'white', text:`All changes has been saved to ${luafile.name}!`});
+			localStorage.setItem('luacode', editor.getValue());
+		}
+		setInterval(function(){ //autosave
+			if(self.location.hash == '')
+				localStorage.setItem('luacode', editor.getValue());
+		},60000);
+		
+		const canvasdiv = document.getElementById('canvas');
+		var mouse = {startx:0, starty:0};
+		canvasdiv.addEventListener('mousedown', (e) => {
+			e.preventDefault();
+			mouse.startx = e.clientX;
+			mouse.starty = e.clientY;
+		});
+		
+		canvasdiv.addEventListener('contextmenu', (e) => {
+		  e.preventDefault();
+		});
+		
+		canvasdiv.addEventListener('mousemove', (e) => {
+			e.preventDefault();
+			if(e.buttons > 0){
+				worker.postMessage({fn: 'OnMouseMove', buttons:e.buttons, deltax:e.clientX - mouse.startx, deltay:e.clientY - mouse.starty});
+				mouse.startx = e.clientX;
+				mouse.starty = e.clientY;
+			}
+		});
+		
+		canvasdiv.addEventListener('wheel', (e) => {
+			e.preventDefault();
+			worker.postMessage({fn: 'OnMouseMove', buttons:4, deltay:e.deltaY});
+		});
+		
+		self.addEventListener('keydown', (e) => {
+			if(document.getElementById('code').dataset.active == "false")
+				return;
+
+			if (e.ctrlKey && e.key == 'n') {
+				e.preventDefault();
+				NewFile();
+			}else if(e.ctrlKey && e.key == 'o'){
+				e.preventDefault();
+				OpenFile();
+			}else if(e.ctrlKey && e.key == 's'){
+				e.preventDefault();
+				SaveFile(false);
+			}else if(e.ctrlKey && e.shiftKey && e.key == 's'){
+				e.preventDefault();
+				SaveFile(true);
+			}
+		});
+		
+//		import { get, set } from './js/idb.min.js';
+		self.ReadCode = async function (){
+			if(self.location.hash == ''){
+				ToggleCode();
+				const contens = localStorage.getItem('luacode');
+				if(contens){
+					editor.setValue(contens, 1);
+					Print({color:'white', text:`Restore the last autosaved lua code!`});
+				}else{
+					const response = await fetch('./lua/startup.lua');
+					editor.setValue(await response.text(), 1);
+					Print({color:'white', text:`Load the startup lua code!`});
+				}
+//						try{
+//						    	luafile = await get('file');    
+//						    	console.log(luafile);
+//						    	if (luafile) {
+//									if(await luafile.queryPermission({mode:'readwrite'}) != 'granted'){
+//										console.log(await luafile.requestPermission())
+//											const file = await luafile.getFile();
+//											const contents = await file.text();
+//											editor.setValue(contents);
+//										}
+//								}
+//							} catch (error) {
+//			    				alert(error.name, error.message);
+//			    			}
+			}else{
+				let { data, e } = await _supabase.from('posts').select('lua').eq('id', self.location.hash);
+				if(data.length == 1){
+					DeactivateBtns();
+					editor.setValue(data[0].lua, 1);
+					return true;
+				}else{
+					ToggleCode();
+				}
+			}
+		}
+		
+		self.PublishCode = async function (){
+			if(document.getElementById('code').dataset.active == "false")
+				return;
+			const time = Date.now();
+			if(typeof PublishCode.lasttime !== "undefined" && time - PublishCode.lasttime < 1000*3600){
+				Print({color:'red', text:`Please wait ${Math.trunc((1000*3600-(time-PublishCode.lasttime))/1000/60)} minutes to publish again!`});
+				return;
+			}
+			const id = '#'+ Math.trunc(time/1000).toString(36);
+			const { data, error } = await _supabase.from('posts').insert([{ id: id, lua: editor.getValue()},])
+			Print({color:'white', text:`The current page has been published to <a style="color:blue" href="${self.location.href}${id}" target="_blank">${self.location.href}${id}</a> !`});
+			PublishCode.lasttime = time;
+		}
+		
+		function DeactivateBtns(){
+			document.getElementById("code").style['filter'] = 'invert(50%)';
+			document.getElementById("new").style['filter'] = 'invert(50%)';
+			document.getElementById("open").style['filter'] = 'invert(50%)';
+			document.getElementById("save").style['filter'] = 'invert(50%)';
+			document.getElementById("publish").style['filter'] = 'invert(50%)';
+			document.getElementById("examples").style['filter'] = 'invert(50%)';
+			
+			document.getElementById("code").removeAttribute('onclick');
+			document.getElementById("new").removeAttribute('onclick');
+			document.getElementById("open").removeAttribute('onclick');
+			document.getElementById("save").removeAttribute('onclick');
+			document.getElementById("publish").removeAttribute('onclick');
+			document.getElementById("examples").removeAttribute('onclick');
+			
+		}
+		
+		self.Init = function (){
+			ReadCode();
+		}
+		
+		Init();
+	</script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+      	<div class="logo"><a href="https://microcity.github.io" target="_blank">MicroDES</a></div>
+      	<div id="commandbar">
+	      	<div id="play" 		class="button" title="Run" 			onclick="RunLua()">			<img src="img/play.svg" alt="play"></div>
+	      	<div id="pause" 	class="button" title="Pause"	onclick="PauseLua()">		<img src="img/pause.svg" alt="pause"></div>
+	      	<div id="stop" 		class="button" title="Stop" 		onclick="StopLua()">		<img src="img/stop.svg" alt="stop"></div>
+	      	<div id="code" 		class="button" title="Show Code" 	onclick="ToggleCode()" data-active="false"><img src="img/code.svg" alt="code"></div>
+	      	<div id="new"  		class="button" title="New" 			onclick="NewFile()">		<img src="img/new.svg" alt="new"></div>
+	      	<div id="open" 		class="button" title="Open" 		onclick="OpenFile()">		<img src="img/open.svg" alt="open"></div>
+	      	<div id="save" 		class="button" title="Save/Save as" onclick="SaveFile(false)" oncontextmenu="SaveFile(true)"><img src="img/save.svg" alt="save"></div>
+	      	<div id="publish"  	class="button" title="Publish" 		onclick="PublishCode()">	<img src="img/publish.svg" alt="publish"></div>
+		</div>
+      	<div id="examples" class="button" title="Examples"><img src="img/works.svg" alt="works"></div>
+      </div>
+      <div id="editor" class="left" style="display : none"></div>
+      <div id="canvas" class="right" style="grid-column : 1 / -1"><canvas id="offcanvas" class="offcanvas"></canvas></div>
+      <div id="footer" class="footer"></div>
+    </div>
+  </body>
+</html>
