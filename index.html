@@ -63,7 +63,7 @@
     	background-color: white;
     }
     
-	#examples{
+	#doc{
 		float: right;
 		margin-right: 0px;
 		margin-left: 145px;
@@ -75,58 +75,82 @@
 		position: absolute;
 	}
 	</style>
-	<title>MicroDES</title>
-    <script src = "./js/supabase-js@2.js"></script>
+	<title>MicroCity Web</title>
+  <link rel="icon" type="image/svg+xml" href="./img/favicon.svg">
+  <script src = "./js/supabase-js@2.js"></script>
 	<script src = "./js/ace.min.js"></script>
 	<script src = "./js/theme-nord_dark.js"></script>
 	<script src = "./js/mode-lua.js"></script>
 	<script src = "./js/ext-language_tools.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./three.module.js"
+      }
+    }
+  </script>
+  <!-- preloads worker.js and its dependencies: -->
+  <link rel="modulepreload" href="./js/worker.module.js">
+    
 	<script type="module">
-		
-		
-		const _supabase = supabase.createClient(
-		'https://vvbgfpuqexloiavpkout.supabase.co',
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c'
-		);
-		
+
+		const _supabase = supabase.createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
+
+    self.DisableBtn = function (id){
+      const btn = document.getElementById(id);
+      btn.style['filter'] = 'invert(50%)';
+      btn.style['pointer-events'] = 'none';
+    }
+
+    self.EnableBtn = function (id){
+      const btn = document.getElementById(id);
+      btn.removeAttribute('style');
+    }
+   
 		self.ToggleCode = function (){
 			const btn = document.getElementById('code');
 			if(btn.dataset.active == "false"){
 				btn.style['background-color'] = 'white';
 				btn.style['filter'] = 'invert(0%)';
 				btn.dataset.active = "true";
-				document.getElementById("new").removeAttribute('style');
-				document.getElementById("open").removeAttribute('style');
-				document.getElementById("save").removeAttribute('style');
-				document.getElementById("publish").removeAttribute('style');
+        EnableBtn('new');
+        EnableBtn('open');
+        EnableBtn('save');
+        EnableBtn('publish');
 				document.getElementById("editor").removeAttribute('style');
-				document.getElementById("canvas").removeAttribute('style');
+				document.getElementById("scene").removeAttribute('style');
 				self.dispatchEvent(new Event('resize'));
 			}else if(btn.dataset.active == "true"){
 				btn.removeAttribute('style');
 				btn.dataset.active = "false";
-				document.getElementById("new").style['filter'] = 'invert(50%)';
-				document.getElementById("open").style['filter'] = 'invert(50%)';
-				document.getElementById("save").style['filter'] = 'invert(50%)';
-				document.getElementById("publish").style['filter'] = 'invert(50%)';
+        DisableBtn('new');
+        DisableBtn('open');
+        DisableBtn('save');
+        DisableBtn('publish');
 				document.getElementById("editor").style['display'] = 'none';
-				document.getElementById("canvas").style['grid-column'] = '1 / -1';
+				document.getElementById("scene").style['grid-column'] = '1 / -1';
 				self.dispatchEvent(new Event('resize'));
 			}
 		}
 		
-
 		self.editor = ace.edit("editor");
 		editor.setOptions({theme: 'ace/theme/nord_dark', mode: 'ace/mode/lua', showPrintMargin: false, enableLiveAutocompletion: true, fontSize: 16, useWorker: false});
-		
 		
 		var canvas = document.querySelector('#offcanvas');
 		if (!canvas.transferControlToOffscreen) {
 			alert("This browser does not support offscreen canvas!");
 		}
 		var offscreen = canvas.transferControlToOffscreen();
-		
-		self.worker = new Worker('./js/woker.js');
+
+    DisableBtn('play');
+    DisableBtn('pause');
+    DisableBtn('stop');
+    self.EnableCtrlBtns = function(){
+      EnableBtn('play');
+      EnableBtn('pause');
+      EnableBtn('stop');
+    }
+		self.worker = await new Worker('./js/worker.module.js', {type : 'module'});
 		self.state = 'stopped';
 		worker.onmessage = (e) => {self[e.data.fn](e.data);};
 		worker.postMessage({fn: 'Init', canvas: offscreen}, [offscreen]);
@@ -139,8 +163,7 @@
 		}
 		self.addEventListener('resize', SendSize);
 		SendSize();
-	
-		
+   
 		self.RunLua = function (){
 			if(state == 'stopped'){
 				state = 'running';
@@ -168,7 +191,7 @@
 			}
 		}
 		
-		self.StopLua = function (){
+		self.StopLua = async function (){
 			if(state == 'running' || state == 'paused'){
 				state = 'stopped';
 				worker.postMessage({fn: 'SetState', state: state});
@@ -177,10 +200,13 @@
 				state = 'terminated';
 				worker.terminate();
 				canvas.remove();
-				canvas = document.getElementById('canvas').appendChild(document.createElement('canvas'));
+				canvas = document.getElementById('scene').appendChild(document.createElement('canvas'));
 				canvas.className = "offcanvas";
 				offscreen = canvas.transferControlToOffscreen();
-				worker = new Worker('./js/woker.js');
+        DisableBtn('play');
+        DisableBtn('pause');
+        DisableBtn('stop');
+				worker = await new Worker('./js/worker.module.js', {type : 'module'});
 				worker.onmessage = (e) => {self[e.data.fn](e.data);};
 				worker.postMessage({fn: 'Init', canvas: offscreen}, [offscreen]);
 				SendSize();
@@ -188,23 +214,21 @@
 			}
 		}
 		
-		function SetState (data){
-//			LuaState = data.state;
+		self.SetState = function (data){
+			state = data.state;
 		}
 		
 		self.Print = function(data){
 			if(data.color == 'red')
 				alert(data.text);
 			const footer = document.getElementById('footer');
-			footer.insertAdjacentHTML("beforeend", `<span style="color:silver;">[${new Date().toISOString().replace(/T/, '/').replace(/\..+/, '')}]</span> <span style="color:${data.color};">${data.text}</span><br>`);
+			footer.insertAdjacentHTML("beforeend", `<span style="color:lightgray;">[${new Date().toISOString().replace(/T/, '/').replace(/\..+/, '')}]</span> <span style="color:${data.color};">${data.text}</span><br>`);
 			footer.scrollTop = footer.scrollHeight;			
 		}
 		
 		self.luafile = null;
 		
 		self.NewFile = async function (){
-			if(document.getElementById('code').dataset.active == "false")
-				return;
 			if(window.confirm("Discard all changes and create a new lua file?")){
 				editor.setValue('');
 				Print({color:'white', text:'A new lua file has been created!'});
@@ -213,11 +237,8 @@
 			}
 		}
 		
-		self.OpenFile = async function (){
-			if(document.getElementById('code').dataset.active == "false")
-				return;
-				
-			const pickerOpts = {types: [{description: 'Lua File', accept: {'lua/*': ['.lua', '.txt']}},], excludeAcceptAllOption: false, multiple: false};
+		self.OpenFile = async function (){		
+			const pickerOpts = {types: [{description: 'Lua File', accept: {'lua/*': ['.lua']}},], excludeAcceptAllOption: false, multiple: false};
 			try{
 				[luafile] = await showOpenFilePicker(pickerOpts);
 				const file = await luafile.getFile();
@@ -233,9 +254,6 @@
 		}
 		
 		self.SaveFile = async function (as){
-			if(document.getElementById('code').dataset.active == "false")
-				return;
-
 			if(!luafile || as){
 				try{
 					const pickerOpts = {suggestedName: 'untitled.lua', types: [{description: 'Lua File', accept: {'lua/*': ['.lua']}},], excludeAcceptAllOption: false};
@@ -250,24 +268,42 @@
 			Print({color:'white', text:`All changes has been saved to ${luafile.name}!`});
 			localStorage.setItem('luacode', editor.getValue());
 		}
+    
 		setInterval(function(){ //autosave
 			if(self.location.hash == '')
 				localStorage.setItem('luacode', editor.getValue());
 		},60000);
-		
-		const canvasdiv = document.getElementById('canvas');
+
+		self.PublishCode = async function (){
+			const time = Date.now();
+			if(typeof PublishCode.lasttime !== "undefined" && time - PublishCode.lasttime < 1000*3600){
+				Print({color:'red', text:`Please wait ${Math.trunc((1000*3600-(time-PublishCode.lasttime))/1000/60)} minutes to publish again!`});
+				return;
+			}
+			const id = '#'+ Math.trunc(time/1000).toString(36);
+			const { data, error } = await _supabase.from('posts').insert([{ id: id, lua: editor.getValue()},])
+			Print({color:'white', text:`The current page has been published to <a style="color:blue" href="${self.location.href}${id}" target="_blank">${self.location.href}${id}</a> !`});
+			PublishCode.lasttime = time;
+		}
+    
+		const scene = document.getElementById('scene');
+    
 		var mouse = {startx:0, starty:0};
-		canvasdiv.addEventListener('mousedown', (e) => {
+		scene.addEventListener('mousedown', (e) => {
 			e.preventDefault();
 			mouse.startx = e.clientX;
 			mouse.starty = e.clientY;
+      //if (e.buttons == 3) {
+        var rect = e.target.getBoundingClientRect();
+        worker.postMessage({fn: 'OnMouseDown', buttons:e.buttons, x: mouse.startx - rect.left, y: mouse.starty - rect.top});
+      //}
 		});
 		
-		canvasdiv.addEventListener('contextmenu', (e) => {
+		scene.addEventListener('contextmenu', (e) => {
 		  e.preventDefault();
 		});
 		
-		canvasdiv.addEventListener('mousemove', (e) => {
+		scene.addEventListener('mousemove', (e) => {
 			e.preventDefault();
 			if(e.buttons > 0){
 				worker.postMessage({fn: 'OnMouseMove', buttons:e.buttons, deltax:e.clientX - mouse.startx, deltay:e.clientY - mouse.starty});
@@ -276,7 +312,7 @@
 			}
 		});
 		
-		canvasdiv.addEventListener('wheel', (e) => {
+		scene.addEventListener('wheel', (e) => {
 			e.preventDefault();
 			worker.postMessage({fn: 'OnMouseMove', buttons:4, deltay:e.deltaY});
 		});
@@ -300,7 +336,6 @@
 			}
 		});
 		
-//		import { get, set } from './js/idb.min.js';
 		self.ReadCode = async function (){
 			if(self.location.hash == ''){
 				ToggleCode();
@@ -313,24 +348,14 @@
 					editor.setValue(await response.text(), 1);
 					Print({color:'white', text:`Load the startup lua code!`});
 				}
-//						try{
-//						    	luafile = await get('file');    
-//						    	console.log(luafile);
-//						    	if (luafile) {
-//									if(await luafile.queryPermission({mode:'readwrite'}) != 'granted'){
-//										console.log(await luafile.requestPermission())
-//											const file = await luafile.getFile();
-//											const contents = await file.text();
-//											editor.setValue(contents);
-//										}
-//								}
-//							} catch (error) {
-//			    				alert(error.name, error.message);
-//			    			}
 			}else{
 				let { data, e } = await _supabase.from('posts').select('lua').eq('id', self.location.hash);
 				if(data.length == 1){
-					DeactivateBtns();
+					DisableBtn('code');
+					DisableBtn('new');
+					DisableBtn('open');
+					DisableBtn('save');
+					DisableBtn('publish');
 					editor.setValue(data[0].lua, 1);
 					return true;
 				}else{
@@ -338,38 +363,7 @@
 				}
 			}
 		}
-		
-		self.PublishCode = async function (){
-			if(document.getElementById('code').dataset.active == "false")
-				return;
-			const time = Date.now();
-			if(typeof PublishCode.lasttime !== "undefined" && time - PublishCode.lasttime < 1000*3600){
-				Print({color:'red', text:`Please wait ${Math.trunc((1000*3600-(time-PublishCode.lasttime))/1000/60)} minutes to publish again!`});
-				return;
-			}
-			const id = '#'+ Math.trunc(time/1000).toString(36);
-			const { data, error } = await _supabase.from('posts').insert([{ id: id, lua: editor.getValue()},])
-			Print({color:'white', text:`The current page has been published to <a style="color:blue" href="${self.location.href}${id}" target="_blank">${self.location.href}${id}</a> !`});
-			PublishCode.lasttime = time;
-		}
-		
-		function DeactivateBtns(){
-			document.getElementById("code").style['filter'] = 'invert(50%)';
-			document.getElementById("new").style['filter'] = 'invert(50%)';
-			document.getElementById("open").style['filter'] = 'invert(50%)';
-			document.getElementById("save").style['filter'] = 'invert(50%)';
-			document.getElementById("publish").style['filter'] = 'invert(50%)';
-			document.getElementById("examples").style['filter'] = 'invert(50%)';
-			
-			document.getElementById("code").removeAttribute('onclick');
-			document.getElementById("new").removeAttribute('onclick');
-			document.getElementById("open").removeAttribute('onclick');
-			document.getElementById("save").removeAttribute('onclick');
-			document.getElementById("publish").removeAttribute('onclick');
-			document.getElementById("examples").removeAttribute('onclick');
-			
-		}
-		
+					
 		self.Init = function (){
 			ReadCode();
 		}
@@ -380,7 +374,7 @@
   <body>
     <div class="container">
       <div class="header">
-      	<div class="logo"><a href="https://microcity.github.io" target="_blank">MicroDES</a></div>
+      	<div class="logo" title="Introduction"><a href="https://microcity.github.io" target="_blank">MicroCity</a><span style="color:lightgray"> Web</span></div>
       	<div id="commandbar">
 	      	<div id="play" 		class="button" title="Run" 			onclick="RunLua()">			<img src="img/play.svg" alt="play"></div>
 	      	<div id="pause" 	class="button" title="Pause"	onclick="PauseLua()">		<img src="img/pause.svg" alt="pause"></div>
@@ -391,10 +385,10 @@
 	      	<div id="save" 		class="button" title="Save/Save as" onclick="SaveFile(false)" oncontextmenu="SaveFile(true)"><img src="img/save.svg" alt="save"></div>
 	      	<div id="publish"  	class="button" title="Publish" 		onclick="PublishCode()">	<img src="img/publish.svg" alt="publish"></div>
 		</div>
-      	<div id="examples" class="button" title="Examples"><img src="img/works.svg" alt="works"></div>
+      	<div id="doc" class="button" title="Documentation"><img src="img/doc.svg" alt="doc"></div>
       </div>
       <div id="editor" class="left" style="display : none"></div>
-      <div id="canvas" class="right" style="grid-column : 1 / -1"><canvas id="offcanvas" class="offcanvas"></canvas></div>
+      <div id="scene" class="right" style="grid-column : 1 / -1"><canvas id="offcanvas" class="offcanvas"></canvas></div>
       <div id="footer" class="footer"></div>
     </div>
   </body>
