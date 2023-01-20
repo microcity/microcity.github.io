@@ -161,6 +161,7 @@ const savefile = async function (as){
       const pickerOpts = {suggestedName: 'untitled.lua', types: [{description: 'Lua File', accept: {'lua/*': ['.lua']}},], excludeAcceptAllOption: false};
       lua.file = await self.showSaveFilePicker(pickerOpts);
     }catch(err){
+      Print({color:'red', text:err});
       return;
     }
   }
@@ -357,6 +358,9 @@ self.Print = function(data){
     footer.insertBefore(newElement, footer.lastChild);
 	footer.scrollTop = footer.scrollHeight;			
 }
+
+//set version
+document.getElementById('version').innerText = document.querySelector('meta[name="version"]').content;
 
 //page load
 disablebtn(btnplay);

@@ -162,7 +162,7 @@ html, body, #container {
   background-color: yellow;
 }
 
-.prompt {
+.prompt, #version {
   color:lightgray;
 }
 
