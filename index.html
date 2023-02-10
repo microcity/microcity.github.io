@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
   <title>MicroCity Web</title>
-  <meta name="version" content="20230120" />
-  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
-  <link rel="icon" type="image/svg+xml" href="/img/favicon.svg">
-  <link rel="stylesheet" type="text/css" href="/css/style.css">
-  <link rel="modulepreload" href="/js/worker.module.js">
+  <meta charset="UTF-8"/>
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate, max-age=0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="/img/favicon.svg"/>
+  <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+  <link rel="modulepreload" href="/js/worker.module.js"/>
   <script src = "/js/supabase-js@2.js"></script>
 	<script src = "/js/ace.min.js"></script>
 	<script src = "/js/theme-nord_dark.js"></script>
@@ -16,5 +17,32 @@
   <script src="/js/app.js" type="module"></script>
 </head>
 <body>
+<div id="container">
+<div id="header">
+    <div id="logo" title="Introduction"><a href="https://microcity.github.io" target="_blank">MicroCity</a> Web</div>
+    <div id="commandbar">
+        <div id="play"     class="button" title="Run/Debug">     <img src="img/play.svg" alt="play"/>      </div>
+        <div id="pause"    class="button" title="Pause">		     <img src="img/pause.svg" alt="pause"/>    </div>
+        <div id="stop"     class="button" title="Stop/Kill">		 <img src="img/stop.svg" alt="stop"/>      </div>
+        <div id="code"     class="button" title="Show Code">     <img src="img/code.svg" alt="code"/>      </div>
+        <div id="new"  	   class="button" title="New">           <img src="img/new.svg" alt="new"/>        </div>
+        <div id="open" 	   class="button" title="Open">          <img src="img/open.svg" alt="open"/>      </div>
+        <div id="save" 	   class="button" title="Save/Save as">  <img src="img/save.svg" alt="save"/>      </div>
+        <div id="pub"      class="button" title="Publish">	     <img src="img/publish.svg" alt="publish"/></div>
+    </div>
+    <div id="doc" class="button" title="Documentation">  <img src="img/doc.svg" alt="doc"/>  </div>
+  </div>
+  <div id="editor"></div>
+  <div id="scene">
+    <div id="docframe"></div>
+    <canvas id="offcanvas"></canvas>
+  </div>
+  <div id="footer">
+    <div id="statusbar">
+      <span class="prompt">state: </span><span id="state"></span><br/>
+      <span class="prompt">version: </span><span id="version"></span>
+    <div>
+  </div>
+</div>
 </body>
 </html>

@@ -1,88 +1,88 @@
-import {Module} from './glue.js';
-import * as THREE from './three.module.js';
-import { GLTFLoader } from './GLTFLoader.js';
+import {Module} from '/js/glue.js';
+import * as THREE from '/js/three.module.js';
+import { GLTFLoader } from '/js/GLTFLoader.js';
 
-self.DrawGrid = function (){
-  const GridSegmentCount = 100;
-  const GridDistance = 10.0;
-  const GridColorLight = 0xc0c0c0;
-  const GridColorDark = GridColorLight/2;
-
-	const xStart = -(GridSegmentCount * GridDistance / 2.0);
-	const xEnd = xStart + (GridSegmentCount * GridDistance);
-  let posHGridStart, posHGridEnd, posVGridStart, posVGridEnd;
-  if(camera.isPerspectiveCamera){
-    posHGridStart = new THREE.Vector3(xStart, 0, xStart);
-    posHGridEnd = new THREE.Vector3(xStart, 0, xEnd);
-    posVGridStart = new THREE.Vector3(xStart, 0, xStart);
-    posVGridEnd = new THREE.Vector3(xEnd, 0, xStart);
-  }else{
-    posHGridStart = new THREE.Vector3(xStart, xStart, 0);
-    posHGridEnd = new THREE.Vector3(xStart, xEnd, 0);
-    posVGridStart = new THREE.Vector3(xStart, xStart, 0);
-    posVGridEnd = new THREE.Vector3(xEnd, xStart, 0);  
-  }
-
-  for (let i = 0; i < GridSegmentCount + 1; ++i){
-    const colorToUse = ((i % 5) == 0) ? GridColorDark : GridColorLight;
-    const material = new THREE.LineBasicMaterial( { color: colorToUse } );
-
-    const hpoints = [];
-    hpoints.push(posHGridStart);
-    hpoints.push(posHGridEnd);
-    const hgeometry = new THREE.BufferGeometry().setFromPoints( hpoints );
-    const hline = new THREE.Line( hgeometry, material );
-    hline.name = "grid";
-    scene.add( hline );
-    
-    const vpoints = [];
-    vpoints.push(posVGridStart);
-    vpoints.push(posVGridEnd);
-    const vgeometry = new THREE.BufferGeometry().setFromPoints( vpoints );
-    const vline = new THREE.Line( vgeometry, material );
-    vline.name = "grid";
-    scene.add( vline );
-
-    posHGridStart.x += GridDistance;
-		posHGridEnd.x += GridDistance;
+self.DrawGrid = function (type){
+  if(grid) grid.removeFromParent();
+  self.grid = new THREE.Group();
+  grid.name = 'grid';
+  scene.add(grid);
+  if( type == 'plane' ){
+    const GridSegmentCount = 100;
+    const GridDistance = 10.0;
+    const GridColorLight = 0xc0c0c0;
+    const GridColorDark = GridColorLight/2;
+  
+  	const xStart = -(GridSegmentCount * GridDistance / 2.0);
+  	const xEnd = xStart + (GridSegmentCount * GridDistance);
+    let posHGridStart, posHGridEnd, posVGridStart, posVGridEnd;
     if(camera.isPerspectiveCamera){
-      posVGridStart.z += GridDistance;
-		  posVGridEnd.z += GridDistance;
+      posHGridStart = new THREE.Vector3(xStart, 0, xStart);
+      posHGridEnd = new THREE.Vector3(xStart, 0, xEnd);
+      posVGridStart = new THREE.Vector3(xStart, 0, xStart);
+      posVGridEnd = new THREE.Vector3(xEnd, 0, xStart);
     }else{
-      posVGridStart.y += GridDistance;
-		  posVGridEnd.y += GridDistance;
+      posHGridStart = new THREE.Vector3(xStart, xStart, 0);
+      posHGridEnd = new THREE.Vector3(xStart, xEnd, 0);
+      posVGridStart = new THREE.Vector3(xStart, xStart, 0);
+      posVGridEnd = new THREE.Vector3(xEnd, xStart, 0);  
+    }
+  
+    for (let i = 0; i < GridSegmentCount + 1; ++i){
+      const colorToUse = ((i % 5) == 0) ? GridColorDark : GridColorLight;
+      const material = new THREE.LineBasicMaterial( { color: colorToUse } );
+  
+      const hpoints = [];
+      hpoints.push(posHGridStart);
+      hpoints.push(posHGridEnd);
+      const hgeometry = new THREE.BufferGeometry().setFromPoints( hpoints );
+      const hline = new THREE.Line( hgeometry, material );
+      grid.add(hline);
+            
+      const vpoints = [];
+      vpoints.push(posVGridStart);
+      vpoints.push(posVGridEnd);
+      const vgeometry = new THREE.BufferGeometry().setFromPoints( vpoints );
+      const vline = new THREE.Line( vgeometry, material );
+      grid.add(vline);
+       
+      posHGridStart.x += GridDistance;
+  		posHGridEnd.x += GridDistance;
+      if(camera.isPerspectiveCamera){
+        posVGridStart.z += GridDistance;
+  		  posVGridEnd.z += GridDistance;
+      }else{
+        posVGridStart.y += GridDistance;
+  		  posVGridEnd.y += GridDistance;
+      }
+    }
+    
+  }else if (type == 'sphere'){ 
+    const GridDistance = 10/180*Math.PI;
+    const GridColorDark = 0xc0c0c0;
+  
+    for(let theta = -Math.PI; theta < Math.PI; theta += GridDistance){
+      const material = new THREE.LineBasicMaterial( { color: GridColorDark } );
+      const lonpoints = [];
+      for(let phi = -Math.PI; phi <= 0; phi += Math.PI/180)
+        lonpoints.push((new THREE.Vector3()).setFromSphericalCoords(15.01, phi, theta));
+      const geometry = new THREE.BufferGeometry().setFromPoints(lonpoints);
+      const line = new THREE.Line(geometry, material);
+      grid.add(line);
+    }
+    for(let phi = -Math.PI + GridDistance; phi < 0; phi += GridDistance){
+      const material = new THREE.LineBasicMaterial( { color: GridColorDark } );
+      const latpoints = [];    
+      for(let theta = -Math.PI; theta < Math.PI; theta += Math.PI/180)
+        latpoints.push((new THREE.Vector3()).setFromSphericalCoords(15.01, phi, theta));
+      const geometry = new THREE.BufferGeometry().setFromPoints(latpoints);
+      const line = new THREE.Line(geometry, material);
+      grid.add(line); 
     }
   }
-  
-  
-  // const GridDistance = 10/180*Math.PI;
-  // const GridColorDark = 0xc0c0c0;
-
-  // for(let theta = -Math.PI; theta < Math.PI; theta += GridDistance){
-  //   const material = new THREE.LineBasicMaterial( { color: GridColorDark } );
-  //   const lonpoints = [];
-  //   for(let phi = -Math.PI; phi <= 0; phi += Math.PI/180)
-  //     lonpoints.push((new THREE.Vector3()).setFromSphericalCoords(15.01, phi, theta));
-  //   const geometry = new THREE.BufferGeometry().setFromPoints(lonpoints);
-  //   const line = new THREE.Line(geometry, material);
-  //   line.name = "grid";
-  //   scene.add(line);
-  // }
-  // for(let phi = -Math.PI + GridDistance; phi < 0; phi += GridDistance){
-  //   const material = new THREE.LineBasicMaterial( { color: GridColorDark } );
-  //   const latpoints = [];    
-  //   for(let theta = -Math.PI; theta < Math.PI; theta += Math.PI/180)
-  //     latpoints.push((new THREE.Vector3()).setFromSphericalCoords(15.01, phi, theta));
-  //   const geometry = new THREE.BufferGeometry().setFromPoints(latpoints);
-  //   const line = new THREE.Line(geometry, material);
-  //   line.name = "grid";
-  //   scene.add(line);  
-  // }
 }
 
 self.AddLights = function (){
-  const light = new THREE.AmbientLight( 0x404040, 6); // soft white light
-  scene.add( light );  
   // var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
   // directionalLight.position.x = 1;
   // directionalLight.position.y = 1;
@@ -134,28 +134,27 @@ self.Resize = function(data) {
   renderer.render( scene, camera );
 }
 
+self.SetCam =  function (camtype){
+  if(camtype=='ortho'){
+    self.camera = new THREE.OrthographicCamera( -canvas.width/10, canvas.width/10, canvas.height/10, -canvas.height/10, -500, 10000 );
+    camera.position.set(0,0,20);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+  }else{
+  	self.camera = new THREE.PerspectiveCamera( 75, canvas.width / canvas.height, 2, 3000 );
+    camera.position.set(20,10,20);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));    
+  }
+}
+
 self.Init = async function(data){
 	const {canvas} = data;
+  self.canvas = canvas;
   self.renderer = new THREE.WebGLRenderer({canvas});
-//	renderer.setSize(canvas.width, canvas.height, false);
 	renderer.setClearColor( 0xffffff, 0);
 	self.scene = new THREE.Scene();
   const light = new THREE.AmbientLight( 0x404040, 6); // soft white light
-  scene.add( light );  
-  
-	self.camera = new THREE.PerspectiveCamera( 75, canvas.width / canvas.height, 2, 3000 );
-  camera.position.set(20,10,20);
-  camera.lookAt(new THREE.Vector3(0, 0, 0));
-  
-  // self.camera = new THREE.OrthographicCamera( -canvas.width/10, canvas.width/10, canvas.height/10, -canvas.height/10, -500, 10000 );
-  // camera.position.set(0,0,20);
-  // camera.lookAt(new THREE.Vector3(0, 0, 0));
-  
-	// function animate() {
-	// 	requestAnimationFrame( animate );
-	// 	renderer.render( scene, camera );
-	// };
-	// animate();      
+  scene.add( light ); 
+  SetCam('persp');
 
   // const model = await LoadJson('/res/world_countries.geojson');
   // const map = new THREE.Object3D();
@@ -218,18 +217,17 @@ self.Init = async function(data){
   // mesh.selectable = true;
   // mesh.highlightcolor = new THREE.Color(0xffffff);
   // scene.add( mesh );
-  
-  DrawGrid(); 
 
   renderer.render( scene, camera );
-  
+
+  self.grid = null;
 	self.RotationSpeed = 1;
   self.TranslationSpeed = 1;
-	self.state = 'stopped';
-}
-
-self.SetState = function(data){
-	state = data.state;
+	self.runningstate = 'running';
+  self.stopping = false;
+  self.pausing = false;
+  self.commanding = false;
+  self.bps = [];
 }
 
 self.Select = function(obj){
@@ -328,7 +326,7 @@ self.OnMouseMove = function(data) {
       }
 
   	}else if(data.buttons == 2){ //right mouse button
-      tvectX.multiplyScalar(deltaX).add(tvectY.multiplyScalar(deltaY)).multiplyScalar(0.1*TranslationSpeed);
+      tvectX.multiplyScalar(deltaX).add(tvectY.multiplyScalar(deltaY)).multiplyScalar(0.002*TranslationSpeed*camera.position.length());
 		  camera.position.add(tvectX);
 
   	}else if(data.buttons == 3){ //left and right mouse button
@@ -338,7 +336,7 @@ self.OnMouseMove = function(data) {
       // camera.position.copy((new THREE.Vector3()).addVectors(self.lookat, lookatVector));
       // camera.lookAt((new THREE.Vector3()).addVectors(self.lookat, self.diffv.multiplyScalar(0.99)))
   	}else if(data.buttons == 4){ //wheel button
- 		  camera.position.add(relativeTarget.multiplyScalar(-0.05*deltaY*TranslationSpeed));
+ 		  camera.position.add(relativeTarget.multiplyScalar(-0.0005*deltaY*TranslationSpeed*camera.position.length()));
   	}
   }else{
     if(data.buttons == 2){
@@ -352,25 +350,12 @@ self.OnMouseMove = function(data) {
   renderer.render( scene, camera );
 }
 
-self.RunLua = function (data){
-  	scene.remove.apply(scene, scene.children);
-    DrawGrid();
-    AddLights();
-    if(data.debug){
-      self.breakpoints = data.bps;
-      Module.runlua(data.code, 1);
-    }else{
-      Module.runlua(data.code, 0);
-    }
+self.RunLua = async function (data){
+  self.postMessage({fn: 'OnReturn', result:await Module.runlua(data.code), id:data.id});
 }
 
-self.RunCommand = function(data){
-  // if(data.code == 'go' || data.code == 'stepover' || data.code == 'stepin' || data.code == 'stepout' || data.code == 'stop'){
-  //   command = data.code;
-  // }else{
-    console.log(Module.command(data.code));
-  //   command = "";
-  // }
+self.SetVar = function (data){
+  self[data.name] = data.value;
 }
 
 self.onmessage = (e) => {self[e.data.fn](e.data);};
