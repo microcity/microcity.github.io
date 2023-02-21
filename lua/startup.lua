@@ -1,10 +1,9 @@
-print("1")
-print("2")
-local obj = scene.addobj()
-x = 1
-y = 1
-z = 0
-while ui.update() do
+print("Hello, there!")
+local obj = scene.addobj('box')
+local x = 1
+local y = 1
+local z = 0
+while scene.render() do
 	x = x + 0.1
 	y = y + 0.1
 	obj:setrot(x, y, z)

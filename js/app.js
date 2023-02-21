@@ -15,10 +15,6 @@ self.BreakAt = function (data){
 }
 
 self.OnModuleLoaded = function(data){
-  enablebtn(btns['play']);
-  enablebtn(btns['pause']);
-  enablebtn(btns['stop']);
-  // lua.setstate('ready');
   SetState({state:'ready'});
   document.getElementById('version').innerText = data.version;
 }
@@ -39,6 +35,33 @@ self.Print = function(data){
 }
 
 self.SetState = function(data){
+  if(data.state == 'running' || data.state == 'debugging'){
+    disablebtn(btns['play']);
+    enablebtn(btns['pause']);
+    enablebtn(btns['stop']);
+    disablebtn(btns['new']);
+    disablebtn(btns['open']);
+    disablebtn(btns['save']);
+    disablebtn(btns['pub']);
+  }else if(data.state == 'paused'){
+    enablebtn(btns['play']);
+    disablebtn(btns['pause']);
+    enablebtn(btns['stop']);
+    disablebtn(btns['new']);
+    disablebtn(btns['open']);
+    disablebtn(btns['save']);
+    disablebtn(btns['pub']);
+  }else if(data.state == 'ready'){
+    enablebtn(btns['play']);
+    disablebtn(btns['pause']);
+    disablebtn(btns['stop']);
+    if(!btns['code'].pass && btns['code'].active){
+      enablebtn(btns['new']);
+      enablebtn(btns['open']);
+      enablebtn(btns['save']);
+      enablebtn(btns['pub']);      
+    }
+  }
   document.getElementById('state').innerText = data.state;
 }
 
@@ -53,6 +76,8 @@ lua.run = async function (code){
 }
 
 lua.runcmd = async function (ele){
+  if(lua.getstate() != 'ready' &&  lua.getstate() != 'paused' )
+    return;
   if(event.key === 'Enter' && ele.value != "") {
       Print({color: 'blue', text: ele.value});
       worker.postMessage({fn:'SetVar', name:'commanding', value:true});
@@ -158,10 +183,13 @@ if(self.location.hash == ''){
     Print({color:'white', text:`The startup code is loaded!`});
   }
 }else{
+  enablebtn(btns['code']);
   const _supabase = supabase.createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
-  let { data, e } = await _supabase.from('posts').select('lua').eq('id', self.location.hash);
+  let { data, e } = await _supabase.from('posts').select('lua,pass').eq('id', self.location.hash);
   if(data.length == 1){
     aceeditor.setValue(data[0].lua, 1);
+    btns['code'].pass = data[0].pass;
+    onresize();
   }else{
     Print({color:'red', text:`Can not load published code!`});
   }

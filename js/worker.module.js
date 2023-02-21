@@ -1,233 +1,37 @@
 import {Module} from '/js/glue.js';
-import * as THREE from '/js/three.module.js';
-import { GLTFLoader } from '/js/GLTFLoader.js';
-
-self.DrawGrid = function (type){
-  if(grid) grid.removeFromParent();
-  self.grid = new THREE.Group();
-  grid.name = 'grid';
-  scene.add(grid);
-  if( type == 'plane' ){
-    const GridSegmentCount = 100;
-    const GridDistance = 10.0;
-    const GridColorLight = 0xc0c0c0;
-    const GridColorDark = GridColorLight/2;
-  
-  	const xStart = -(GridSegmentCount * GridDistance / 2.0);
-  	const xEnd = xStart + (GridSegmentCount * GridDistance);
-    let posHGridStart, posHGridEnd, posVGridStart, posVGridEnd;
-    if(camera.isPerspectiveCamera){
-      posHGridStart = new THREE.Vector3(xStart, 0, xStart);
-      posHGridEnd = new THREE.Vector3(xStart, 0, xEnd);
-      posVGridStart = new THREE.Vector3(xStart, 0, xStart);
-      posVGridEnd = new THREE.Vector3(xEnd, 0, xStart);
-    }else{
-      posHGridStart = new THREE.Vector3(xStart, xStart, 0);
-      posHGridEnd = new THREE.Vector3(xStart, xEnd, 0);
-      posVGridStart = new THREE.Vector3(xStart, xStart, 0);
-      posVGridEnd = new THREE.Vector3(xEnd, xStart, 0);  
-    }
-  
-    for (let i = 0; i < GridSegmentCount + 1; ++i){
-      const colorToUse = ((i % 5) == 0) ? GridColorDark : GridColorLight;
-      const material = new THREE.LineBasicMaterial( { color: colorToUse } );
-  
-      const hpoints = [];
-      hpoints.push(posHGridStart);
-      hpoints.push(posHGridEnd);
-      const hgeometry = new THREE.BufferGeometry().setFromPoints( hpoints );
-      const hline = new THREE.Line( hgeometry, material );
-      grid.add(hline);
-            
-      const vpoints = [];
-      vpoints.push(posVGridStart);
-      vpoints.push(posVGridEnd);
-      const vgeometry = new THREE.BufferGeometry().setFromPoints( vpoints );
-      const vline = new THREE.Line( vgeometry, material );
-      grid.add(vline);
-       
-      posHGridStart.x += GridDistance;
-  		posHGridEnd.x += GridDistance;
-      if(camera.isPerspectiveCamera){
-        posVGridStart.z += GridDistance;
-  		  posVGridEnd.z += GridDistance;
-      }else{
-        posVGridStart.y += GridDistance;
-  		  posVGridEnd.y += GridDistance;
-      }
-    }
-    
-  }else if (type == 'sphere'){ 
-    const GridDistance = 10/180*Math.PI;
-    const GridColorDark = 0xc0c0c0;
-  
-    for(let theta = -Math.PI; theta < Math.PI; theta += GridDistance){
-      const material = new THREE.LineBasicMaterial( { color: GridColorDark } );
-      const lonpoints = [];
-      for(let phi = -Math.PI; phi <= 0; phi += Math.PI/180)
-        lonpoints.push((new THREE.Vector3()).setFromSphericalCoords(15.01, phi, theta));
-      const geometry = new THREE.BufferGeometry().setFromPoints(lonpoints);
-      const line = new THREE.Line(geometry, material);
-      grid.add(line);
-    }
-    for(let phi = -Math.PI + GridDistance; phi < 0; phi += GridDistance){
-      const material = new THREE.LineBasicMaterial( { color: GridColorDark } );
-      const latpoints = [];    
-      for(let theta = -Math.PI; theta < Math.PI; theta += Math.PI/180)
-        latpoints.push((new THREE.Vector3()).setFromSphericalCoords(15.01, phi, theta));
-      const geometry = new THREE.BufferGeometry().setFromPoints(latpoints);
-      const line = new THREE.Line(geometry, material);
-      grid.add(line); 
-    }
-  }
-}
-
-self.AddLights = function (){
-  // var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-  // directionalLight.position.x = 1;
-  // directionalLight.position.y = 1;
-  // directionalLight.position.z = 0.75;
-  // directionalLight.position.normalize();
-  // scene.add( directionalLight );
-  
-  // var directionalLight = new THREE.DirectionalLight( 0x808080, 1 );
-  // directionalLight.position.x = - 1;
-  // directionalLight.position.y = 1;
-  // directionalLight.position.z = - 0.75;
-  // directionalLight.position.normalize();
-  // scene.add( directionalLight );  
-}
-
-self.LoadGltf = function (url) {
-  const loader = new GLTFLoader();
-  return new Promise((resolve, reject) => {
-    loader.load(url, data => resolve(data.scene), null, reject);
-  });
-}
-
-self.LoadBitmap = function (url) {
-    const loader = new THREE.ImageBitmapLoader();
-    loader.setOptions( { imageOrientation: 'flipY' } );
-    return new Promise((resolve, reject) => {
-      loader.load(url, data => resolve(data), null, reject);
-    });
-}  
-
-self.LoadJson = function (url) {
-  const loader = new THREE.FileLoader().setResponseType('json');
-  return new Promise((resolve, reject) => {
-    loader.load(url, data => resolve(data), null, reject);
-  });
-}
-
-self.Resize = function(data) {
-	renderer.setSize(data.width, data.height, false);
-  if(camera.isPerspectiveCamera){
-    camera.aspect = data.width / data.height;
-  }else{
-    camera.left = -data.width/10;
-    camera.right = data.width/10;
-    camera.top = data.height/10;
-    camera.bottom = -data.height/10;
-  }
-	camera.updateProjectionMatrix();
-  renderer.render( scene, camera );
-}
-
-self.SetCam =  function (camtype){
-  if(camtype=='ortho'){
-    self.camera = new THREE.OrthographicCamera( -canvas.width/10, canvas.width/10, canvas.height/10, -canvas.height/10, -500, 10000 );
-    camera.position.set(0,0,20);
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
-  }else{
-  	self.camera = new THREE.PerspectiveCamera( 75, canvas.width / canvas.height, 2, 3000 );
-    camera.position.set(20,10,20);
-    camera.lookAt(new THREE.Vector3(0, 0, 0));    
-  }
-}
+import * as THREE from '/js/three.module.min.js';
+import GLPK from '/js/glpk.js';
+import { RoomEnvironment } from '/js/RoomEnvironment.js';
+import '/js/scene.js';
 
 self.Init = async function(data){
-	const {canvas} = data;
-  self.canvas = canvas;
+	//const {canvas} = data;
+  self.canvas = data.canvas;
+  self.label = data.label;
   self.renderer = new THREE.WebGLRenderer({canvas});
-	renderer.setClearColor( 0xffffff, 0);
+	//renderer.setClearColor( 0xffffff, 0);
 	self.scene = new THREE.Scene();
-  const light = new THREE.AmbientLight( 0x404040, 6); // soft white light
-  scene.add( light ); 
-  SetCam('persp');
+  // const light = new THREE.AmbientLight( 0x404040, 6); // soft white light
+  // scene.add( light ); 
+  const pmremGenerator = new THREE.PMREMGenerator( renderer );
+  scene.environment = pmremGenerator.fromScene( new RoomEnvironment() ).texture;
+  InitEnv();
+  //renderer.render( scene, camera );
 
-  // const model = await LoadJson('/res/world_countries.geojson');
-  // const map = new THREE.Object3D();
-  // model.features.forEach(elem => {
-  //   const country = new THREE.Object3D();
-  //   const type = elem.geometry.type;
-  //   const coordinates = elem.geometry.coordinates;
-  //   coordinates.forEach(multiPolygon => {
-  //     if(type === 'Polygon'){
-  //       multiPolygon = [multiPolygon];
-  //     }
-  //     multiPolygon.forEach(polygon => {
-  //       const shape = new THREE.Shape();
-  //       const lineMaterial = new THREE.LineBasicMaterial({ color: 'black' });
-  //       const points = [];
-  //       for (let i = 0; i < polygon.length; i++) {
-  //         const [x, y] = polygon[i];
-  //         if (i === 0) shape.moveTo(x, y);
-  //         shape.lineTo(x, y);
-  //         points.push(new THREE.Vector3(x, y, 0));
-  //       }
-
-  //       // const extrudeSettings = {depth: 4, bevelEnabled: false};
-  //       // const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings)
-  //       const geometry = new THREE.ShapeGeometry( shape );
-  //       const material = new THREE.MeshBasicMaterial({ color: 0x3480C4, transparent: true, opacity: 0.6 })
-  //       // const material1 = new THREE.MeshBasicMaterial({ color: '#3480C4', transparent: true, opacity: 0.5 })
-  //       const mesh = new THREE.Mesh(geometry, material)
-  //       const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
-  //       const line = new THREE.Line(lineGeometry, lineMaterial)
-  //       country.add(mesh);
-  //       country.add(line);
-  //     });
-  //   });
-
-  //   country.userData = elem.properties;
-  //   if (elem.properties.contorid) {
-  //     const [x, y] = elem.properties.contorid;
-  //     country.userData.centroid = [x, y];
-  //   }
-  //   country.selectable = true;
-  //   country.highlightcolor = new THREE.Color(0xff0000);
-  //   map.add(country);
-  // });
-  // scene.add(map);
+  //self.glpk = await GLPK();
+  //SolveLP();
   
-  // const model = await LoadGltf('../res/2axle.glb');
-  // model.traverse((node) => {
-  //     if(node.isMesh){
-  //       let newMat = new THREE.MeshLambertMaterial({map: node.material.map});
-  //       node.material = newMat;
-  //     }
-  // });
-  // scene.add(model);
-  
-  // const geometry = new THREE.SphereGeometry( 15, 360, 180 );
-  // const texture = new THREE.CanvasTexture(await LoadBitmap('../res/natrual_earth.jpg'));
-  // const material = new THREE.MeshPhongMaterial( {map: texture, color: 0xffffff,  opacity: 0.9, transparent: true  });
-  // const mesh = new THREE.Mesh( geometry, material );
-  // mesh.selectable = true;
-  // mesh.highlightcolor = new THREE.Color(0xffffff);
-  // scene.add( mesh );
-
-  renderer.render( scene, camera );
-
   self.grid = null;
-	self.RotationSpeed = 1;
-  self.TranslationSpeed = 1;
 	self.runningstate = 'running';
   self.stopping = false;
   self.pausing = false;
   self.commanding = false;
   self.bps = [];
+  self.context = label.getContext('2d', {willReadFrequently: true});
+  // DrawGrid('plane');
+  // self.obj = [];
+  // self.id = 0;
+  // var spritey = AddTextSprite("hello, world!", 'Arial', true, 32, 'black', 0.5, 'red');
 }
 
 self.Select = function(obj){
@@ -356,6 +160,54 @@ self.RunLua = async function (data){
 
 self.SetVar = function (data){
   self[data.name] = data.value;
+}
+
+self.SolveLP = async function (){
+  const lp = {
+      name: 'LP',
+      objective: {
+          direction: glpk.GLP_MAX,
+          name: 'obj',
+          vars: [
+              { name: 'x1', coef: 0.6 },
+              { name: 'x2', coef: 0.5 }
+          ]
+      },
+      subjectTo: [
+          {
+          name: 'cons1',
+              vars: [
+                  { name: 'x1', coef: 1.0 },
+                  { name: 'x2', coef: 2.0 }
+              ],
+              bnds: { type: glpk.GLP_UP, ub: 1.0, lb: 0.0 }
+          },
+          {
+              name: 'cons2',
+              vars: [
+                  { name: 'x1', coef: 3.0 },
+                  { name: 'x2', coef: 1.0 }
+              ],
+              bnds: { type: glpk.GLP_UP, ub: 2.0, lb: 0.0 }
+          }
+      ]
+  };
+
+  const opt = {
+      msglev: glpk.GLP_MSG_OFF,
+      cb: {
+          call: res => print(res),
+          each: 1
+      }
+  };
+  
+  // const print = (res) => console.log(JSON.stringify(res, null, 2))
+  
+  // await glpk.solve(lp, opt);
+      // .then(res => print(res))
+      // .catch(err => console.log(err));
+
+  console.log(await glpk.solve(lp, glpk.GLP_MSG_OFF));
 }
 
 self.onmessage = (e) => {self[e.data.fn](e.data);};

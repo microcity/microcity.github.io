@@ -8,7 +8,8 @@ export const btns      = {
   "open":   document.getElementById('open'),
   "save":   document.getElementById('save'),
   "pub":    document.getElementById('pub'),
-  "doc":    document.getElementById('doc')
+  "doc":    document.getElementById('doc'),
+  "newclose":   document.getElementById('newclose')
 };
 
 export const editor    = document.getElementById('editor');
@@ -33,7 +34,8 @@ if (!offcanvas.transferControlToOffscreen) {
   alert("This browser does not support offscreen canvas!");
 }
 var offscreen = offcanvas.transferControlToOffscreen();
-worker.postMessage({fn: 'Init', canvas: offscreen}, [offscreen]);
+const label = document.createElement("canvas").transferControlToOffscreen();
+worker.postMessage({fn: 'Init', canvas: offscreen, label: label}, [offscreen, label]);
 onresize();
 
 export const disablebtn = function (btn){
@@ -56,6 +58,15 @@ btns['stop'].onclick = () => stoplua();
 btns['stop'].oncontextmenu = () => scene.reload();
 
 btns['code'].onclick = function (){
+  if(btns['code'].pass){
+    const pass = prompt("The password for allowing editing:");
+    if(btns['code'].pass == pass){
+      btns['code'].pass = false;
+    }else{
+      Print({color:'red', text:'The password is wong!'})
+      return;
+    }
+  }
   if(!btns['code'].active){
     btns['code'].style['background-color'] = 'white';
     btns['code'].style['filter'] = 'invert(0%)';
@@ -81,12 +92,16 @@ btns['code'].onclick = function (){
 }
 
 btns['new'].onclick = async function (){
-  if(window.confirm("Discard all changes and create a new lua file?")){
-    aceeditor.setValue('');
-    Print({color:'white', text:'A new lua file has been created!'});
-    lua.file = null;
-    localStorage.clear();
-  }
+  await newdialog.showModal();
+  // if(window.confirm("Discard all changes and create a new lua file?")){
+  //   aceeditor.setValue('');
+  //   Print({color:'white', text:'A new lua file has been created!'});
+  //   lua.file = null;
+  //   localStorage.clear();
+  // }
+}
+btns['newclose'].onclick = function (){
+  newdialog.close();
 }
 		
 btns['open'].onclick = async function (){		
@@ -130,9 +145,17 @@ btns['pub'].onclick = async function (){
     Print({color:'red', text:`Please wait ${Math.trunc((1000*3600-(time-btns['pub'].lasttime))/1000/60)} minutes to publish again!`});
     return;
   }
-  const id = '#'+ Math.trunc(time/1000).toString(36);
-  const { data, error } = await _supabase.from('posts').insert([{ id: id, lua: aceeditor.getValue()},])
-  Print({color:'white', text:`The current page has been published to <a style="color:blue" href="${self.location.href}${id}" target="_blank">${self.location.href}${id}</a> !`});
+  if(location.hash){
+    const id = location.hash;
+    const { data, error } = await _supabase.from('posts').upsert([{ id: id, lua: aceeditor.getValue()}]);
+    Print({color:'white', text:`The published page is updated!`});
+  }else{
+    const pass = prompt("The password for allowing editing:");
+    const id = '#'+ Math.trunc(time/1000).toString(36);
+    const { data, error } = await _supabase.from('posts').insert([{ id: id, lua: aceeditor.getValue(), pass:pass}]);
+    Print({color:'white', text:`The page is published to <a style="color:blue" href="${self.location.href}${id}" target="_blank">${self.location.href}${id}</a> !`});
+    location.hash = id;
+  }
   btns['pub'].lasttime = time;
 }
 
@@ -345,8 +368,23 @@ scene.reload = () => {
   disablebtn(btns['stop']);
   worker = new Worker('./js/worker.module.js', {type : 'module'});
   worker.onmessage = (e) => {self[e.data.fn](e.data);};
-  worker.postMessage({fn: 'Init', canvas: offscreen}, [offscreen]);
+  const label = document.createElement("canvas").transferControlToOffscreen();
+  worker.postMessage({fn: 'Init', canvas: offscreen, label: label}, [offscreen, label]);
   onresize();
   worker.postMessage({fn:'SetVar', name:'bps', value:lua.bps});
   Print({color:'red', text:`The lua thread is killed!`});
+}
+
+const newfrom = async function (file){
+    const response = await fetch(file);
+    aceeditor.setValue(await response.text(), 1);
+    Print({color:'white', text:`Created new code from the template ${file}!`});
+    lua.file = null;
+    newdialog.close();
+    location.hash = "";
+}
+const newcodes = document.getElementsByClassName("newcode");
+for (let i = 0; i < newcodes.length; i++) {
+  const file = newcodes[i].getAttribute("data");
+  newcodes[i].onclick = () => newfrom(file);
 }
