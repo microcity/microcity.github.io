@@ -176,11 +176,11 @@ if(self.location.hash == ''){
   const contents = localStorage.getItem('luacode');
   if(contents){
     aceeditor.setValue(contents, 1);
-    Print({color:'white', text:`The autosaved code is loaded!`});
+    Print({color:'white', text:`Cached code is loaded!`});
   }else{
     const response = await fetch('/lua/startup.lua');
     aceeditor.setValue(await response.text(), 1);
-    Print({color:'white', text:`The startup code is loaded!`});
+    Print({color:'white', text:`Startup code is loaded!`});
   }
 }else{
   enablebtn(btns['code']);
