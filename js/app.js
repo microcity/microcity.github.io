@@ -161,7 +161,7 @@ disablebtn(btns['pub']);
 editor.style['display'] = 'none';
 scene.style['grid-column'] = '1 / -1';
 docframe.style['display'] = 'none';
-markdown('/doc/sample.md', 'docframe');
+markdown('/doc/readme.md', 'docframe');
 SetState({state:'initializing'});
 
 //load lua code
