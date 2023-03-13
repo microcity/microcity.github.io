@@ -1,70 +1,14 @@
-# MicroCity Web Documentation
+# Documentation
 
+MicroCity Web is **An Online Spatial Planning Tool** reassembled from the desktop version of MicroCity (https://microcity.github.io).
 
-Tiny but reliable Markdown to HTML conversion in JavaScript
+## Table of Contents
+- **1 Introduction**
+  - [1.1 What MicroCity Web can Do](1.1_what_microcity_web_can_do.md)
+- **2 Getting Started**
+  - [2.1 Showing a Rolling Cube](2.1_showing_a_rolling_cube.md)
+  - [2.2 Searching for Countries](2.2_searching_for_countries.md)
+- **3 User Interfaces**
+- **4 Scripting Interfaces**
 
-Supported Markdown features:
-
-## Headings
-
-Inline styles such as **bold**, *italic*, ***both***, ~~strikethrough~~, `monospace`, --subscript--, and ^^superscript^^.
-
-> Block quotes, including
-> > nested block quotes.
-
-```lua
-Fenced code blocks
-```
-
-    Indented code blocks
-
-1. Numbered lists
-  - Unordered lists
-  - Nested in other lists
-    a. Lettered lists are an extension to the spec.
-    b. They may be useful for legal documents.
-2. Another entry in my numbered list.
-
-| Tables | Tables | Tables |
-| ------ | ------ | ------ |
-| Cell 1 | Cell 2 | Cell 3 |
-| Cell 4 | Cell 5 | Cell 6 |
-| Cell 7 | Cell 8 | Cell 9 |
-
-[Links](test.md)
-
-Images:
-
-![Images](../img/play.svg)
-
----
-
-### Summary...
-
-These are the supported features:
-
-- Block quotes
-- Code blocks
-- Links
-- Images
-- Headings
-- Lists (including lettered lists)
-- Bold
-- Italic
-- Strikethrough
-- Monospace
-- Subscript
-- Horizontal rule
-- Tables
-
-Unsupported Markdown features at this time:
-
-- Line blocks
-- Definition lists
-- Footnotes
-- Twitter/Facebook/YouTube embed
-- Inline math equations
-
-To use:
-
-    element.innerHTML = markdown(text);
+## Index

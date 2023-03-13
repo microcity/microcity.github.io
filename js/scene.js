@@ -2,7 +2,7 @@ import * as THREE from '/js/three.module.min.js';
 import { GLTFLoader } from '/js/GLTFLoader.js';
 
 self.InitEnv = function (){
-  scene.remove.apply(scene, scene.children);
+  scene.clear();
   scene.background = new THREE.Color( 0xffffff );
   SetCam('persp');
   self.RotationSpeed = 1;

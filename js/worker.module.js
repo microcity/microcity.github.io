@@ -20,13 +20,16 @@ self.Init = async function(data){
 
   //self.glpk = await GLPK();
   //SolveLP();
-  
+
   self.grid = null;
 	self.runningstate = 'running';
   self.stopping = false;
   self.pausing = false;
   self.commanding = false;
-  self.bps = [];
+  self.bps = [];                //breakpoints
+  self.vertices = [];           //object3d vertices
+  self.index = [];              //the index of each vertex for each triangular face
+  self.entries = [];            //userdata entries
   self.context = label.getContext('2d', {willReadFrequently: true});
   // DrawGrid('plane');
   // self.obj = [];

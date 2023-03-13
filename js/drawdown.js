@@ -1,8 +1,4 @@
-/**
- * drawdown.js
- * (c) Adam Leggett
- */
-
+/* drawdown.js https://github.com/adamvleggett/drawdown * (c) Adam Leggett */
 
 ;async function markdown(url, id) {
     var rx_lt = /</g;
