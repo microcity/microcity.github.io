@@ -47,7 +47,7 @@ self.Select = function(obj){
       self.selected = obj.parent;
       self.selected.children.forEach(child =>{
         child.color = child.material.color;
-        child.material.color = obj.highlightcolor || new THREE.Color(0xff0000);
+        child.material.color = obj.parent.highlightcolor || new THREE.Color(0xff0000);
       });
     }else{
       return false;

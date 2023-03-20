@@ -113,6 +113,8 @@ self.SetCam =  function (camtype){
     camera.position.set(20,10,20);
     camera.lookAt(new THREE.Vector3(0, 0, 0));    
   }
+  camera.name = "camera";
+  scene.add( camera );
 }
 
 self.LoadGltf = function (url) {
