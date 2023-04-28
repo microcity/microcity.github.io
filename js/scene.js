@@ -320,7 +320,10 @@ self.AddLight = function (color, opacity){
 
 self.AddTextSprite = function( text, font, sel, size, color, opacity, hcolor){
 	// var context = label.getContext('2d', {willReadFrequently: true});
+  
   context.reset();
+  // context.clearRect(0, 0, label.width, label.height); //gpt suggest
+  
   size = size*16;
 	context.font = size + "px " + font;   
 	// get size data (height depends only on font size)
@@ -333,8 +336,14 @@ self.AddTextSprite = function( text, font, sel, size, color, opacity, hcolor){
   context.fillText( text, 0, label.height);
 
   // var data = new Uint8ClampedArray(context.getImageData(0,0,label.width, label.height).data);
+  
   const data = context.getImageData(0,0,label.width, label.height).data;
   const texture = new THREE.DataTexture( data, label.width, label.height);
+
+  // const imageData = context.getImageData(0, 0, label.width, label.height);
+  // const data = new Uint8Array(imageData.data.buffer);
+  // const texture = new THREE.DataTexture(data, label.width, label.height, THREE.RGBAFormat); //gpt suggest
+  
   texture.needsUpdate = true;
   texture.flipY = true;
   
