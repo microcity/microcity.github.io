@@ -23,6 +23,64 @@ self.OnReturn = function(data){
   lua.rets[data.id].thaw(data.result);
 }
 
+self.OnFilePicker = async function(data){
+  let fileHandles = [];
+  try {
+    const pickerOpts = {types: [{},], excludeAcceptAllOption: false, multiple: true};
+    fileHandles = await window.showOpenFilePicker(pickerOpts);
+  }catch (error) {}
+  worker.postMessage({fn: 'onFileHandles', filehandles: fileHandles});
+}
+
+self.OnFileDownPicker = async function(data){
+  const files = data.files;
+  // const table = document.getElementById("downfiletable");
+  // 获取tbody的引用
+  var tbodyRef = document.getElementById("downfiletable").getElementsByTagName("tbody")[0];
+  // 获取tbody中的行数
+  var rowCount = tbodyRef.rows.length;
+  // 从最后一行开始，循环删除每一行
+  for (var i = rowCount - 1; i >= 0; i--) {
+    tbodyRef.deleteRow(i);
+  }
+  for(const file of files){
+    const row = tbodyRef.insertRow();
+    // 创建三个单元格
+    const cell1 = row.insertCell();
+    const cell2 = row.insertCell();
+    const cell3 = row.insertCell();
+
+    // 创建一个超链接元素
+    const link = document.createElement("a");
+    link.textContent = file.name; // 设置超链接文本为文件名
+    link.download = file.name;
+    const blob = new Blob ([file.data], {type: 'application/octet-stream'});
+    link.href = URL.createObjectURL(blob);
+    // link.href = file.url; // 设置超链接地址为文件url
+
+    // 把超链接元素添加到第一个单元格中
+    cell1.appendChild(link);
+    // 把文件大小添加到第二个单元格中
+    cell2.textContent = file.mtime;
+    // 把文件修改时间添加到第三个单元格中
+    cell3.textContent = file.size;
+  }
+  
+  await downdialog.showModal();
+  downdialog.focus();
+}
+
+self.OnFileDownload = function(data){
+  let link = document.createElement('a');
+  const blob = new Blob ([data.file], {type: 'application/octet-stream'});
+  link.href = URL.createObjectURL(blob);
+  link.download = data.filename; // specify a file name
+  document.body.appendChild(link);
+  link.click ();
+  URL.revokeObjectURL(link.href);
+  document.body.removeChild(link);
+}
+
 self.Print = function(data){
   let newElement = document.createElement("span");
   newElement.className = 'prompt';

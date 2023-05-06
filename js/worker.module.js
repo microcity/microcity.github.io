@@ -1,6 +1,6 @@
 import {Module} from '/js/glue.js';
 import * as THREE from '/js/three.module.min.js';
-import GLPK from '/js/glpk.js';
+//import GLPK from '/js/glpk.js';
 import { RoomEnvironment } from '/js/RoomEnvironment.js';
 import '/js/scene.js';
 
@@ -165,52 +165,135 @@ self.SetVar = function (data){
   self[data.name] = data.value;
 }
 
-self.SolveLP = async function (){
-  const lp = {
-      name: 'LP',
-      objective: {
-          direction: glpk.GLP_MAX,
-          name: 'obj',
-          vars: [
-              { name: 'x1', coef: 0.6 },
-              { name: 'x2', coef: 0.5 }
-          ]
-      },
-      subjectTo: [
-          {
-          name: 'cons1',
-              vars: [
-                  { name: 'x1', coef: 1.0 },
-                  { name: 'x2', coef: 2.0 }
-              ],
-              bnds: { type: glpk.GLP_UP, ub: 1.0, lb: 0.0 }
-          },
-          {
-              name: 'cons2',
-              vars: [
-                  { name: 'x1', coef: 3.0 },
-                  { name: 'x2', coef: 1.0 }
-              ],
-              bnds: { type: glpk.GLP_UP, ub: 2.0, lb: 0.0 }
-          }
-      ]
-  };
-
-  const opt = {
-      msglev: glpk.GLP_MSG_OFF,
-      cb: {
-          call: res => print(res),
-          each: 1
-      }
-  };
-  
-  // const print = (res) => console.log(JSON.stringify(res, null, 2))
-  
-  // await glpk.solve(lp, opt);
-      // .then(res => print(res))
-      // .catch(err => console.log(err));
-
-  console.log(await glpk.solve(lp, glpk.GLP_MSG_OFF));
+self.onFileHandles = async function(data){
+  const fileHandles = data.filehandles;
+  for (const fileHandle of fileHandles) {
+    const file = await fileHandle.getFile();
+    const data = new Uint8Array(await file.arrayBuffer());
+    Module.FS.writeFile(file.name, data);
+    self.postMessage({fn: 'Print', text: `${file.name} is uploaded!`, color: 'white'});
+  }
+  if(self.finishupload) 
+    finishupload();
+  else{
+    Module.FS.syncfs(false, function (err) {
+      if(err) console.error('Error syncing IDBFS:', err);
+    });
+  }
 }
+
+self.OSUpload = async function(url){
+  if(url){
+    const response = await fetch(url);
+    if(!response.ok) return 0;
+    const data = new Uint8Array(await response.arrayBuffer());
+    const filename = url.replace(/^.*[\\\/]/, '');
+    Module.FS.writeFile(filename, data);
+    self.postMessage({fn: 'Print', text: `${filename} is uploaded!`, color: 'white'});
+  }else{
+    self.postMessage({fn: 'OnFilePicker'});
+    await new Promise(res => self.finishupload = res);
+  }
+  Module.FS.syncfs(false, function (err) {
+    if(err) console.error('Error syncing IDBFS:', err);
+  }); 
+  return 1;
+}
+
+self.ConvertURL = function(url){
+  if(!url.startsWith('http') && !url.startsWith('/res/')){
+    const data = Module.FS.readFile(url);
+    const blob = new Blob ([data], {type: 'application/octet-stream'});
+    return URL.createObjectURL(blob);
+  }else
+    return url;
+}
+
+self.OnFileDownPicker = async function(data){
+  return await OSDownload();
+}
+
+self.OSDownload = async function(url){
+  if(url){
+    self.postMessage({fn: 'OnFileDownload', filename:url, file: Module.FS.readFile(url)});
+    return 1;
+  }else{
+    let filelist = [];
+    const filenames = Module.FS.readdir('/usr');
+    for(const filename of filenames){
+      if(filename === '.' || filename === '..') continue;
+      const stat = Module.FS.stat(filename);
+      const file = {
+        data: Module.FS.readFile(filename),
+        name: filename,
+        size: (stat.size / 1024).toFixed(2) + " KB",
+        mtime: new Date(stat.mtime).toLocaleString("zh-CN", {year:'numeric', month:'numeric', day:'numeric', hour: 'numeric',  minute: 'numeric',})
+      }
+      filelist.push(file);
+    }
+    self.postMessage({fn: 'OnFileDownPicker', files: filelist});
+    await new Promise(res => self.FinishDownload = res);
+    return 1;
+  }
+}
+
+self.OnNewFS = function(data){
+  Module.FS.unmount('/usr');
+  // Module.FS.unlink('/usr');
+  // Module.FS.mkdir('/usr');
+  Module.FS.mount(Module.IDBFS, {}, '/usr');
+  Module.FS.chdir('/usr');
+  Module.FS.syncfs(false, function (err) {
+    if(err) console.error('Error syncing IDBFS:', err);
+  }); 
+}
+
+// self.SolveLP = async function (){
+//   const lp = {
+//       name: 'LP',
+//       objective: {
+//           direction: glpk.GLP_MAX,
+//           name: 'obj',
+//           vars: [
+//               { name: 'x1', coef: 0.6 },
+//               { name: 'x2', coef: 0.5 }
+//           ]
+//       },
+//       subjectTo: [
+//           {
+//           name: 'cons1',
+//               vars: [
+//                   { name: 'x1', coef: 1.0 },
+//                   { name: 'x2', coef: 2.0 }
+//               ],
+//               bnds: { type: glpk.GLP_UP, ub: 1.0, lb: 0.0 }
+//           },
+//           {
+//               name: 'cons2',
+//               vars: [
+//                   { name: 'x1', coef: 3.0 },
+//                   { name: 'x2', coef: 1.0 }
+//               ],
+//               bnds: { type: glpk.GLP_UP, ub: 2.0, lb: 0.0 }
+//           }
+//       ]
+//   };
+
+//   const opt = {
+//       msglev: glpk.GLP_MSG_OFF,
+//       cb: {
+//           call: res => print(res),
+//           each: 1
+//       }
+//   };
+  
+//   // const print = (res) => console.log(JSON.stringify(res, null, 2))
+  
+//   // await glpk.solve(lp, opt);
+//       // .then(res => print(res))
+//       // .catch(err => console.log(err));
+
+//   console.log(await glpk.solve(lp, glpk.GLP_MSG_OFF));
+// }
 
 self.onmessage = (e) => {self[e.data.fn](e.data);};

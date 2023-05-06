@@ -118,24 +118,31 @@ self.SetCam =  function (camtype){
 }
 
 self.LoadGltf = function (url) {
+  url = ConvertURL(url);
   const loader = new GLTFLoader();
+  // loader.crossOrigin = 'use-credentials';
   return new Promise((resolve, reject) => {
     loader.load(url, data => resolve(data.scene), null, reject);
+    URL.revokeObjectURL(url);
   });
 }
 
 self.LoadBitmap = function (url) {
-    const loader = new THREE.ImageBitmapLoader();
-    loader.setOptions( { imageOrientation: 'flipY' } );
-    return new Promise((resolve, reject) => {
-      loader.load(url, data => resolve(data), null, reject);
-    });
+  url = ConvertURL(url);
+  const loader = new THREE.ImageBitmapLoader();
+  loader.setOptions( { imageOrientation: 'flipY' } );
+  return new Promise((resolve, reject) => {
+    loader.load(url, data => resolve(data), null, reject);
+    URL.revokeObjectURL(url);
+  });
 }  
 
 self.LoadJson = function (url) {
+  url = ConvertURL(url);
   const loader = new THREE.FileLoader().setResponseType('json');
   return new Promise((resolve, reject) => {
     loader.load(url, data => resolve(data), null, reject);
+    URL.revokeObjectURL(url);
   });
 }
 

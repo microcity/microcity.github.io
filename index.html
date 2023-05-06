@@ -25,9 +25,9 @@
         <div id="pause"    class="button" title="Pause">		     <img src="img/pause.svg" alt="pause"/>    </div>
         <div id="stop"     class="button" title="Stop/Kill">		 <img src="img/stop.svg" alt="stop"/>      </div>
         <div id="code"     class="button" title="Show Code">     <img src="img/code.svg" alt="code"/>      </div>
-        <div id="new"  	   class="button" title="New">           <img src="img/new.svg" alt="new"/>        </div>
-        <div id="open" 	   class="button" title="Open">          <img src="img/open.svg" alt="open"/>      </div>
-        <div id="save" 	   class="button" title="Save/Save as">  <img src="img/save.svg" alt="save"/>      </div>
+        <div id="new"  	   class="button" title="New/Clear">     <img src="img/new.svg" alt="new"/>        </div>
+        <div id="open" 	   class="button" title="Open/Upload">   <img src="img/open.svg" alt="open"/>      </div>
+        <div id="save" 	   class="button" title="Save/Download">  <img src="img/save.svg" alt="save"/>      </div>
         <div id="pub"      class="button" title="Publish">	     <img src="img/publish.svg" alt="publish"/></div>
     </div>
     <div id="doc" class="button" title="Documentation">  <img src="img/doc.svg" alt="doc"/>  </div>
@@ -52,6 +52,23 @@
   <img class="newcode" src="/img/gltf.png" alt="" title="Loading GLTF" data="/lua/gltf.lua"/>
   <img class="newcode" src="/img/earth.png" alt="" title="The Spherical Earth" data="/lua/earth.lua"/>
   <img class="newcode" src="/img/world.png" alt="" title="The World Map" data="/lua/geojson.lua"/>
+  </div>
+</dialog>
+<dialog id="downdialog">
+  <div class="dialogtitle">Download<span id="downclose" class="dialogclose">✖</span></div>
+  <div class="downcontainer">
+  <table id="downfiletable" class="downfiletable">
+    <thead>
+    <tr style = "background-color: lightgray;">
+      <td>File Name</td>
+      <td style="width: 150px;">Last Modified</td>
+      <td style="width: 150px;">Size</td>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  </div>
   </div>
 </dialog>
 </body>

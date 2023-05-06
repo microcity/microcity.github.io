@@ -11,9 +11,9 @@
   .date{
     display: none;
   }
-  .ace_gutter-cell.ace_breakpoint::before{
+  /* .ace_gutter-cell.ace_breakpoint::before{
     display: none;
-  }
+  } */
 } 
 
 @media (orientation:landscape) and (min-width: 721px) {
@@ -279,4 +279,33 @@ html, body, #container {
 
 .newcode:hover{
   filter: brightness(70%);
+}
+
+#downdialog{
+  width: 720px;
+  height: 435px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+}
+
+.downcontainer{
+  width: 710px;
+  height: 400px;
+  padding-top: 5px;
+  padding-left:10px;
+  overflow-y: scroll;
+}
+
+.downfiletable{
+  width: 690px;
+}
+
+/* 设置表头背景色为浅灰 */
+.downfiletable thead th {
+  background-color: lightgray;
+}
+/* 设置表格行在鼠标悬停时背景色为浅蓝 */
+.downfiletable tbody tr:hover {
+  background-color: lightblue;
 }

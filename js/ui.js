@@ -1,4 +1,3 @@
-
 export const header    = document.getElementById('header');
 export const btns      = {
   "play":   document.getElementById('play'),
@@ -10,7 +9,8 @@ export const btns      = {
   "save":   document.getElementById('save'),
   "pub":    document.getElementById('pub'),
   "doc":    document.getElementById('doc'),
-  "newclose":   document.getElementById('newclose')
+  "newclose":  document.getElementById('newclose'),
+  "downclose": document.getElementById('downclose')
 };
 
 export const editor    = document.getElementById('editor');
@@ -68,6 +68,8 @@ btns['code'].onclick = function (){
       return;
     }
   }
+  editor.removeAttribute('style');
+  scene.removeAttribute('style');
   if(!btns['code'].active){
     btns['code'].style['background-color'] = 'white';
     btns['code'].style['filter'] = 'invert(0%)';
@@ -76,8 +78,6 @@ btns['code'].onclick = function (){
     enablebtn(btns['open']);
     enablebtn(btns['save']);
     enablebtn(btns['pub']);
-    editor.removeAttribute('style');
-    scene.removeAttribute('style');
     self.dispatchEvent(new Event('resize'));
   }else{
     btns['code'].removeAttribute('style');
@@ -92,6 +92,15 @@ btns['code'].onclick = function (){
   }
 }
 
+btns['code'].oncontextmenu = function (){
+  btns['code'].onclick();
+  if(btns['code'].active){
+    btns['code'].style['background-color'] = '#2e3440';
+    scene.style['display'] = 'none';
+    editor.style['grid-column'] = '1 / -1';
+  }
+}
+
 btns['new'].onclick = async function (){
   await newdialog.showModal();
   // if(window.confirm("Discard all changes and create a new lua file?")){
@@ -101,10 +110,12 @@ btns['new'].onclick = async function (){
   //   localStorage.clear();
   // }
 }
-btns['newclose'].onclick = function (){
-  newdialog.close();
+btns['new'].oncontextmenu = function (){
+  history.replaceState(null, null, ' ');
+  worker.postMessage({fn: 'OnNewFS'});
+  Print({color:'white', text:`Cleared the file system and link!`});
 }
-		
+
 btns['open'].onclick = async function (){		
   const pickerOpts = {types: [{description: 'Lua File', accept: {'lua/*': ['.lua']}},], excludeAcceptAllOption: false, multiple: false};
   try{
@@ -118,7 +129,13 @@ btns['open'].onclick = async function (){
     console.log(lua.file);
   }
 }
-		
+
+btns['open'].oncontextmenu = async function(){
+  const pickerOpts = {types: [{},], excludeAcceptAllOption: false, multiple: true};
+  const fileHandles = await window.showOpenFilePicker(pickerOpts);
+  worker.postMessage({fn: 'onFileHandles', filehandles: fileHandles});
+}
+
 const savefile = async function (as){
   if(!lua.file || as){
     try{
@@ -137,7 +154,9 @@ const savefile = async function (as){
 }
 
 btns['save'].onclick = () => savefile(false);
-btns['save'].oncontextmenu = () => savefile(true);
+btns['save'].oncontextmenu = async function (){
+  worker.postMessage({fn: 'OnFileDownPicker'});
+}
 
 btns['pub'].onclick = async function (){
   const time = Date.now();
@@ -172,6 +191,15 @@ btns['doc'].onclick = function(){
     offcanvas.style['display'] = 'unset';
   }
   self.dispatchEvent(new Event('resize'));
+}
+
+btns['newclose'].onclick = function (){
+  newdialog.close();
+}
+
+btns['downclose'].onclick = function (){
+  downdialog.close();
+  worker.postMessage({fn: 'FinishDownload'});  
 }
 
 aceeditor.setOptions({theme: 'ace/theme/nord_dark', mode: 'ace/mode/lua', showPrintMargin: false, enableLiveAutocompletion: true, useWorker: false});
@@ -377,12 +405,14 @@ scene.reload = () => {
 }
 
 const newfrom = async function (file){
-    const response = await fetch(file);
-    aceeditor.setValue(await response.text(), 1);
-    Print({color:'white', text:`Created new code from the template ${file}!`});
-    lua.file = null;
-    newdialog.close();
-    location.hash = "";
+  const response = await fetch(file);
+  aceeditor.setValue(await response.text(), 1);
+  Print({color:'white', text:`Created new code from the template ${file}!`});
+  lua.file = null;
+  newdialog.close();
+  // location.hash = "";
+  history.replaceState(null, null, ' ');
+  worker.postMessage({fn: 'OnNewFS'});
 }
 const newcodes = document.getElementsByClassName("newcode");
 for (let i = 0; i < newcodes.length; i++) {
