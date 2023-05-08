@@ -113,7 +113,7 @@ btns['new'].onclick = async function (){
 btns['new'].oncontextmenu = function (){
   history.replaceState(null, null, ' ');
   worker.postMessage({fn: 'OnNewFS'});
-  Print({color:'white', text:`Cleared the file system and link!`});
+  Print({color:'white', text:`The file system and link are cleared!`});
 }
 
 btns['open'].onclick = async function (){		
