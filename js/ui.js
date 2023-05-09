@@ -98,6 +98,7 @@ btns['code'].oncontextmenu = function (){
     btns['code'].style['background-color'] = '#2e3440';
     scene.style['display'] = 'none';
     editor.style['grid-column'] = '1 / -1';
+    self.dispatchEvent(new Event('resize'));
   }
 }
 
