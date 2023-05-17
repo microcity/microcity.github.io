@@ -46,7 +46,8 @@ self.Select = function(obj){
     }else if(obj.parent.selectable){
       self.selected = obj.parent;
       self.selected.children.forEach(child =>{
-        child.color = child.material.color;
+        if(!child.material.ocolor)
+          child.material.ocolor = child.material.color;
         child.material.color = obj.parent.highlightcolor || new THREE.Color(0xff0000);
       });
     }else{
@@ -63,8 +64,8 @@ self.Deselect = function(){
       self.selected.color = null;
     }else{
       self.selected.children.forEach(child =>{
-        child.material.color = child.color;
-        child.color = null;
+        if(child.material.ocolor)
+          child.material.color = child.material.ocolor;
       });
     }
     self.selected = null;
