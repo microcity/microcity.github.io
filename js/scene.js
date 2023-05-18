@@ -1,8 +1,58 @@
 import * as THREE from '/js/three.module.min.js';
 import { GLTFLoader } from '/js/GLTFLoader.js';
 
+// Remove all objects
+self.DisposeObj = function(obj){
+    if(!obj) return false;
+  
+    if(obj.children.length > 0){
+        for (var x = obj.children.length - 1; x>=0; x--){
+            DisposeObj( obj.children[x]);
+        }
+    }
+
+    if (obj.geometry) {
+        obj.geometry.dispose();
+    }
+
+    if (obj.material) {
+        if (obj.material.length) {
+            for (let i = 0; i < obj.material.length; ++i) {
+
+                if (obj.material[i].map) obj.material[i].map.dispose();
+                if (obj.material[i].lightMap) obj.material[i].lightMap.dispose();
+                if (obj.material[i].bumpMap) obj.material[i].bumpMap.dispose();
+                if (obj.material[i].normalMap) obj.material[i].normalMap.dispose();
+                if (obj.material[i].specularMap) obj.material[i].specularMap.dispose();
+                if (obj.material[i].envMap) obj.material[i].envMap.dispose();
+
+                obj.material[i].dispose()
+            }
+        }
+        else {
+            if (obj.material.map) obj.material.map.dispose();
+            if (obj.material.lightMap) obj.material.lightMap.dispose();
+            if (obj.material.bumpMap) obj.material.bumpMap.dispose();
+            if (obj.material.normalMap) obj.material.normalMap.dispose();
+            if (obj.material.specularMap) obj.material.specularMap.dispose();
+            if (obj.material.envMap) obj.material.envMap.dispose();
+
+            obj.material.dispose();
+        }
+    }
+
+    obj.removeFromParent();
+
+    return true;
+}
+
 self.InitEnv = function (){
-  scene.clear();
+  // scene.clear();
+  // for( var i = scene.children.length - 1; i >= 0; i--) { 
+  //    obj = scene.children[i];
+  //    scene.remove(obj); 
+  // }
+  DisposeObj(scene);
   scene.background = new THREE.Color( 0xffffff );
   SetCam('persp');
   self.RotationSpeed = 1;
