@@ -248,6 +248,7 @@ if(self.location.hash == ''){
     aceeditor.setValue(data[0].lua, 1);
     btns['code'].pass = data[0].pass;
     onresize();
+    Print({color:'white', text:`Published code is loaded!`});
   }else{
     Print({color:'red', text:`Can not load published code!`});
   }
