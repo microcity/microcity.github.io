@@ -21,7 +21,7 @@ self.Init = async function(data){
   //self.glpk = await GLPK();
   //SolveLP();
 
-  self.grid = null;
+  // self.grid = null;
 	self.runningstate = 'running';
   self.stopping = false;
   self.pausing = false;

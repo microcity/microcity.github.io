@@ -55,6 +55,8 @@ self.InitEnv = function (){
   DisposeObj(scene);
   scene.background = new THREE.Color( 0xffffff );
   SetCam('persp');
+  self.grid = null;
+  self.selected = null;
   self.RotationSpeed = 1;
   self.TranslationSpeed = 1;
 }

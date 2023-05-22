@@ -1,7 +1,7 @@
 import {btns, disablebtn, enablebtn, editor, aceeditor, 
         docframe, footer, scene, offcanvas, worker} from '/js/ui.js';
 
-self.lua = {state: '', file: null, rets:[], bps: aceeditor.session.getBreakpoints(0, 0)};
+self.lua = {state: '', file: null, rets:[], bps: aceeditor.session.getBreakpoints(0, 0), engine: false, loaded: false};
 
 self.BreakAt = function (data){
   if(data.row){
@@ -15,6 +15,7 @@ self.BreakAt = function (data){
 }
 
 self.OnModuleLoaded = function(data){
+  lua.engine = true;
   SetState({state:'ready'});
   document.getElementById('version').innerText = data.version;
 }
@@ -109,10 +110,11 @@ self.SetState = function(data){
     disablebtn(btns['open']);
     disablebtn(btns['save']);
     disablebtn(btns['pub']);
-  }else if(data.state == 'ready'){
+  }else if(data.state == 'ready' && lua.loaded){
     enablebtn(btns['play']);
     disablebtn(btns['pause']);
     disablebtn(btns['stop']);
+    // enablebtn(btns['code']);
     if(!btns['code'].pass && btns['code'].active){
       enablebtn(btns['new']);
       enablebtn(btns['open']);
@@ -224,8 +226,6 @@ SetState({state:'initializing'});
 
 //load lua code
 if(self.location.hash == ''){
-  enablebtn(btns['code']);
-  btns['code'].onclick();
   const bps = JSON.parse(localStorage.getItem("bps"));
   if(bps){
     bps.forEach((element, row) => {if(element) aceeditor.session.setBreakpoint(row);});
@@ -240,8 +240,9 @@ if(self.location.hash == ''){
     aceeditor.setValue(await response.text(), 1);
     Print({color:'white', text:`Startup code is loaded!`});
   }
-}else{
   enablebtn(btns['code']);
+  btns['code'].onclick();
+}else{
   const _supabase = supabase.createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
   let { data, e } = await _supabase.from('posts').select('lua,pass').eq('id', self.location.hash);
   if(data.length == 1){
@@ -249,7 +250,12 @@ if(self.location.hash == ''){
     btns['code'].pass = data[0].pass;
     onresize();
     Print({color:'white', text:`Published code is loaded!`});
+    enablebtn(btns['code']);
   }else{
     Print({color:'red', text:`Can not load published code!`});
   }
 }
+
+//enable run 
+lua.loaded = true;
+SetState({state:'ready'});
