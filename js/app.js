@@ -242,6 +242,7 @@ if(self.location.hash == ''){
   }
   enablebtn(btns['code']);
   btns['code'].onclick();
+  lua.loaded = true;
 }else{
   const _supabase = supabase.createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
   let { data, e } = await _supabase.from('posts').select('lua,pass').eq('id', self.location.hash);
@@ -251,11 +252,11 @@ if(self.location.hash == ''){
     onresize();
     Print({color:'white', text:`Published code is loaded!`});
     enablebtn(btns['code']);
+    lua.loaded = true;
   }else{
     Print({color:'red', text:`Can not load published code!`});
   }
 }
 
 //enable run 
-lua.loaded = true;
 SetState({state:'ready'});
