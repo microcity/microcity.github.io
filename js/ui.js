@@ -180,6 +180,32 @@ btns['pub'].onclick = async function (){
   btns['pub'].lasttime = time;
 }
 
+btns['pub'].oncontextmenu = async function(){
+  const pickerOpts = {types: [{},], excludeAcceptAllOption: false, multiple: false};
+  const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
+  const file = await fileHandle.getFile();
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = async function(){
+    const base64String = reader.result.split(",")[1];
+    await fetch(
+      `https://api.github.com/repos/mixwind-1/mixwind-1.github.io/contents/${file.name}`,
+      {
+        method: "PUT",
+        headers: {
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer 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`
+        },
+        body: JSON.stringify({
+          message: "from microcity web",
+          content: base64String
+        })
+      }
+    );
+    Print({color:'white', text:`The file is shared with https://mixwind-1.github.io/${file.name}`});
+  };
+}
+
 btns['doc'].onclick = function(){
   if(docframe.style['display'] === 'none'){
     btns['doc'].style['background-color'] = 'white';

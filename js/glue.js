@@ -4,7 +4,7 @@ export var Module = {
   onRuntimeInitialized: () => {
    	Module.runlua = Module.cwrap('runlua', 'string', ['string']);
     // Module.xcode = Module.cwrap('xcode', 'string', ['string', 'string']);
-    self.postMessage({fn: 'OnModuleLoaded', version:'230518'});
+    self.postMessage({fn: 'OnModuleLoaded', version:'230528'});
 
     FS.mkdir('/usr');
     FS.mount(IDBFS, {}, '/usr');

@@ -282,6 +282,7 @@ self.AddGLTF = async function (file, sel, hcolor){
       //   node.material = newMat;
       // }
       if ( node.material ) node.material.metalness = 0;
+      node.selectable = sel;
   });
   obj[id].selectable = sel;
   obj[id].highlightcolor = new THREE.Color(hcolor);
