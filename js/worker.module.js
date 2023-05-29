@@ -93,9 +93,11 @@ self.OnMouseDown = function(data){
     Deselect();
     for (let i=0; i < intersects.length; i++) {
       if(Select(intersects[i].object)){
-        self.lookat = self.selected.position;
+        scene.updateMatrixWorld(true);
+        // self.lookat = self.selected.position;
+        self.selected.getWorldPosition(self.lookat);
         raycaster.setFromCamera((new THREE.Vector2(0,0)), camera );
-        const distance = camera.position.distanceTo( self.selected.position );
+        const distance = camera.position.distanceTo( self.lookat );
         raycaster.ray.at(distance, self.diffv);
         self.diffv.sub(self.lookat);
         var lookatVector = (new THREE.Vector3()).subVectors(camera.position, self.lookat);
