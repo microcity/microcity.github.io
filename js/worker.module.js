@@ -26,6 +26,9 @@ self.Init = async function(data){
   self.stopping = false;
   self.pausing = false;
   self.commanding = false;
+  self.debugfunc = '';
+  self.debugtype = '';
+  self.debugwatch = [];
   self.bps = [];                //breakpoints
   self.vertices = [];           //object3d vertices
   self.index = [];              //the index of each vertex for each triangular face
@@ -170,10 +173,9 @@ self.SetVar = function (data){
   self[data.name] = data.value;
 }
 
-self.onFileHandles = async function(data){
-  const fileHandles = data.filehandles;
-  for (const fileHandle of fileHandles) {
-    const file = await fileHandle.getFile();
+self.onFilesUpload = async function(data){
+  const files = data.files;
+  for(const file of files){
     const data = new Uint8Array(await file.arrayBuffer());
     Module.FS.writeFile(file.name, data);
     self.postMessage({fn: 'Print', text: `${file.name} is uploaded!`, color: 'white'});

@@ -42,10 +42,12 @@ onresize();
 export const disablebtn = function (btn){
   btn.style['filter'] = 'invert(50%)';
   btn.style['pointer-events'] = 'none';
+  btn.enabled = false;
 }
 
 export const enablebtn = function (btn){
   btn.removeAttribute('style');
+  btn.enabled = true;
 }
 
 header.oncontextmenu = (e) => {
@@ -134,7 +136,12 @@ btns['open'].onclick = async function (){
 btns['open'].oncontextmenu = async function(){
   const pickerOpts = {types: [{},], excludeAcceptAllOption: false, multiple: true};
   const fileHandles = await window.showOpenFilePicker(pickerOpts);
-  worker.postMessage({fn: 'onFileHandles', filehandles: fileHandles});
+  var dropFiles = [];
+  for (const fileHandle of fileHandles) {
+    const file = await fileHandle.getFile();
+    dropFiles.push(file);
+  }
+  worker.postMessage({fn: 'onFilesUpload', files: dropFiles});
 }
 
 const savefile = async function (as){
@@ -248,6 +255,25 @@ aceeditor.on("guttermousedown", function(e) {
 });
 
 aceeditor.commands.addCommand({
+  name: 'new',
+  bindKey: {win: 'Ctrl-B',  mac: 'Command-B'},
+  exec: btns['new'].onclick,
+  readOnly: true, // false if this command should not apply in readOnly mode
+});
+aceeditor.commands.addCommand({
+  name: 'open',
+  bindKey: {win: 'Ctrl-O',  mac: 'Command-O'},
+  exec: btns['open'].onclick,
+  readOnly: true, // false if this command should not apply in readOnly mode
+});
+aceeditor.commands.addCommand({
+  name: 'save',
+  bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+  exec: btns['save'].onclick,
+  readOnly: true, // false if this command should not apply in readOnly mode
+});
+
+aceeditor.commands.addCommand({
   name: 'help',
   bindKey: {win: 'F1',  mac: 'F1'},
   exec: btns['doc'].onclick,
@@ -255,9 +281,51 @@ aceeditor.commands.addCommand({
 });
 
 aceeditor.commands.addCommand({
-  name: 'go',
+  name: 'play',
+  bindKey: {win: 'F5',  mac: 'F5'},
+  exec: btns['play'].onclick,
+  readOnly: true, // false if this command should not apply in readOnly mode
+});
+
+aceeditor.commands.addCommand({
+  name: 'pause',
+  bindKey: {win: 'F6',  mac: 'F6'},
+  exec: btns['pause'].onclick,
+  readOnly: true, // false if this command should not apply in readOnly mode
+});
+
+aceeditor.commands.addCommand({
+  name: 'stop',
+  bindKey: {win: 'F7',  mac: 'F7'},
+  exec: btns['stop'].onclick,
+  readOnly: true, // false if this command should not apply in readOnly mode
+});
+
+aceeditor.commands.addCommand({
+  name: 'toggle code',
+  bindKey: {win: 'F8',  mac: 'F8'},
+  exec: btns['code'].onclick,
+  readOnly: true, // false if this command should not apply in readOnly mode
+});
+
+aceeditor.commands.addCommand({
+  name: 'stepover',
   bindKey: {win: 'F9',  mac: 'F9'},
-  exec: btns['doc'].onclick,
+  exec: self.stepover,
+  readOnly: true, // false if this command should not apply in readOnly mode
+});
+
+aceeditor.commands.addCommand({
+  name: 'stepin',
+  bindKey: {win: 'F10',  mac: 'F10'},
+  exec: self.stepin,
+  readOnly: true, // false if this command should not apply in readOnly mode
+});
+
+aceeditor.commands.addCommand({
+  name: 'step',
+  bindKey: {win: 'F11',  mac: 'F11'},
+  exec: self.stepout,
   readOnly: true, // false if this command should not apply in readOnly mode
 });
 
@@ -313,26 +381,45 @@ footer.onmouseover = (e) => {
 }
 
 self.onkeydown = (e) => {
-  if(!btns['code'].active)
-    return;
+  // if(!btns['code'].active)
+  //   return;
 
-  if (e.ctrlKey && e.key == 'n') {
+  if (e.ctrlKey && e.key == 'b') {
     e.preventDefault();
-    btns['new'].onclick();
+    if(btns['new'].enabled)
+      btns['new'].onclick();
   }else if(e.ctrlKey && e.key == 'o'){
     e.preventDefault();
-    btns['open'].onclick();
+    if(btns['open'].enabled)
+      btns['open'].onclick();
   }else if(e.ctrlKey && e.key == 's'){
     e.preventDefault();
-    btns['save'].onclick(false);
-  }else if(e.ctrlKey && e.shiftKey && e.key == 's'){
-    e.preventDefault();
-    btns['save'].oncontextmenu(true);
+    if(btns['save'].enabled)
+      btns['save'].onclick(false);
   }else if(e.key === "F1"){
     e.preventDefault();
     btns['doc'].onclick();
-  }else if(e.key === 'F9' && lua.state === 'debugging'){
+  }else if(e.key === 'F5'){
     e.preventDefault();
+    btns['play'].onclick();
+  }else if(e.key === 'F6'){
+    e.preventDefault();
+    btns['pause'].onclick();
+  }else if(e.key === 'F7'){
+    e.preventDefault();
+    btns['stop'].onclick();
+  }else if(e.key === 'F8'){
+    e.preventDefault();
+    btns['code'].onclick();  
+  }else if(e.key === 'F9'){
+    e.preventDefault();
+    self.stepover();
+  }else if(e.key === 'F10'){
+    e.preventDefault();
+    self.stepin();
+  }else if(e.key === 'F11'){
+    e.preventDefault();
+    self.stepout();
   }
 }
 
@@ -446,3 +533,24 @@ for (let i = 0; i < newcodes.length; i++) {
   const file = newcodes[i].getAttribute("data");
   newcodes[i].onclick = () => newfrom(file);
 }
+
+document.addEventListener( "dragenter" , function (e) {
+     e.preventDefault();
+     e.stopPropagation();
+}, false );
+ 
+document.addEventListener( "dragover" , function (e) {
+     e.preventDefault();
+     e.stopPropagation();
+}, false );
+ 
+document.addEventListener( "dragleave" , function (e) {
+     e.preventDefault();
+     e.stopPropagation();
+}, false );
+ 
+document.addEventListener( "drop" , function (e) {
+     e.preventDefault();
+     e.stopPropagation();
+     worker.postMessage({fn: 'onFilesUpload', files: e.dataTransfer.files});
+}, false );

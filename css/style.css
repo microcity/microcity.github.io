@@ -309,3 +309,9 @@ html, body, #container {
 .downfiletable tbody tr:hover {
   background-color: lightblue;
 }
+
+#debugwatch{
+  position: fixed;
+  left: 50%;
+  color: yellow;
+}

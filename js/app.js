@@ -1,7 +1,7 @@
 import {btns, disablebtn, enablebtn, editor, aceeditor, 
         docframe, footer, scene, offcanvas, worker} from '/js/ui.js';
 
-self.lua = {state: '', file: null, rets:[], bps: aceeditor.session.getBreakpoints(0, 0), engine: false, loaded: false};
+self.lua = {state: '', file: null, rets:[], bps: aceeditor.session.getBreakpoints(0, 0), engine: false, loaded: false, debugwatch:{}};
 
 self.BreakAt = function (data){
   if(data.row){
@@ -16,8 +16,8 @@ self.BreakAt = function (data){
 
 self.OnModuleLoaded = function(data){
   lua.engine = true;
-  SetState({state:'ready'});
   document.getElementById('version').innerText = data.version;
+  SetState({state:'ready'});
 }
 
 self.OnReturn = function(data){
@@ -125,6 +125,21 @@ self.SetState = function(data){
   document.getElementById('state').innerText = data.state;
 }
 
+self.UpdateWatch = function(data){
+  if(data.cmd == "set"){
+    lua.debugwatch[data.name] = data.value;
+  }else if(data.cmd == "clr"){
+    lua.debugwatch = {}
+    document.getElementById("debugwatch").innerHTML = "";
+  }else if(data.cmd == "prn"){
+    var footer = document.getElementById("debugwatch");
+    footer.innerHTML = "";
+    for(var name in lua.debugwatch){
+       footer.innerHTML += name + " = " + lua.debugwatch[name] + "<br>";
+    }
+  }
+}
+
 lua.getstate = function (){
   return document.getElementById('state').innerText;
 }
@@ -208,6 +223,29 @@ self.stoplua = async function(){
   }
 }
 
+self.stepover = async function(){
+  if(lua.breakline){
+    aceeditor.session.removeGutterDecoration(lua.breakline - 1, "ace_gutter_debug_current");
+    lua.breakline = null;
+    await lua.runcmd("debug.step()");
+  }
+}
+
+self.stepin = async function(){
+  if(lua.breakline){
+    aceeditor.session.removeGutterDecoration(lua.breakline - 1, "ace_gutter_debug_current");
+    lua.breakline = null;
+    await lua.runcmd("debug.stepi()");
+  }
+}
+
+self.stepout = async function(){
+  if(lua.breakline){
+    aceeditor.session.removeGutterDecoration(lua.breakline - 1, "ace_gutter_debug_current");
+    lua.breakline = null;
+    await lua.runcmd("debug.stepo()");
+  }
+}
 
 //page load
 disablebtn(btns['play']);
@@ -257,6 +295,3 @@ if(self.location.hash == ''){
     Print({color:'red', text:`Can not load published code!`});
   }
 }
-
-//enable run 
-SetState({state:'ready'});
