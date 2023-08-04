@@ -236,6 +236,7 @@ btns['downclose'].onclick = function (){
   worker.postMessage({fn: 'FinishDownload'});  
 }
 
+ace.config.set('basePath', 'js');
 aceeditor.setOptions({theme: 'ace/theme/nord_dark', mode: 'ace/mode/lua', showPrintMargin: false, enableLiveAutocompletion: true, useWorker: false});
 aceeditor.on("guttermousedown", function(e) {
   var target = e.domEvent.target; 
