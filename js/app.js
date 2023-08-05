@@ -247,7 +247,6 @@ self.stepout = async function(){
   }
 }
 
-
 //page load
 disablebtn(btns['play']);
 disablebtn(btns['pause']);
