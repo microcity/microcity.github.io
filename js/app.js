@@ -291,7 +291,7 @@ if(self.location.hash == ''){
     Print({color:'white', text:`Published code is loaded!`});
     enablebtn(btns['code']);
     lua.loaded = true;
-    if(document.getElementById('state').innerText == “ready")
+    if(document.getElementById('state').innerText == "ready")
       enablebtn(btns['play']);
   }else{
     Print({color:'red', text:`Can not load published code!`});
