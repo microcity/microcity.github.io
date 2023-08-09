@@ -201,9 +201,9 @@ self.OSUpload = async function(url){
     self.postMessage({fn: 'OnFilePicker'});
     await new Promise(res => self.finishupload = res);
   }
-  Module.FS.syncfs(false, function (err) {
-    if(err) console.error('Error syncing IDBFS:', err);
-  }); 
+  // Module.FS.syncfs(false, function (err) {
+  //   if(err) console.error('Error syncing IDBFS:', err);
+  // }); 
   return 1;
 }
 

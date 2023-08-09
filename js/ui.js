@@ -133,16 +133,7 @@ btns['open'].onclick = async function (){
   }
 }
 
-btns['open'].oncontextmenu = async function(){
-  const pickerOpts = {types: [{},], excludeAcceptAllOption: false, multiple: true};
-  const fileHandles = await window.showOpenFilePicker(pickerOpts);
-  var dropFiles = [];
-  for (const fileHandle of fileHandles) {
-    const file = await fileHandle.getFile();
-    dropFiles.push(file);
-  }
-  worker.postMessage({fn: 'onFilesUpload', files: dropFiles});
-}
+btns['open'].oncontextmenu = () => OnFilePicker();
 
 const savefile = async function (as){
   if(!lua.file || as){

@@ -25,12 +25,14 @@ self.OnReturn = function(data){
 }
 
 self.OnFilePicker = async function(data){
-  let fileHandles = [];
-  try {
-    const pickerOpts = {types: [{},], excludeAcceptAllOption: false, multiple: true};
-    fileHandles = await window.showOpenFilePicker(pickerOpts);
-  }catch (error) {}
-  worker.postMessage({fn: 'onFileHandles', filehandles: fileHandles});
+  const pickerOpts = {types: [{},], excludeAcceptAllOption: false, multiple: true};
+  const fileHandles = await window.showOpenFilePicker(pickerOpts);
+  var dropFiles = [];
+  for (const fileHandle of fileHandles) {
+    const file = await fileHandle.getFile();
+    dropFiles.push(file);
+  }
+  worker.postMessage({fn: 'onFilesUpload', files: dropFiles});
 }
 
 self.OnFileDownPicker = async function(data){

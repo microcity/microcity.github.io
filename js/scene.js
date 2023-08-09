@@ -274,6 +274,49 @@ self.AddSphere = function (r, seg, sel, color, opacity, hcolor){
   // scene.add( mesh );
 }
 
+self.AddJson = async function (url, sel, hcolor){
+  url = ConvertURL(url);
+  const loader = new THREE.ObjectLoader();
+  obj[++id] = await new Promise((resolve, reject) => {
+    loader.load(url, data => resolve(data), null, reject);
+    URL.revokeObjectURL(url);
+  });
+  obj[id].traverse((node) => {
+    if ( node.material ) node.material.metalness = 0;
+    node.selectable = sel;
+  });
+  obj[id].selectable = sel;
+  obj[id].highlightcolor = new THREE.Color(hcolor);
+  scene.add(obj[id]);
+  return id;
+  
+  // loader.load(
+	 // // resource URL
+	 // file,
+
+	 // // onLoad callback
+	 // // Here the loaded data is assumed to be an object
+	 // function ( jsonobj ) {
+		// // Add the loaded object to the scene
+  //   obj[++id] = jsonobj;
+  //   obj[id].traverse((node) => {
+  //       if ( node.material ) node.material.metalness = 0;
+  //       node.selectable = sel;
+  //   });
+  //   obj[id].selectable = sel;
+  //   obj[id].highlightcolor = new THREE.Color(hcolor);
+  //   scene.add(obj[id]);
+	 // },
+  // 	// onProgress callback
+  // 	null, 
+  // 	// onError callback
+  // 	function ( err ) {
+  // 		console.error( 'An error happened while loading json!' );
+  // 	}
+  // );
+  // return id;
+}
+
 self.AddGLTF = async function (file, sel, hcolor){
   obj[++id] = await LoadGltf(file);
   obj[id].traverse((node) => {
