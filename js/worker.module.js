@@ -1,11 +1,10 @@
 import {Module} from '/js/glue.js';
 import * as THREE from '/js/three.module.min.js';
-//import GLPK from '/js/glpk.js';
 import { RoomEnvironment } from '/js/RoomEnvironment.js';
 import '/js/scene.js';
+// import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 self.Init = async function(data){
-	//const {canvas} = data;
   self.canvas = data.canvas;
   self.label = data.label;
   self.renderer = new THREE.WebGLRenderer({canvas});
@@ -17,9 +16,6 @@ self.Init = async function(data){
   scene.environment = pmremGenerator.fromScene( new RoomEnvironment() ).texture;
   InitEnv();
   //renderer.render( scene, camera );
-
-  //self.glpk = await GLPK();
-  //SolveLP();
 
   // self.grid = null;
 	self.runningstate = 'running';
@@ -38,6 +34,13 @@ self.Init = async function(data){
   // self.obj = [];
   // self.id = 0;
   // var spritey = AddTextSprite("hello, world!", 'Arial', true, 32, 'black', 0.5, 'red');
+  // self.supabase = createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
+  // // console.log('Supabase Instance: ', supabase);
+  // let { _data, _e } = await supabase.from('posts').select('lua, pass').eq('id', '1676561110');
+  // console.log(_data);
+  // if(_data && _data.length == 1){
+  //   console.log(_data[0].lua);
+  // }
 }
 
 self.Select = function(obj){
@@ -181,7 +184,7 @@ self.onFilesUpload = async function(data){
     self.postMessage({fn: 'Print', text: `${file.name} is uploaded!`, color: 'white'});
   }
   if(self.finishupload) 
-    finishupload();
+    finishupload(files.map(file => file.name).join(","));
   else{
     Module.FS.syncfs(false, function (err) {
       if(err) console.error('Error syncing IDBFS:', err);
@@ -197,14 +200,14 @@ self.OSUpload = async function(url){
     const filename = url.replace(/^.*[\\\/]/, '');
     Module.FS.writeFile(filename, data);
     self.postMessage({fn: 'Print', text: `${filename} is uploaded!`, color: 'white'});
+    return url;
   }else{
     self.postMessage({fn: 'OnFilePicker'});
-    await new Promise(res => self.finishupload = res);
+    return await new Promise(res => self.finishupload = res);
   }
   // Module.FS.syncfs(false, function (err) {
   //   if(err) console.error('Error syncing IDBFS:', err);
   // }); 
-  return 1;
 }
 
 self.ConvertURL = function(url){
@@ -254,53 +257,5 @@ self.OnNewFS = function(data){
     if(err) console.error('Error syncing IDBFS:', err);
   }); 
 }
-
-// self.SolveLP = async function (){
-//   const lp = {
-//       name: 'LP',
-//       objective: {
-//           direction: glpk.GLP_MAX,
-//           name: 'obj',
-//           vars: [
-//               { name: 'x1', coef: 0.6 },
-//               { name: 'x2', coef: 0.5 }
-//           ]
-//       },
-//       subjectTo: [
-//           {
-//           name: 'cons1',
-//               vars: [
-//                   { name: 'x1', coef: 1.0 },
-//                   { name: 'x2', coef: 2.0 }
-//               ],
-//               bnds: { type: glpk.GLP_UP, ub: 1.0, lb: 0.0 }
-//           },
-//           {
-//               name: 'cons2',
-//               vars: [
-//                   { name: 'x1', coef: 3.0 },
-//                   { name: 'x2', coef: 1.0 }
-//               ],
-//               bnds: { type: glpk.GLP_UP, ub: 2.0, lb: 0.0 }
-//           }
-//       ]
-//   };
-
-//   const opt = {
-//       msglev: glpk.GLP_MSG_OFF,
-//       cb: {
-//           call: res => print(res),
-//           each: 1
-//       }
-//   };
-  
-//   // const print = (res) => console.log(JSON.stringify(res, null, 2))
-  
-//   // await glpk.solve(lp, opt);
-//       // .then(res => print(res))
-//       // .catch(err => console.log(err));
-
-//   console.log(await glpk.solve(lp, glpk.GLP_MSG_OFF));
-// }
 
 self.onmessage = (e) => {self[e.data.fn](e.data);};
