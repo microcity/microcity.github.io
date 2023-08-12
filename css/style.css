@@ -7,6 +7,7 @@
   }
   #commandbar{
     right: 0;
+    width: 220px; /* firefox */
   }
   .date{
     display: none;
@@ -23,6 +24,7 @@
   #commandbar{
     left: 50%;
     transform: translate(-50%);
+    width: 440px; /* firefox */
   }
 }
 

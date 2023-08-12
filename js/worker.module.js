@@ -2,7 +2,7 @@ import {Module} from '/js/glue.js';
 import * as THREE from '/js/three.module.min.js';
 import { RoomEnvironment } from '/js/RoomEnvironment.js';
 import '/js/scene.js';
-// import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+// import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 self.Init = async function(data){
   self.canvas = data.canvas;
@@ -30,17 +30,7 @@ self.Init = async function(data){
   self.index = [];              //the index of each vertex for each triangular face
   self.entries = [];            //userdata entries
   self.context = label.getContext('2d', {willReadFrequently: true});
-  // DrawGrid('plane');
-  // self.obj = [];
-  // self.id = 0;
-  // var spritey = AddTextSprite("hello, world!", 'Arial', true, 32, 'black', 0.5, 'red');
-  // self.supabase = createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
-  // // console.log('Supabase Instance: ', supabase);
-  // let { _data, _e } = await supabase.from('posts').select('lua, pass').eq('id', '1676561110');
-  // console.log(_data);
-  // if(_data && _data.length == 1){
-  //   console.log(_data[0].lua);
-  // }
+  // self.createClient = createClient;
 }
 
 self.Select = function(obj){

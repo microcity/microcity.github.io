@@ -165,11 +165,12 @@ btns['pub'].onclick = async function (){
     return;
   }
   if(location.hash){
+    // const pass = prompt("The new password for allowing editing: (can be empty)");
     const id = location.hash;
     const { data, error } = await _supabase.from('posts').upsert([{ id: id, lua: aceeditor.getValue()}]);
     Print({color:'white', text:`The published page is updated!`});
   }else{
-    const pass = prompt("The password for allowing editing:");
+    const pass = prompt("The password for allowing editing: (can be empty)");
     const id = '#'+ Math.trunc(time/1000).toString(36);
     const { data, error } = await _supabase.from('posts').insert([{ id: id, lua: aceeditor.getValue(), pass:pass}]);
     Print({color:'white', text:`The page is published to <a style="color:blue" href="${self.location.href}${id}" target="_blank">${self.location.href}${id}</a> !`});
