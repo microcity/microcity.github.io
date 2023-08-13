@@ -160,10 +160,10 @@ btns['save'].oncontextmenu = async function (){
 btns['pub'].onclick = async function (){
   const time = Date.now();
   const _supabase = supabase.createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
-  if(btns['pub'].lasttime && time - btns['pub'].lasttime < 1000*3600){
-    Print({color:'red', text:`Please wait ${Math.trunc((1000*3600-(time-btns['pub'].lasttime))/1000/60)} minutes to publish again!`});
-    return;
-  }
+  // if(btns['pub'].lasttime && time - btns['pub'].lasttime < 1000*3600){
+  //   Print({color:'red', text:`Please wait ${Math.trunc((1000*3600-(time-btns['pub'].lasttime))/1000/60)} minutes to publish again!`});
+  //   return;
+  // }
   if(location.hash){
     // const pass = prompt("The new password for allowing editing: (can be empty)");
     const id = location.hash;
