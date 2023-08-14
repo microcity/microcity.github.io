@@ -158,7 +158,7 @@ btns['save'].oncontextmenu = async function (){
 }
 
 btns['pub'].onclick = async function (){
-  const time = Date.now();
+  // const time = Date.now();
   const _supabase = supabase.createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
   // if(btns['pub'].lasttime && time - btns['pub'].lasttime < 1000*3600){
   //   Print({color:'red', text:`Please wait ${Math.trunc((1000*3600-(time-btns['pub'].lasttime))/1000/60)} minutes to publish again!`});
@@ -170,13 +170,15 @@ btns['pub'].onclick = async function (){
     const { data, error } = await _supabase.from('posts').upsert([{ id: id, lua: aceeditor.getValue()}]);
     Print({color:'white', text:`The published page is updated!`});
   }else{
-    const pass = prompt("The password for allowing editing: (can be empty)");
-    const id = '#'+ Math.trunc(time/1000).toString(36);
-    const { data, error } = await _supabase.from('posts').insert([{ id: id, lua: aceeditor.getValue(), pass:pass}]);
-    Print({color:'white', text:`The page is published to <a style="color:blue" href="${self.location.href}${id}" target="_blank">${self.location.href}${id}</a> !`});
-    location.hash = id;
+    const pass = prompt("Confirm to publish and fill a password for editing: (can be empty)");
+    if(pass != null){
+      const id = '#'+ Math.trunc(time/1000).toString(36);
+      const { data, error } = await _supabase.from('posts').insert([{ id: id, lua: aceeditor.getValue(), pass:pass}]);
+      Print({color:'white', text:`The page is published to <a style="color:blue" href="${self.location.href}${id}" target="_blank">${self.location.href}${id}</a> !`});
+      location.hash = id;
+    }
   }
-  btns['pub'].lasttime = time;
+  // btns['pub'].lasttime = time;
 }
 
 btns['pub'].oncontextmenu = async function(){
