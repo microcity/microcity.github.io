@@ -174,7 +174,7 @@ btns['pub'].onclick = async function (){
     if(pass != null){
       const id = '#'+ Math.trunc(time/1000).toString(36);
       const { data, error } = await _supabase.from('posts').insert([{ id: id, lua: aceeditor.getValue(), pass:pass}]);
-      Print({color:'white', text:`The page is published to <a style="color:blue" href="${self.location.href}${id}" target="_blank">${self.location.href}${id}</a> !`});
+      Print({color:'white', text:`This page is published to <span style="color:blue">${self.location.href}${id}</span>`});
       location.hash = id;
     }
   }
