@@ -187,7 +187,6 @@ self.runlua = async function (){
 self.debuglua = async function (){
   if(lua.getstate() == 'ready'){
     aceeditor.setReadOnly(true);
-    Print({color:'yellow', text:'Start debugging...'});
     await lua.runcmd("debug.debug()");
     await lua.run(aceeditor.getValue());
     aceeditor.setReadOnly(false);
