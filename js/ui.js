@@ -342,8 +342,11 @@ footer.showconsole = () => {
   if(!footer.console){
     Print({text: '<input id="command" onkeydown="lua.runcmd(this)"/>'});
     footer.console = true;
+    document.getElementById('command').focus();
+  }else{
+    footer.removeChild(footer.lastChild);
+    footer.console = false;
   }
-  document.getElementById('command').focus();
 }
 
 footer.onmousedown = (e) => {
