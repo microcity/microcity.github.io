@@ -11,7 +11,8 @@ self.BreakAt = function (data){
     aceeditor.session.addGutterDecoration(data.row-1, "ace_gutter_debug_current");
     // Print({text: `The lua code is breaked at line ${data.row+1}. Waiting for control commands (go, stepover, stepin, stepout, stop) or lua code.`, color:'white'})
   }
-  footer.showconsole();
+  if(!footer.console)
+    footer.showconsole();
 }
 
 self.OnModuleLoaded = function(data){
@@ -187,7 +188,7 @@ self.runlua = async function (){
 self.debuglua = async function (){
   if(lua.getstate() == 'ready'){
     aceeditor.setReadOnly(true);
-    await lua.runcmd("debug.debug()");
+    await lua.runcmd("debug.debug(true)");
     await lua.run(aceeditor.getValue());
     aceeditor.setReadOnly(false);
   }else if(lua.getstate() == 'paused'){

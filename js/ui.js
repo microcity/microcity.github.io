@@ -76,10 +76,12 @@ btns['code'].onclick = function (){
     btns['code'].style['background-color'] = 'white';
     btns['code'].style['filter'] = 'invert(0%)';
     btns['code'].active = true;
-    enablebtn(btns['new']);
-    enablebtn(btns['open']);
-    enablebtn(btns['save']);
-    enablebtn(btns['pub']);
+    if(lua.getstate() == 'ready'){
+      enablebtn(btns['new']);
+      enablebtn(btns['open']);
+      enablebtn(btns['save']);
+      enablebtn(btns['pub']);
+    }
     self.dispatchEvent(new Event('resize'));
   }else{
     btns['code'].removeAttribute('style');
