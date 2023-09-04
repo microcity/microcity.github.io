@@ -343,37 +343,39 @@ self.AddGeoJson = async function(file, sel, color, opacity, hcolor){
       });
     });
     }if(type == 'LineString' || type == 'MultiLineString'){
-      coordinates.forEach(multiLine =>{
-        if(type === 'LineString'){
-          multiLine = [multiLine];
-        }
-        multiLine.forEach(line => {
-          const points = [];
-          for (let i = 0; i < line.length; i++) {
-            const [x, y] = line[i];
-            points.push(new THREE.Vector3(x, y, 0));
-          }
-          const lineMaterial = new THREE.LineBasicMaterial({ color: 'black' });
-          const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
-          const objline = new THREE.Line(lineGeometry, lineMaterial);
-          feature.add(objline);
-        });
-      });
-    }if(type == 'Point' || type == 'MultiPoint'){
-      coordinates.forEach(multiPoint =>{
-        if(type === 'MultiPoint'){
-          multiPoint = [multiPoint];
-        }
+      // coordinates.forEach(multiLine =>{
+      let multiLine = coordinates;
+      if(type === 'LineString'){
+        multiLine = [multiLine];
+      }
+      multiLine.forEach(line => {
         const points = [];
-        multiPoint.forEach(point => {
-          const [x, y] = point;
+        for (let i = 0; i < line.length; i++) {
+          const [x, y] = line[i];
           points.push(new THREE.Vector3(x, y, 0));
-        });
-        var dotGeometry = new THREE.BufferGeometry().setFromPoints( points );
-        var dotMaterial = new THREE.PointsMaterial( {color: 'black', size: 1, sizeAttenuation: false } );
-        var dot = new THREE.Points( dotGeometry, dotMaterial );       
-        feature.add(dot);
+        }
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 'black' });
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
+        const objline = new THREE.Line(lineGeometry, lineMaterial);
+        feature.add(objline);
       });
+      // });
+    }if(type == 'Point' || type == 'MultiPoint'){
+      // coordinates.forEach(multiPoint =>{
+      let multiPoint = coordinates;
+      if(type === 'Point'){
+        multiPoint = [multiPoint];
+      }
+      const points = [];
+      multiPoint.forEach(point => {
+        const [x, y] = point;
+        points.push(new THREE.Vector3(x, y, 0));
+      });
+      var dotGeometry = new THREE.BufferGeometry().setFromPoints( points );
+      var dotMaterial = new THREE.PointsMaterial( {color: 'black', size: 5, sizeAttenuation: false } );
+      var dot = new THREE.Points( dotGeometry, dotMaterial );       
+      feature.add(dot);
+      // });
     }
 
     feature.userData = elem.properties;
