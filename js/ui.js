@@ -326,6 +326,22 @@ aceeditor.commands.addCommand({
   readOnly: true, // false if this command should not apply in readOnly mode
 });
 
+aceeditor.commands.addCommand({
+  name: 'gencode',
+  bindKey: {win: 'Enter',  mac: 'Enter'},
+  exec: async () => {
+    const currline = aceeditor.getSelectionRange().start.row;
+    const comment = aceeditor.session.getLine(currline);
+    if(comment.substring(0, 3) === "---"){
+      // Print({color:'blue', text:'Generating code...'});
+      const code = await lua.run(`return os.gencode('${comment.substring(1)}')`);
+      aceeditor.insert("\n" + code);
+    }else
+      aceeditor.insert("\n");
+  },
+  readOnly: true, // false if this command should not apply in readOnly mode
+});
+
 aceeditor.on('input', function() { // async and batched
   if(self.location.hash == '')
     localStorage.setItem('luacode', aceeditor.getValue());
