@@ -330,12 +330,17 @@ aceeditor.commands.addCommand({
   name: 'gencode',
   bindKey: {win: 'Enter',  mac: 'Enter'},
   exec: async () => {
-    const currline = aceeditor.getSelectionRange().start.row;
+    const currline = aceeditor.getCursorPosition().row;
+    const currcol = aceeditor.getCursorPosition().column;
     const comment = aceeditor.session.getLine(currline);
-    if(comment.substring(0, 3) === "---"){
-      // Print({color:'blue', text:'Generating code...'});
+    if(comment.substring(0, 3) === "---" && currcol == aceeditor.session.getLine(currline).length){
+      aceeditor.setReadOnly(true);
+      aceeditor.insert("\nGenerating code...");
+      worker.postMessage({fn:'SetVar', name:'commanding', value:true});
       const code = await lua.run(`return os.gencode('${comment.substring(1)}')`);
-      aceeditor.insert("\n" + code);
+      aceeditor.removeToLineStart();
+      aceeditor.insert(code);
+      aceeditor.setReadOnly(false);
     }else
       aceeditor.insert("\n");
   },
