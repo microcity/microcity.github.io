@@ -337,7 +337,8 @@ aceeditor.commands.addCommand({
       aceeditor.setReadOnly(true);
       aceeditor.insert("\nGenerating code...");
       worker.postMessage({fn:'SetVar', name:'commanding', value:true});
-      const code = await lua.run(`return os.chatcmpl('Generate Lua code', '${comment.substring(1)}')`);
+      let userstr = comment.substring(1).replace(/['"\\]/g, '\\$&');
+      const code = await lua.run(`return os.chatcmpl('Generate Lua code', [[${userstr}]], 128)`);
       aceeditor.removeToLineStart();
       aceeditor.insert(code);
       aceeditor.setReadOnly(false);
