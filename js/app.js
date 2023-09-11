@@ -153,17 +153,31 @@ lua.run = async function (code){
   return new Promise(res => lua.rets[id].thaw = res);
 }
 
+let cmds = [""];                                                                        //保存cmd列表
+let cmdi = 0;                                                                           //设置cmd指针
 lua.runcmd = async function (ele){
   if(lua.getstate() != 'ready' &&  lua.getstate() != 'paused' )
     return;
-  if(event.key === 'Enter' && ele.value != "") {
-      Print({color: 'blue', text: ele.value});
-      worker.postMessage({fn:'SetVar', name:'commanding', value:true});
-      lua.run(ele.value);
-      ele.parentNode.parentNode.firstChild.data = `[${new Date().toLocaleString()}]>`;
-      ele.value = "";
+  if(event.key === 'Enter' && ele.value != "") {                                        //在控制台运行
+    Print({color: 'blue', text: ele.value});                                            //打印命令
+    worker.postMessage({fn:'SetVar', name:'commanding', value:true});
+    lua.run(ele.value);                                                                 //运行命令
+    ele.parentNode.parentNode.firstChild.data = `[${new Date().toLocaleString()}]>`;    //重新调整日期
+    cmds.splice(-1, 0, ele.value);                                                      //加入到cmd列表倒数第2个位置
+    cmdi = cmds.length -1 ;                                                             //设置指针
+    ele.value = "";
+  }else if(event.key === 'ArrowUp'){
+    if(cmdi > 0){
+      cmdi--;
+      ele.value = cmds[cmdi];
+    }
+  }else if(event.key === 'ArrowDown'){
+    if(cmdi < cmds.length - 1){
+      cmdi++;
+      ele.value = cmds[cmdi];
+    }
   }
-  if(typeof ele == 'string'){
+  if(typeof ele == 'string'){                                                           //通过js调用运行
     worker.postMessage({fn:'SetVar', name:'commanding', value:true});
     await lua.run(ele);
   }
