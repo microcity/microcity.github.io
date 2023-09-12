@@ -108,6 +108,12 @@ btns['code'].oncontextmenu = function (){
 
 btns['new'].onclick = async function (){
   await newdialog.showModal();
+  
+  lua.bps.forEach((element, row) => {if(element) aceeditor.session.clearBreakpoint(row);});
+  worker.postMessage({fn:'SetVar', name:'bps', value:lua.bps});
+  localStorage.setItem("bps", JSON.stringify(lua.bps));
+
+  lua.run('debug.watch()');
   // if(window.confirm("Discard all changes and create a new lua file?")){
   //   aceeditor.setValue('');
   //   Print({color:'white', text:'A new lua file has been created!'});
@@ -118,7 +124,13 @@ btns['new'].onclick = async function (){
 btns['new'].oncontextmenu = function (){
   history.replaceState(null, null, ' ');
   worker.postMessage({fn: 'OnNewFS'});
-  Print({color:'white', text:`The file system and link are cleared!`});
+
+  lua.bps.forEach((element, row) => {if(element) aceeditor.session.clearBreakpoint(row);});
+  worker.postMessage({fn:'SetVar', name:'bps', value:lua.bps});
+  localStorage.setItem("bps", JSON.stringify(lua.bps));
+  
+  lua.run('debug.watch()');
+  Print({color:'white', text:`The file system, link and debug data are cleared!`});
 }
 
 btns['open'].onclick = async function (){		
@@ -243,7 +255,7 @@ aceeditor.on("guttermousedown", function(e) {
   
   var row = e.getDocumentPosition().row;
   if(typeof lua.bps[row] === typeof undefined)
-      e.editor.session.setBreakpoint(row);
+      e.editor.session.setBreakpoint(row);                        //可能是通过cookie修改了lua.bps？
   else
       e.editor.session.clearBreakpoint(row);
   e.stop();
