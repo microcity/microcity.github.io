@@ -113,7 +113,7 @@ btns['new'].onclick = async function (){
   worker.postMessage({fn:'SetVar', name:'bps', value:lua.bps});
   localStorage.setItem("bps", JSON.stringify(lua.bps));
 
-  lua.run('debug.watch()');
+  lua.runcmd('debug.watch()');
   // if(window.confirm("Discard all changes and create a new lua file?")){
   //   aceeditor.setValue('');
   //   Print({color:'white', text:'A new lua file has been created!'});
@@ -129,7 +129,7 @@ btns['new'].oncontextmenu = function (){
   worker.postMessage({fn:'SetVar', name:'bps', value:lua.bps});
   localStorage.setItem("bps", JSON.stringify(lua.bps));
   
-  lua.run('debug.watch()');
+  lua.runcmd('debug.watch()');
   Print({color:'white', text:`The file system, link and debug data are cleared!`});
 }
 
@@ -255,7 +255,7 @@ aceeditor.on("guttermousedown", function(e) {
   
   var row = e.getDocumentPosition().row;
   if(typeof lua.bps[row] === typeof undefined)
-      e.editor.session.setBreakpoint(row);                        //可能是通过cookie修改了lua.bps？
+      e.editor.session.setBreakpoint(row);                        //在定义lua的时候定义了bps: aceeditor.session.getBreakpoints(0, 0)
   else
       e.editor.session.clearBreakpoint(row);
   e.stop();

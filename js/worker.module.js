@@ -243,7 +243,8 @@ self.OnNewFS = function(data){
   // Module.FS.mkdir('/usr');
   Module.FS.mount(Module.IDBFS, {}, '/usr');
   Module.FS.chdir('/usr');
-  Module.FS.syncfs(false, function (err) {
+                                          
+  Module.FS.syncfs(false, function (err) {              //如果出现warning: 2 FS.syncfs operations in flight at once，执行lua代码在结束时重复刷新了
     if(err) console.error('Error syncing IDBFS:', err);
   }); 
 }
