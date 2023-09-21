@@ -6,7 +6,7 @@ self.lua = {state: '', file: null, rets:[], bps: aceeditor.session.getBreakpoint
 self.BreakAt = function (data){
   if(data.row){
     lua.breakline = data.row;
-    aceeditor.renderer.scrollToLine(data.row);
+    aceeditor.renderer.scrollToLine(data.row, true);
     aceeditor.gotoLine(data.row);
     aceeditor.session.addGutterDecoration(data.row-1, "ace_gutter_debug_current");
     // Print({text: `The lua code is breaked at line ${data.row+1}. Waiting for control commands (go, stepover, stepin, stepout, stop) or lua code.`, color:'white'})
