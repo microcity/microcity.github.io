@@ -202,9 +202,14 @@ self.OSUpload = async function(url){
 
 self.ConvertURL = function(url){
   if(!url.startsWith('http') && !url.startsWith('/res/')){
-    const data = Module.FS.readFile(url);
-    const blob = new Blob ([data], {type: 'application/octet-stream'});
-    return URL.createObjectURL(blob);
+    try {
+      const data = Module.FS.readFile(url);
+      const blob = new Blob ([data], {type: 'application/octet-stream'});
+      return URL.createObjectURL(blob);
+    } catch (err) {
+      self.postMessage({fn: 'Print', text: `The ${url} cannot be found!`, color: 'red'});
+      throw err;
+    }
   }else
     return url;
 }
