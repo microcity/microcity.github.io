@@ -24,12 +24,14 @@ self.Init = async function(data){
   self.commanding = false;
   self.debugfunc = '';
   self.debugtype = '';
+  self.debuglevel = 0;
   self.debugwatch = [];
   self.bps = [];                //breakpoints
   self.vertices = [];           //object3d vertices
   self.index = [];              //the index of each vertex for each triangular face
   self.entries = [];            //userdata entries
   self.context = label.getContext('2d', {willReadFrequently: true});
+  self.embedding = false;
   // self.createClient = createClient;
 }
 
@@ -252,6 +254,11 @@ self.OnNewFS = function(data){
   Module.FS.syncfs(false, function (err) {              //如果出现warning: 2 FS.syncfs operations in flight at once，执行lua代码在结束时重复刷新了
     if(err) console.error('Error syncing IDBFS:', err);
   }); 
+}
+
+self.FindSimilarStr = function(embvec){
+  let str = "similar";
+  return str;
 }
 
 self.onmessage = (e) => {self[e.data.fn](e.data);};

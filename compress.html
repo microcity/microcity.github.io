@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<script src="js/tarball.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文件压缩器</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+
+<button onclick="compressFiles()">压缩文件</button>
+<button onclick="decompressFiles()">解压缩文件</button>
+<ul id="file-list">
+</ul>
+<script>
+async function compressFiles() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '*/*';
+    fileInput.multiple = true;
+    fileInput.style.display = 'none';
+    document.body.appendChild(fileInput);
+    fileInput.click();
+
+    fileInput.onchange = async function(event) {
+        const files = event.target.files;
+        if (files.length === 0) return;
+
+        const tar = new tarball.TarWriter();
+        for (let i = 0; i < files.length; i++) {
+            tar.addFile(files[i].name, files[i]);
+        }
+        const tarBlob = await tar.writeBlob();
+        const tarStream = tarBlob.stream();
+        const compressionStream = new CompressionStream('gzip');
+        const compressedStream = tarStream.pipeThrough(compressionStream);
+
+        const chunks = [];
+        const reader = compressedStream.getReader();
+        let result;
+        while (!(result = await reader.read()).done) {
+            chunks.push(result.value);
+        }
+
+        const compressedBlob = new Blob(chunks, { type: 'application/gzip' });
+        const url = URL.createObjectURL(compressedBlob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'archive.tar.gz';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        document.body.removeChild(fileInput);
+    };
+}
+async function decompressFiles() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'application/gzip';
+    fileInput.style.display = 'none';
+    document.body.appendChild(fileInput);
+    fileInput.click();
+
+    fileInput.onchange = async function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const fileStream = file.stream();
+        const decompressionStream = new DecompressionStream('gzip');
+        const decompressedStream = fileStream.pipeThrough(decompressionStream);
+
+        const chunks = [];
+        const reader = decompressedStream.getReader();
+        let result;
+        while (!(result = await reader.read()).done) {
+            chunks.push(result.value);
+        }
+
+        const decompressedBlob = new Blob(chunks, { type: 'application/tar' });
+        const tar = new tarball.TarReader();
+        const fileInfo = await tar.readFile(decompressedBlob);
+
+        const $fileList = document.getElementById('file-list');
+        $fileList.innerHTML = "";
+        for (let i = 0; i < fileInfo.length; i++) {
+            const fileName = fileInfo[i].name;
+            if (fileInfo[i].type === "file") {
+                const blob = tar.getFileBlob(fileName);
+                const fileUrl = window.URL.createObjectURL(blob);
+                $fileList.innerHTML += "<li><a href='" + fileUrl + "' download='" + fileName + "'>" + fileName + "</a></li>";
+            }
+        }
+
+        document.body.removeChild(fileInput);
+    };
+}
+async function uploadToWebDav(compressedBlob) {
+    const serverUrl = 'https://dav.jianguoyun.com/dav/microcity';
+    const fileName = 'archive.tar.gz';
+    const uploadUrl = serverUrl + fileName;
+
+    const response = await fetch(uploadUrl, {
+        method: 'PUT',
+        body: compressedBlob,
+        headers: {
+            'Authorization': 'Basic ' + btoa('mixwind+microcity@gmail.com:avzmfnsmjf7yjrjf'),  // 如果服务器需要认证
+            'Content-Type': 'application/gzip'
+        }
+    });
+
+    if (response.ok) {
+        console.log('File uploaded successfully:', response.statusText);
+    } else {
+        console.error('File upload failed:', response.statusText);
+    }
+}
+
+
+</script>
+
+</body>
+</html>

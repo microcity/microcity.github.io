@@ -348,12 +348,21 @@ aceeditor.commands.addCommand({
     if(comment.substring(0, 3) === "---" && currcol == aceeditor.session.getLine(currline).length){
       aceeditor.setReadOnly(true);
       aceeditor.insert("\nGenerating code...");
-      worker.postMessage({fn:'SetVar', name:'commanding', value:true});
+      
+      // //去掉---只保留用户信息
+      // let input = comment.substring(3).replace(/['"\\]/g, '\\$&');
+      // worker.postMessage({fn:'SetVar', name:'commanding', value:true});
+      // worker.postMessage({fn:'SetVar', name:'embedding', value:true});
+      // const simstr = await lua.run(`return os.embedding([=[${input}]=])`);
+
+      //去掉-保留--
       let userstr = comment.substring(1).replace(/['"\\]/g, '\\$&');
-      const code = await lua.run(`return os.chatcmpl('Generate Lua code', [[${userstr}]])`);
+      worker.postMessage({fn:'SetVar', name:'commanding', value:true});
+      const code = await lua.run(`return os.chatcmpl('Generate Lua code', [=[${userstr}]=])`);
       aceeditor.removeToLineStart();
       aceeditor.insert(code);
       aceeditor.setReadOnly(false);
+      aceeditor.renderer.scrollToLine(aceeditor.getCursorPosition().row, true);
     }else
       aceeditor.insert("\n");
   },
