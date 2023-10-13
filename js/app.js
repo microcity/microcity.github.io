@@ -89,10 +89,17 @@ self.Print = function(data){
   let newElement = document.createElement("span");
   newElement.className = 'prompt';
   newElement.innerHTML = `<span class="date">[${new Date().toLocaleString()}]</span>><span style="color:${data.color};">${data.text}</span><br/>`;
-  if(data.text.substring(0, 6) == '<input' || !footer.console)
+    
+  if(data.text == ''){                                                          //清空打印出来的内容
+    const prompts = document.querySelectorAll('.prompt');
+    prompts.forEach(prompt => {
+        prompt.parentNode.removeChild(prompt);
+    });
+    footer.console = false;
+  }else if(data.text.substring(0, 6) == '<input' || !footer.console)             //打印到最后
     footer.insertBefore(newElement, null);
   else
-    footer.insertBefore(newElement, footer.lastChild);
+    footer.insertBefore(newElement, footer.lastChild);                          //打印到前一个
 	footer.scrollTop = footer.scrollHeight;			
 }
 
