@@ -12,6 +12,9 @@
   .date{
     display: none;
   }
+  #logo span{
+    display: none;
+  }
   /* .ace_gutter-cell.ace_breakpoint::before{
     display: none;
   } */
