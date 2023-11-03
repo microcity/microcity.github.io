@@ -1,5 +1,6 @@
 print("Hello, there!")
 local obj = scene.addobj('box')
+obj:setscale(5, 5, 5)
 local x = 1
 local y = 1
 local z = 0
