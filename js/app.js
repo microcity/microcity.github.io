@@ -285,7 +285,6 @@ docframe.style['display'] = 'none';
 markdown('/doc/readme.md', 'docframe');
 SetState({state:'initializing'});
 
-
 //load lua code
 if(self.location.hash == ''){
   const bps = JSON.parse(localStorage.getItem("bps"));
