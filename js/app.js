@@ -320,3 +320,17 @@ if(self.location.hash == ''){
     Print({color:'red', text:`Can not load published code!`});
   }
 }
+
+self.OpenNewWindow = function (){
+  // 在这里放置您想在点击<a>标签时运行的代码
+  if (window.self !== window.top) {
+    // 如果当前网页是通过iframe嵌入的
+    window.open(window.location.href, '_blank');
+  } else {
+    // 如果当前网页不是通过iframe嵌入的
+    // 移除URL末尾的hash部分
+    var currentUrl = window.location.href;
+    var urlWithoutHash = currentUrl.split('#')[0];
+    window.open(urlWithoutHash, '_blank');
+  }
+}
