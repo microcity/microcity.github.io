@@ -320,7 +320,7 @@ if(self.location.hash == ''){
     Print({color:'red', text:`Can not load published code!`});
   }
 }
- 
+  
 self.OpenNewWindow = function (){
   // 在这里放置您想在点击<a>标签时运行的代码
   if (window.self !== window.top) {
