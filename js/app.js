@@ -102,7 +102,7 @@ self.Print = function(data){
     footer.insertBefore(newElement, footer.lastChild);                          //打印到前一个
 	footer.scrollTop = footer.scrollHeight;			
 }
-
+ 
 self.SetState = function(data){
   if(data.state == 'running' || data.state == 'debugging'){
     disablebtn(btns['play']);
