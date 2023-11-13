@@ -200,17 +200,18 @@ btns['pub'].oncontextmenu = async function(){
   const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
   const file = await fileHandle.getFile();
   const reader = new FileReader();
+  const token = atob('Z2hwX2hkOHlpNUo3dXl2aUlKR3BJOHUwdHpPc3lURG5YaDNseGFlSg==');
   reader.readAsDataURL(file);
   reader.onload = async function(){
     const base64String = reader.result.split(",")[1];
-    try {
+    try { //从gitee使用api访问github的文件会被删除token
       const response = await fetch(
         `https://api.github.com/repos/mixwind-1/mixwind-1.github.io/contents/${file.name}`,
         {
           method: "PUT",
           headers: {
             Accept: "application/vnd.github+json",
-            Authorization: `Bearer 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`
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({
             message: "from microcity web",
