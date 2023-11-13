@@ -203,21 +203,26 @@ btns['pub'].oncontextmenu = async function(){
   reader.readAsDataURL(file);
   reader.onload = async function(){
     const base64String = reader.result.split(",")[1];
-    await fetch(
-      `https://api.github.com/repos/mixwind-1/mixwind-1.github.io/contents/${file.name}`,
-      {
-        method: "PUT",
-        headers: {
-          Accept: "application/vnd.github+json",
-          Authorization: `Bearer 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`
-        },
-        body: JSON.stringify({
-          message: "from microcity web",
-          content: base64String
-        })
-      }
-    );
-    Print({color:'white', text:`The file is shared with https://mixwind-1.github.io/${file.name}`});
+    try {
+      await fetch(
+        `https://api.github.com/repos/mixwind-1/mixwind-1.github.io/contents/${file.name}`,
+        {
+          method: "PUT",
+          headers: {
+            Accept: "application/vnd.github+json",
+            Authorization: `Bearer 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`
+          },
+          body: JSON.stringify({
+            message: "from microcity web",
+            content: base64String
+          })
+        }
+      );
+      Print({color:'white', text:`The file is shared with https://mixwind-1.github.io/${file.name}`});
+    } catch (error) {
+      // 处理错误，显示给用户
+      Print({color:'red', text: error});
+    }
   };
 }
 
