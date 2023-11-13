@@ -200,7 +200,7 @@ btns['pub'].oncontextmenu = async function(){
   const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
   const file = await fileHandle.getFile();
   const reader = new FileReader();
-  const token = atob('Z2hwX2hkOHlpNUo3dXl2aUlKR3BJOHUwdHpPc3lURG5YaDNseGFlSg==');
+  const token = atob(atob('WjJod1gxWTRjbGcxT1hCSFpHNXBRbGc0Y21wUFJXSlhSM2hUYlZwTlQzUkhTVEZoY25kVk5RPT0='));
   reader.readAsDataURL(file);
   reader.onload = async function(){
     const base64String = reader.result.split(",")[1];
@@ -214,7 +214,7 @@ btns['pub'].oncontextmenu = async function(){
             Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({
-            message: "from microcity web",
+            message: "from microcity",
             content: base64String
           })
         }
