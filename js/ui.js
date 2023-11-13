@@ -210,7 +210,7 @@ btns['pub'].oncontextmenu = async function(){
           method: "PUT",
           headers: {
             Accept: "application/vnd.github+json",
-            Authorization: `Bearer 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`
+            Authorization: `Bearer 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`
           },
           body: JSON.stringify({
             message: "from microcity web",
