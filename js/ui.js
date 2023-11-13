@@ -204,7 +204,7 @@ btns['pub'].oncontextmenu = async function(){
   reader.onload = async function(){
     const base64String = reader.result.split(",")[1];
     try {
-      await fetch(
+      const response = await fetch(
         `https://api.github.com/repos/mixwind-1/mixwind-1.github.io/contents/${file.name}`,
         {
           method: "PUT",
@@ -218,10 +218,14 @@ btns['pub'].oncontextmenu = async function(){
           })
         }
       );
+      // 可以在这里检查响应状态
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
       Print({color:'white', text:`The file is shared with https://mixwind-1.github.io/${file.name}`});
     } catch (error) {
       // 处理错误，显示给用户
-      Print({color:'red', text: error});
+      Print({color:'red', text: error.message});
     }
   };
 }
