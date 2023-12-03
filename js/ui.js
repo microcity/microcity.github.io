@@ -1,3 +1,4 @@
+import {tarball} from '/js/tarball.js';
 export const header    = document.getElementById('header');
 export const btns      = {
   "play":   document.getElementById('play'),
@@ -20,6 +21,20 @@ export const footer    = document.getElementById('footer');
 export const scene     = document.getElementById('scene');
 export var   offcanvas = document.getElementById('offcanvas');
 export var   worker    = new Worker('./js/worker.module.js', {type : 'module'});
+
+self.remotecallcount = 0;
+
+//接受远程调用并返回结果
+self.OnRemoteCall = async function(data){
+  const ret = await self[data.refn](...data.args);
+  worker.postMessage({fn: data.retfn, ret: ret});
+}
+//远程调用，refn为函数名，args为参数列表，可以接受返回值
+self.RemoteCall = async function(refn, ...args){
+  const retfn = 'RetRemoteCall' + self.remotecallcount++; //生成一个唯一的函数名
+  worker.postMessage({fn: 'OnRemoteCall', refn: refn, args: args, retfn: retfn});
+  return await new Promise(resolve => self[retfn] = (data) => resolve(data.ret)); 
+}
 
 worker.onmessage = (e) => {self[e.data.fn](e.data);};
 
@@ -134,25 +149,35 @@ btns['new'].oncontextmenu = function (){
 }
 
 btns['open'].onclick = async function (){		
-  const pickerOpts = {types: [{description: 'Lua File', accept: {'lua/*': ['.lua']}},], excludeAcceptAllOption: false, multiple: false};
+  const pickerOpts = {types: [{description: 'MicroCity Web File', accept: {'lua/*': ['.mw', '.lua']}},], excludeAcceptAllOption: false, multiple: false};
   try{
     [lua.file] = await showOpenFilePicker(pickerOpts);
-    const file = await lua.file.getFile();
-    const contents = await file.text();
-    aceeditor.setValue(contents, 1);
+    const blob = await lua.file.getFile();
+    const fileExtension = lua.file.name.split('.').pop(); // 获取文件扩展名
+    if(fileExtension === 'lua') {
+      const contents = await blob.text();
+      aceeditor.setValue(contents, 1);
+      localStorage.setItem('luacode', contents);
+    }else if(fileExtension === 'mw') {
+      worker.postMessage({fn: 'OnNewFS'});
+      const decompdata = await RemoteCall('UnpackFiles', blob);
+      aceeditor.setValue(decompdata.code, 1);
+      localStorage.setItem('luacode', decompdata.code);
+    }
     Print({color:'white', text:`The ${lua.file.name} has been opened!`});
-    localStorage.setItem('luacode', contents);
   }catch(err){
-    console.log(lua.file);
+    console.log(err);
   }
 }
 
 btns['open'].oncontextmenu = () => OnFilePicker();
 
-const savefile = async function (as){
-  if(!lua.file || as){
+// btns['save'].onclick = () => worker.postMessage({fn: 'OnFileSave'});
+btns['save'].onclick = async function(){
+  const blob =  await RemoteCall('PackFiles', aceeditor.getValue(), '');
+  if(!lua.file){
     try{
-      const pickerOpts = {suggestedName: 'untitled.lua', types: [{description: 'Lua File', accept: {'lua/*': ['.lua']}},], excludeAcceptAllOption: false};
+      const pickerOpts = {suggestedName: 'untitled.mw', types: [{description: 'MicroCity Web File', accept: {'lua/*': ['.mw']}},], excludeAcceptAllOption: false};
       lua.file = await self.showSaveFilePicker(pickerOpts);
     }catch(err){
       Print({color:'red', text:err});
@@ -160,39 +185,72 @@ const savefile = async function (as){
     }
   }
   const writable = await lua.file.createWritable();
-  await writable.write(aceeditor.getValue());
+  await writable.write(blob);
   await writable.close();			
   Print({color:'white', text:`All changes has been saved to ${lua.file.name}!`});
   localStorage.setItem('luacode', aceeditor.getValue());
 }
 
-btns['save'].onclick = () => savefile(false);
 btns['save'].oncontextmenu = async function (){
   worker.postMessage({fn: 'OnFileDownPicker'});
 }
 
 btns['pub'].onclick = async function (){
-  const time = Date.now();
-  const _supabase = supabase.createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
-  // if(btns['pub'].lasttime && time - btns['pub'].lasttime < 1000*3600){
-  //   Print({color:'red', text:`Please wait ${Math.trunc((1000*3600-(time-btns['pub'].lasttime))/1000/60)} minutes to publish again!`});
-  //   return;
-  // }
-  if(location.hash){
-    // const pass = prompt("The new password for allowing editing: (can be empty)");
+  const cutid = '#s52mpt'               //分界点
+
+  if(location.hash && location.hash < cutid){
+    const _supabase = supabase.createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
     const id = location.hash;
     const { data, error } = await _supabase.from('posts').upsert([{ id: id, lua: aceeditor.getValue()}]);
     Print({color:'white', text:`The published page is updated!`});
   }else{
-    const pass = prompt("Confirm to publish and fill a password for editing: (can be empty)");
+    let id = location.hash && location.hash.slice(1) || Math.trunc(Date.now()/1000).toString(36);
+    let pass = prompt("Confirm to publish and fill a password for editing: (can be empty)");
+    
     if(pass != null){
-      const id = '#'+ Math.trunc(time/1000).toString(36);
-      const { data, error } = await _supabase.from('posts').insert([{ id: id, lua: aceeditor.getValue(), pass:pass}]);
-      Print({color:'white', text:`This page is published to <span style="color:blue">${self.location.href}${id}</span>`});
-      location.hash = id;
+      //获取虚拟文件系统的压缩blob
+      const blob =  await RemoteCall('PackFiles', aceeditor.getValue(), pass);
+      //转换成base64存入github
+      const reader = new FileReader();
+      const token = atob(atob('WjJod1gxWTRjbGcxT1hCSFpHNXBRbGc0Y21wUFJXSlhSM2hUYlZwTlQzUkhTVEZoY25kVk5RPT0='));
+      reader.readAsDataURL(blob);
+      reader.onload = async function(){
+        const base64String = reader.result.split(",")[1];
+        try { 
+          const response = await fetch(
+            `https://api.github.com/repos/mixwind-1/microcity/contents/${id}`,
+            {
+              method: "PUT",
+              headers: {
+                Accept: "application/vnd.github+json",
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                message: "from microcity",
+                content: base64String,          //如果更新文件，还需要sha字段
+                sha: location.sha
+              })
+            }
+          );
+          // 可以在这里检查响应状态
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const responseData = await response.json();
+          location.hash = '#'+id;
+          btns['code'].pass = pass;
+          if(location.sha == null)         
+            Print({color:'white', text:`This page is published to <span style="color:blue">${location.href}</span>`});
+          else
+            Print({color:'white', text:`The published page is updated!`});
+          location.sha = responseData.content.sha;
+        } catch (error) {
+          // 处理错误，显示给用户
+          Print({color:'red', text: error.message});
+        }
+      };
     }
   }
-  // btns['pub'].lasttime = time;
 }
 
 btns['pub'].oncontextmenu = async function(){
@@ -200,11 +258,11 @@ btns['pub'].oncontextmenu = async function(){
   const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
   const file = await fileHandle.getFile();
   const reader = new FileReader();
-  const token = atob(atob('WjJod1gxWTRjbGcxT1hCSFpHNXBRbGc0Y21wUFJXSlhSM2hUYlZwTlQzUkhTVEZoY25kVk5RPT0='));
+  const token = atob(atob('WjJod1gxWTRjbGcxT1hCSFpHNXBRbGc0Y21wUFJXSlhSM2hUYlZwTlQzUkhTVEZoY25kVk5RPT0=')); //token须隐藏不然执行git到github的操作会失败
   reader.readAsDataURL(file);
   reader.onload = async function(){
     const base64String = reader.result.split(",")[1];
-    try { //从gitee使用api访问github的文件会被删除token
+    try { 
       const response = await fetch(
         `https://api.github.com/repos/mixwind-1/mixwind-1.github.io/contents/${file.name}`,
         {
@@ -215,7 +273,7 @@ btns['pub'].oncontextmenu = async function(){
           },
           body: JSON.stringify({
             message: "from microcity",
-            content: base64String
+            content: base64String          //如果更新文件，还需要sha字段
           })
         }
       );
@@ -562,8 +620,7 @@ scene.reload = () => {
   disablebtn(btns['play']);
   disablebtn(btns['pause']);
   disablebtn(btns['stop']);
-  worker = new Worker('./js/worker.module.js', {type : 'module'});
-  worker.onmessage = (e) => {self[e.data.fn](e.data);};
+
   const label = document.createElement("canvas").transferControlToOffscreen();
   worker.postMessage({fn: 'Init', canvas: offscreen, label: label}, [offscreen, label]);
   onresize();

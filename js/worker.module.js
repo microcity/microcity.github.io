@@ -2,6 +2,7 @@ import {Module} from '/js/glue.js';
 import * as THREE from '/js/three.module.min.js';
 import { RoomEnvironment } from '/js/RoomEnvironment.js';
 import '/js/scene.js';
+import {tarball} from '/js/tarball.js';
 // import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 self.Init = async function(data){
@@ -32,6 +33,7 @@ self.Init = async function(data){
   self.entries = [];            //userdata entries
   self.context = label.getContext('2d', {willReadFrequently: true});
   self.embedding = false;
+  self.remotecallcount = 0;
   // self.createClient = createClient;
 }
 
@@ -168,7 +170,7 @@ self.SetVar = function (data){
   self[data.name] = data.value;
 }
 
-self.onFilesUpload = async function(data){
+self.onFilesUpload = async function(data){ //通过打开按钮上传文件
   const files = data.files;
   for(const file of files){
     const data = new Uint8Array(await file.arrayBuffer());
@@ -184,7 +186,7 @@ self.onFilesUpload = async function(data){
   }
 }
 
-self.OSUpload = async function(url){
+self.OSUpload = async function(url){ //通过os.upload命令上传文件
   if(url){
     const response = await fetch(url);
     if(!response.ok) return 0;
@@ -220,6 +222,74 @@ self.OnFileDownPicker = async function(data){
   return await OSDownload();
 }
 
+//打包压缩虚拟文件系统中的文件
+self.PackFiles = async function(code, pass){
+  const tar = new tarball.TarWriter();
+  tar.addTextFile('code', code);
+  tar.addTextFile('pass', pass);
+  
+  //遍历虚拟文件系统中的文件
+  const filenames = Module.FS.readdir('/usr');
+  for(const filename of filenames){
+    if(filename === '.' || filename === '..') continue;
+    tar.addFileArrayBuffer(filename, Module.FS.readFile(filename));
+  }
+
+  //创建压缩包
+  const tarBlob = await tar.writeBlob();
+  const tarStream = tarBlob.stream();
+  const compressionStream = new CompressionStream('gzip');
+  const compressedStream = tarStream.pipeThrough(compressionStream);
+
+  const chunks = [];
+  const reader = compressedStream.getReader();
+  let result;
+  while (!(result = await reader.read()).done) {
+      chunks.push(result.value);
+  }
+  
+  //返回压缩的文件
+  return new Blob(chunks, { type: 'application/gzip' });
+}
+
+//解压文件到虚拟系统中
+self.UnpackFiles = async function(blob){
+  // OnNewFS(); //清空文件系统
+  const compressedBlob = blob;
+  const fileStream = compressedBlob.stream();  // 获取文件流
+  const decompressionStream = new DecompressionStream('gzip');
+  const decompressedStream = fileStream.pipeThrough(decompressionStream);
+
+  const chunks = [];
+  const reader = decompressedStream.getReader();
+  let result;
+  while (!(result = await reader.read()).done) {
+    chunks.push(result.value);
+  }
+
+  const decompressedBlob = new Blob(chunks, { type: 'application/tar' });
+  const tar = new tarball.TarReader();
+  const fileInfo = await tar.readFile(decompressedBlob);
+
+  let code, pass;
+  for (let i = 0; i < fileInfo.length; i++) {
+    const fileName = fileInfo[i].name;
+    if (fileInfo[i].type === "file") {
+      if(fileName === 'code'){
+        code = tar.getTextFile(fileName);
+      }else if(fileName === 'pass'){
+        pass = tar.getTextFile(fileName);
+      }else{
+        const bin = tar.getFileBinary(fileName);
+        Module.FS.writeFile(fileName, bin);
+      }
+    }
+  }
+
+  //返回主代码和密码
+  return {code: code, pass: pass};
+}
+
 self.OSDownload = async function(url){
   if(url){
     self.postMessage({fn: 'OnFileDownload', filename:url, file: Module.FS.readFile(url)});
@@ -239,7 +309,7 @@ self.OSDownload = async function(url){
       filelist.push(file);
     }
     self.postMessage({fn: 'OnFileDownPicker', files: filelist});
-    await new Promise(res => self.FinishDownload = res);
+    await new Promise(res => self.FinishDownload = res); //等待浏览器端关闭对话框
     return 1;
   }
 }
@@ -259,6 +329,18 @@ self.OnNewFS = function(data){
 self.FindSimilarStr = function(embvec){
   let str = "similar";
   return str;
+}
+
+//接受远程调用并返回结果
+self.OnRemoteCall = async function(data){
+  const ret = await self[data.refn](...data.args);
+  self.postMessage({fn: data.retfn, ret: ret});
+}
+//远程调用，refn为函数名，args为参数列表，可以接受返回值
+self.RemoteCall = async function(refn, ...args){
+  const retfn = 'RetRemoteCall' + self.remotecallcount++; //生成一个唯一的函数名
+  self.postMessage({fn: 'OnRemoteCall', refn: refn, args: args, retfn: retfn});
+  return await new Promise(resolve => self[retfn] = (data) => resolve(data.ret)); 
 }
 
 self.onmessage = (e) => {self[e.data.fn](e.data);};

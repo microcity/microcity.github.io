@@ -1,5 +1,6 @@
 import {btns, disablebtn, enablebtn, editor, aceeditor, 
         docframe, footer, scene, offcanvas, worker} from '/js/ui.js';
+import {tarball} from '/js/tarball.js';
 
 self.lua = {state: '', file: null, rets:[], bps: aceeditor.session.getBreakpoints(0, 0), engine: false, loaded: false, debugwatch:{}};
 
@@ -305,11 +306,52 @@ if(self.location.hash == ''){
   btns['code'].onclick();
   lua.loaded = true;
 }else{
-  const _supabase = supabase.createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
-  let { data, e } = await _supabase.from('posts').select('lua,pass').eq('id', self.location.hash);
-  if(data && data.length == 1){
-    aceeditor.setValue(data[0].lua, 1);
-    btns['code'].pass = data[0].pass;
+  const cutid = '#s52mpt'               //分界点
+  let code, pass;
+  if(location.hash < cutid){
+    const _supabase = supabase.createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
+    let { data, e } = await _supabase.from('posts').select('lua,pass').eq('id', self.location.hash);
+    if(data && data.length == 1){
+      code = data[0].lua;
+      pass = data[0].pass;
+    }
+  }else{
+    const id = location.hash.slice(1);
+    const token = atob(atob('WjJod1gxWTRjbGcxT1hCSFpHNXBRbGc0Y21wUFJXSlhSM2hUYlZwTlQzUkhTVEZoY25kVk5RPT0='));
+    try { 
+      const response = await fetch(
+        `https://api.github.com/repos/mixwind-1/microcity/contents/${id}`,
+        {
+          headers: {
+            Accept: "application/vnd.github+json",
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      // 可以在这里检查响应状态
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const responseData = await response.json();
+      // Base64 解码以获取原始二进制数据
+      const blob = new Blob([Uint8Array.from(atob(responseData.content), c => c.charCodeAt(0))], { type: "application/gzip" });
+
+      //解压文件
+      const decompdata = await RemoteCall('UnpackFiles', blob);
+      
+      code = decompdata.code;
+      pass = decompdata.pass;
+
+      //设置sha便于更新文件
+      location.sha = responseData.sha;
+    } catch (error) {
+      // 处理错误，显示给用户
+      Print({color:'red', text: error.message});
+    }
+  }
+  if(code){
+    aceeditor.setValue(code, 1);
+    btns['code'].pass = pass;
     onresize();
     Print({color:'white', text:`Published code is loaded!`});
     enablebtn(btns['code']);
@@ -317,7 +359,7 @@ if(self.location.hash == ''){
     if(document.getElementById('state').innerText == "ready")
       enablebtn(btns['play']);
   }else{
-    Print({color:'red', text:`Can not load published code!`});
+      Print({color:'red', text:`Can not load published code!`});
   }
 }
   
