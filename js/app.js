@@ -20,6 +20,7 @@ self.OnModuleLoaded = function(data){
   lua.engine = true;
   document.getElementById('version').innerText = data.version;
   SetState({state:'ready'});
+  if(self.FinishModuleLoad) self.FinishModuleLoad(); //如果有等待模块加载的函数，执行（下载外部代码）
 }
 
 self.OnReturn = function(data){
@@ -337,6 +338,7 @@ if(self.location.hash == ''){
       const blob = new Blob([Uint8Array.from(atob(responseData.content), c => c.charCodeAt(0))], { type: "application/gzip" });
 
       //解压文件
+      if(!lua.engine) await new Promise(res => self.FinishModuleLoad = res); //如果模块没加载，等待模块加载完成
       const decompdata = await RemoteCall('UnpackFiles', blob);
       
       code = decompdata.code;
