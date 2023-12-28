@@ -620,7 +620,8 @@ scene.reload = () => {
   disablebtn(btns['play']);
   disablebtn(btns['pause']);
   disablebtn(btns['stop']);
-
+  worker = new Worker('./js/worker.module.js', {type : 'module'});
+  worker.onmessage = (e) => {self[e.data.fn](e.data);};
   const label = document.createElement("canvas").transferControlToOffscreen();
   worker.postMessage({fn: 'Init', canvas: offscreen, label: label}, [offscreen, label]);
   onresize();
