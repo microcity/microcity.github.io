@@ -174,15 +174,25 @@ btns['open'].oncontextmenu = () => OnFilePicker();
 
 // btns['save'].onclick = () => worker.postMessage({fn: 'OnFileSave'});
 btns['save'].onclick = async function(){
-  const blob =  await RemoteCall('PackFiles', aceeditor.getValue(), '');
   if(!lua.file){
     try{
-      const pickerOpts = {suggestedName: 'untitled.mw', types: [{description: 'MicroCity Web File', accept: {'lua/*': ['.mw']}},], excludeAcceptAllOption: false};
+      const pickerOpts = {
+        suggestedName: 'untitled.mw', types: [
+          {description: 'MicroCity Web File', accept: {'lua/*': ['.mw']}},
+          {description: 'Lua File', accept: {'text/lua': ['.lua']}},
+        ], excludeAcceptAllOption: false};
       lua.file = await self.showSaveFilePicker(pickerOpts);
     }catch(err){
       Print({color:'red', text:err});
       return;
     }
+  }
+  const fileExtension = lua.file.name.split('.').pop(); // 获取文件扩展名
+  let blob;
+  if(fileExtension === 'lua') {
+    blob = aceeditor.getValue();
+  }else if(fileExtension === 'mw') {
+    blob =  await RemoteCall('PackFiles', aceeditor.getValue(), '');
   }
   const writable = await lua.file.createWritable();
   await writable.write(blob);
