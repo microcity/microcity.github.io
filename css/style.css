@@ -182,9 +182,9 @@ html, body, #container {
 #docframe th {
   border-bottom: 1px solid #aaa;
 }
-#docframe img {
+/* #docframe img {
   max-width: 96px;
-}
+} */
 #docframe a {
   color: #0969da;
 }
