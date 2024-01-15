@@ -123,5 +123,8 @@
     // stash
     replace(rx_stash, function(all) { return stash[parseInt(all)] });
 
+    // restore tags
+    src = src.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  
     document.getElementById(id).innerHTML = src.trim();
 };
