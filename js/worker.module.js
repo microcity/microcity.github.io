@@ -3,7 +3,6 @@ import * as THREE from '/js/three.module.min.js';
 import { RoomEnvironment } from '/js/RoomEnvironment.js';
 import '/js/scene.js';
 import {tarball} from '/js/tarball.js';
-// import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 self.Init = async function(data){
   self.canvas = data.canvas;

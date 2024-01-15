@@ -206,60 +206,52 @@ btns['save'].oncontextmenu = async function (){
 }
 
 btns['pub'].onclick = async function (){
-  const cutid = '#s52mpt'               //分界点
 
-  if(location.hash && location.hash < cutid){
-    const _supabase = supabase.createClient('https://vvbgfpuqexloiavpkout.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YmdmcHVxZXhsb2lhdnBrb3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5OTIzMTYsImV4cCI6MTk4NTU2ODMxNn0._sXP-cVlcVMCWQmiFUL-u2O1hR_wy3hm86bg71T8t0c');
-    const id = location.hash;
-    const { data, error } = await _supabase.from('posts').upsert([{ id: id, lua: aceeditor.getValue()}]);
-    Print({color:'white', text:`The published page is updated!`});
-  }else{
-    let id = location.hash && location.hash.slice(1) || Math.trunc(Date.now()/1000).toString(36);
-    let pass = prompt("Confirm to publish and fill a password for editing: (can be empty)");
-    
-    if(pass != null){
-      //获取虚拟文件系统的压缩blob
-      const blob =  await RemoteCall('PackFiles', aceeditor.getValue(), pass);
-      //转换成base64存入github
-      const reader = new FileReader();
-      const token = atob(atob('WjJod1gxWTRjbGcxT1hCSFpHNXBRbGc0Y21wUFJXSlhSM2hUYlZwTlQzUkhTVEZoY25kVk5RPT0='));
-      reader.readAsDataURL(blob);
-      reader.onload = async function(){
-        const base64String = reader.result.split(",")[1];
-        try { 
-          const response = await fetch(
-            `https://api.github.com/repos/mixwind-1/microcity/contents/${id}`,
-            {
-              method: "PUT",
-              headers: {
-                Accept: "application/vnd.github+json",
-                Authorization: `Bearer ${token}`
-              },
-              body: JSON.stringify({
-                message: "from microcity",
-                content: base64String,          //如果更新文件，还需要sha字段
-                sha: location.sha
-              })
-            }
-          );
-          // 可以在这里检查响应状态
-          if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
+  let id = location.hash && location.hash.slice(1) || Math.trunc(Date.now()/1000).toString(36);
+  let pass = prompt("Confirm to publish and fill a password for editing: (can be empty)");
+  
+  if(pass != null){
+    //获取虚拟文件系统的压缩blob
+    const blob =  await RemoteCall('PackFiles', aceeditor.getValue(), pass);
+    //转换成base64存入github
+    const reader = new FileReader();
+    const token = atob(atob('WjJod1gxWTRjbGcxT1hCSFpHNXBRbGc0Y21wUFJXSlhSM2hUYlZwTlQzUkhTVEZoY25kVk5RPT0='));
+    reader.readAsDataURL(blob);
+    reader.onload = async function(){
+      const base64String = reader.result.split(",")[1];
+      try { 
+        const response = await fetch(
+          `https://api.github.com/repos/mixwind-1/microcity/contents/${id}`,
+          {
+            method: "PUT",
+            headers: {
+              Accept: "application/vnd.github+json",
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              message: "from microcity",
+              content: base64String,          //如果更新文件，还需要sha字段
+              sha: location.sha
+            })
           }
-          const responseData = await response.json();
-          location.hash = '#'+id;
-          btns['code'].pass = pass;
-          if(location.sha == null)         
-            Print({color:'white', text:`This page is published to <span style="color:blue">${location.href}</span>`});
-          else
-            Print({color:'white', text:`The published page is updated!`});
-          location.sha = responseData.content.sha;
-        } catch (error) {
-          // 处理错误，显示给用户
-          Print({color:'red', text: error.message});
+        );
+        // 可以在这里检查响应状态
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-      };
-    }
+        const responseData = await response.json();
+        location.hash = '#'+id;
+        btns['code'].pass = pass;
+        if(location.sha == null)         
+          Print({color:'white', text:`This page is published to <span style="color:blue">${location.href}</span>`});
+        else
+          Print({color:'white', text:`The published page is updated!`});
+        location.sha = responseData.content.sha;
+      } catch (error) {
+        // 处理错误，显示给用户
+        Print({color:'red', text: error.message});
+      }
+    };
   }
 }
 
