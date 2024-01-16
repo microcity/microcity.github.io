@@ -156,6 +156,7 @@ self.Resize = function(data) {
 }
 
 self.SetCam =  function (camtype){
+  DisposeObj(self.camera);
   if(camtype=='ortho'){
     self.camera = new THREE.OrthographicCamera( -canvas.width/10, canvas.width/10, canvas.height/10, -canvas.height/10, -500, 10000 );
     camera.position.set(0,0,20);
