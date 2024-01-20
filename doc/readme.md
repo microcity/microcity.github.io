@@ -10,8 +10,8 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
   - [2.2 Searching for Countries](2.2_searching_for_countries.md)
 - 3 User Interfaces
   - [3.1 UI Overview](3.1_ui_overview.md)
-  - [3.2 Editing Scripts](3.3_editing_scripts.md)
-  - [3.3 Running Scripts](3.2_running_scripts.md)
+  - [3.2 Editing Scripts](3.2_editing_scripts.md)
+  - [3.3 Running Scripts](3.3_running_scripts.md)
   - [3.4 Navigating Scenes](3.4_navigating_scenes.md)
 - 4 Scripting Interfaces
   - [4.1 SI Overview](4.1_si_overview.md)
