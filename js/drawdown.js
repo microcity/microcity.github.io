@@ -74,6 +74,7 @@
 
     replace(rx_lt, '&lt;');
     replace(rx_gt, '&gt;');
+    replace(/\r/g, ''); //remove \r to avoid extra space
     replace(rx_space, '  ');
 
     // blockquote
