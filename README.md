@@ -1,5 +1,6 @@
 # MicroCity Web
 An Online Logistics Modeling Tool
+
 ![simulation](./doc/img/terminal_simulation.apng)
 
 ## Quick Start
