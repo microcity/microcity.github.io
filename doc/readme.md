@@ -15,7 +15,7 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
   - [3.4 Navigating Scenes](3.4_navigating_scenes.md)
 - 4 Scripting Interfaces
   - [4.1 SI Overview](4.1_si_overview.md)
-  - [4.2 Operating System](4.2_operation_system.md)
+  - [4.2 Operation System](4.2_operation_system.md)
   - [4.3 Scene and Object](4.3_scene_and_object.md)
   - [4.4 Discrete Event Simulation](4.4_discrete_event_simulation.md)
   - [4.5 Mixed Integer Programming](4.5_mixed_integer_programming.md)
