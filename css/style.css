@@ -190,8 +190,8 @@ html, body, #container {
 }
 
 #docframe a.anchor {
-    color: #000080;
-    font-size: 1.5em;
+    color: black;
+    font-size: 1.2em;
 }
 
 #offcanvas {
