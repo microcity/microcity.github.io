@@ -130,9 +130,10 @@
     document.getElementById(id).innerHTML = src.trim();
 
     let hashIndex = url.indexOf('#');
-    if (hashIndex !== -1)
+    if (hashIndex !== -1){
         let hash = url.substring(hashIndex);
         let anchor = document.querySelector(hash);
         if (anchor)
             anchor.scrollIntoView({ behavior: 'smooth' });
+    }
 };
