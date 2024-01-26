@@ -24,7 +24,7 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
 
 ## Index
 **os:**
-[os.execute](4.2_operation_system.md)
+[os.execute](4.2_operation_system.md#os.execute)
 [os.sleep](4.2_operation_system.md)
 [os.getready](4.2_operation_system.md)
 [os.upload](4.2_operation_system.md)
