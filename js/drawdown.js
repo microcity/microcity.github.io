@@ -132,6 +132,8 @@
     let hashIndex = url.indexOf('#');
     if (hashIndex !== -1){
         let hash = url.substring(hashIndex);
+        let selector = hash.replace('.', '\\.');
+        let anchor = document.querySelector(selector);
         let anchor = document.querySelector(hash);
         if (anchor)
             anchor.scrollIntoView({ behavior: 'smooth' });
