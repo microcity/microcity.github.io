@@ -402,7 +402,7 @@ aceeditor.commands.addCommand({
 });
 
 aceeditor.commands.addCommand({
-  name: 'step',
+  name: 'stepout',
   bindKey: {win: 'F11',  mac: 'F11'},
   exec: self.stepout,
   readOnly: true, // false if this command should not apply in readOnly mode

@@ -127,4 +127,8 @@
     src = src.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
   
     document.getElementById(id).innerHTML = src.trim();
+    let hash = (new URL(url)).hash;
+    let element = document.querySelector(hash);
+    if (element)
+      element.scrollIntoView({ behavior: 'smooth' });
 };
