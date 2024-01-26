@@ -128,8 +128,11 @@
     src = src.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
   
     document.getElementById(id).innerHTML = src.trim();
-    let hash = (new URL(url)).hash;
-    let anchor = document.querySelector(hash);
-    if (anchor)
-        anchor.scrollIntoView({ behavior: 'smooth' });
+
+    let hashIndex = url.indexOf('#');
+    if (hashIndex !== -1)
+        let hash = url.substring(hashIndex);
+        let anchor = document.querySelector(hash);
+        if (anchor)
+            anchor.scrollIntoView({ behavior: 'smooth' });
 };
