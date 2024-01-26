@@ -189,6 +189,11 @@ html, body, #container {
   color: #0969da;
 }
 
+#docframe a.anchor {
+    color: #d30038;
+    font-size: 1.2em;
+}
+
 #offcanvas {
   width: 100%;
   height: 100%;
