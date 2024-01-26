@@ -167,7 +167,7 @@ html, body, #container {
 }
 #docframe pre > code {
   display: block;
-  padding: 0.5em 4em;
+  padding: 0.5em 0.5em;
 }
 #docframe table {
   border-spacing: 0;
