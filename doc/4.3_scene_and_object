@@ -1,0 +1,18 @@
+scene.setenv([argtab]) 设置场景, 可选参数表： {grid='plane', bgcolor='white', camtype='ortho'}。
+scene.addobj(type [, argtab]) 添加对象, 种类有'points', 'polyline', 'polygon', 'box', 'sphere', 'mesh', '*.json', '*.gltf', '*.glb', 'label', 'light'，可选参数表： {width, height, length, radius, segments, selectable, color, opacity, size, hcolor, name, text, font, vertices}。
+obj:getpos() 得到对象的位置x, y, z。
+obj:setpos(x, y, z) 设置对象的位置。
+obj:getrot() 得到对象的旋转x, y, z。
+obj:setrot(x, y, z) 设置对象的旋转。
+obj:getscale() 得到对象的缩放x, y, z。
+obj:setscale(x, y, z) 设置对象的缩放。
+obj:getchildren() 得到子对象表。
+obj:setchildren(childtab) 设置子对象表。
+obj:getparent() 得到父对象。
+obj:setparent(objparent) 设置父对象。
+
+obj:setmat(argtab) 设置对象材质，可选参数表：{type, map, color, opacity}
+scene.tovector(radius, phi, theta), 球坐标转换为向量x, y, z
+scene.topolar(x, y, z)，向量转换为球坐标radius, phi, theta
+
+scene.getobj('camera'): 找到摄像机
