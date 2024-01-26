@@ -49,9 +49,9 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
 - os:
 [os.download](4.2_operation_system.md#os.download)
 [os.execute](4.2_operation_system.md#os.execute)
-[os.getready](4.2_operation_system.md#os.getready#os.getready)
+[os.getready](4.2_operation_system.md#os.getready)
 [os.upload](4.2_operation_system.md#os.upload)
-[os.sleep](4.2_operation_system.md#os.sleep#os.sleep)
+[os.sleep](4.2_operation_system.md#os.sleep)
 - scene:
 [scene.addobj](4.3_scene_and_object.md#scene.addobj)
 [scene.delete](4.3_scene_and_object.md#scene.delete)
