@@ -135,6 +135,6 @@
         let selector = hash.replace('.', '\\.');
         let anchor = document.querySelector(selector);
         if (anchor)
-            anchor.scrollIntoView({ behavior: 'smooth' });
+            anchor.scrollIntoView();
     }
 };
