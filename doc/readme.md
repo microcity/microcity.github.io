@@ -23,12 +23,12 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
   - 5.1 <a href="https://www.lua.org/manual/5.4/manual.html" target="_blank">Lua Reference Manual</a>
 
 ## Index of Functions
-**coroutine:**
+- **coroutine:**
 [coroutine.qexec](4.4_discrete_event_simulation.md#coroutine.qexec)
 [coroutine.qtime](4.4_discrete_event_simulation.md#coroutine.qtime)
 [coroutine.queue](4.4_discrete_event_simulation.md#coroutine.queue)
 [coroutine.resume](4.4_discrete_event_simulation.md#coroutine.resume)
-**debug:**
+- **debug:**
 [debug.cont](4.2_operation_system.md#debug.cont)
 [debug.debug](4.2_operation_system.md#debug.debug)
 [debug.pause](4.2_operation_system.md#debug.pause)
@@ -36,7 +36,7 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
 [debug.stepi](4.2_operation_system.md#debug.stepi)
 [debug.stepo](4.2_operation_system.md#debug.stepo)
 [debug.watch](4.2_operation_system.md#debug.watch)
-**math:**
+- **math:**
 [math.addcol](4.5_mixed_integer_programming.md#math.addcol)
 [math.addrow](4.5_mixed_integer_programming.md#math.addrow)
 [math.delcol](4.5_mixed_integer_programming.md#math.delcol)
@@ -46,13 +46,13 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
 [math.random](4.5_mixed_integer_programming.md#math.random)
 [math.randomseed](4.5_mixed_integer_programming.md#math.randomseed)
 [math.solve](4.5_mixed_integer_programming.md#math.solve)
-**os:**
+- **os:**
 [os.download](4.2_operation_system.md#os.download)
 [os.execute](4.2_operation_system.md#os.execute)
 [os.getready](4.2_operation_system.md#os.getready#os.getready)
 [os.upload](4.2_operation_system.md#os.upload)
 [os.sleep](4.2_operation_system.md#os.sleep#os.sleep)
-**scene:**
+- **scene:**
 [scene.addobj](4.3_scene_and_object.md#scene.addobj)
 [scene.delete](4.3_scene_and_object.md#scene.delete)
 [scene.getchildren](4.3_scene_and_object.md#scene.getchildren)
