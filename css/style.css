@@ -190,7 +190,7 @@ html, body, #container {
 }
 
 #docframe a.anchor {
-    color: #d30038;
+    /*color: #d30038;*/
     font-size: 1.2em;
 }
 
