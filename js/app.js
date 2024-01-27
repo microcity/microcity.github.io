@@ -359,13 +359,8 @@ self.OpenNewWindow = function (){
   // 获取当前网址
   var currentUrl = window.location.href;
   // 判断是否以https://microcity.gitee.io/开头
-  if (currentUrl.startsWith("https://microcity.gitee.io/")) {
-    // 打开新窗口，网址是https://gitee.com/microcity/microcity
-    window.open("https://gitee.com/microcity/microcity");
-  }
-  // 判断是否以https://microcity.github.io/开头
-  else if (currentUrl.startsWith("https://microcity.github.io/")) {
-    // 打开新窗口，网址是https://github.com/microcity/microcity.github.io
-    window.open("https://github.com/microcity/microcity.github.io");
-  }
+  if (currentUrl.startsWith("https://microcity.gitee.io/"))
+    window.open("https://gitee.com/microcity/");
+  else
+    window.open("https://github.com/microcity/");
 }
