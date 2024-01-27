@@ -189,7 +189,7 @@ html, body, #container {
   color: #0969da;
 }
 
-#docframe a.anchor {
+#docframe a[id] {
     /*color: #d30038;*/
     font-size: 1.2em;
 }
