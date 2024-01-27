@@ -1,6 +1,6 @@
 # Documentation
 
-MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desktop version of <a href="https://github.com/microcity/desktop" target="_blank">MicroCity</a>.
+MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desktop version of <a href="https://github.com/microcity/" target="_blank">MicroCity</a>.
 
 ## Table of Contents
 - 1 Introduction
