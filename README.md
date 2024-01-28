@@ -10,4 +10,4 @@ An Online Logistics Modeling Tool
 For more information please go to [Documentation](./doc/readme.md).
 
 ## Author
-Sun Zhuo (mixwind@gmail.com)
+Mixwind (mixwind@gmail.com)
