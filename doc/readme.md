@@ -21,7 +21,7 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
   - [4.5 Mixed Integer Programming](4.5_mixed_integer_programming.md)
 - 5 Appendix
   - 5.1 <a href="https://www.lua.org/manual/5.4/contents.html" target="_blank">Lua Reference Manual</a>
-  - 5.2 <a href="https://microcity.gitee.io/book" target="_blank">Dive into Logistics Modelling</a>
+  - 5.2 <a href="https://microcity.gitee.io/book" target="_blank">From Data to Logistics Models</a>
 
 ## Index of Functions
 - coroutine:
