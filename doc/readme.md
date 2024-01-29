@@ -21,7 +21,7 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
   - [4.5 Mixed Integer Programming](4.5_mixed_integer_programming.md)
 - 5 Appendix
   - 5.1 <a href="https://www.lua.org/manual/5.4/contents.html" target="_blank">Lua Reference Manual</a>
-  - 5.2 <a href="https://microcity.gitee.io/book" target="_blank">物流数字化建模技术</a>
+  - 5.2 <a href="https://microcity.gitee.io/book" target="_blank">From Data to Logistics Models</a>
 
 ## Index of Functions
 - coroutine:
@@ -55,26 +55,26 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
 [os.sleep](4.2_operation_system.md#os.sleep)
 - scene:
 [scene.addobj](4.3_scene_and_object.md#scene.addobj)
-[scene.delete](4.3_scene_and_object.md#scene.delete)
-[scene.getchildren](4.3_scene_and_object.md#scene.getchildren)
-[scene.getdata](4.3_scene_and_object.md#scene.getdata)
-[scene.getmat](4.3_scene_and_object.md#scene.getmat)
 [scene.getobj](4.3_scene_and_object.md#scene.getobj)
-[scene.getparent](4.3_scene_and_object.md#scene.getparent)
-[scene.getpos](4.3_scene_and_object.md#scene.getpos)
-[scene.getrot](4.3_scene_and_object.md#scene.getrot)
-[scene.getscale](4.3_scene_and_object.md#scene.getscale)
-[scene.getselection](4.3_scene_and_object.md#scene.getselection)
-[scene.getvertices](4.3_scene_and_object.md#scene.getvertices)
 [scene.render](4.3_scene_and_object.md#scene.render)
-[scene.setchildren](4.3_scene_and_object.md#scene.setchildren)
 [scene.setenv](4.3_scene_and_object.md#scene.setenv)
-[scene.setmat](4.3_scene_and_object.md#scene.setmat)
-[scene.setparent](4.3_scene_and_object.md#scene.setparent)
-[scene.setpos](4.3_scene_and_object.md#scene.setpos)
-[scene.setrot](4.3_scene_and_object.md#scene.setrot)
-[scene.setscale](4.3_scene_and_object.md#scene.setscale)
-[scene.setvertices](4.3_scene_and_object.md#scene.setvertices)
-[scene.tojson](4.3_scene_and_object.md#scene.tojson)
 [scene.topolar](4.3_scene_and_object.md#scene.topolar)
-[scene.tovector](4.3_scene_and_object.md#scene.tovector)
+[scene.tovector](4.3_scene_and_object.md#scene.tovector)<br>
+[obj:delete](4.3_scene_and_object.md#obj:delete)
+[obj:getchildren](4.3_scene_and_object.md#obj:getchildren)
+[obj:getdata](4.3_scene_and_object.md#obj:getdata)
+[obj:getmat](4.3_scene_and_object.md#obj:getmat)
+[obj:getparent](4.3_scene_and_object.md#obj:getparent)
+[obj:getpos](4.3_scene_and_object.md#obj:getpos)
+[obj:getrot](4.3_scene_and_object.md#obj:getrot)
+[obj:getscale](4.3_scene_and_object.md#obj:getscale)
+[obj:getvertices](4.3_scene_and_object.md#obj:getvertices)
+[obj:setchildren](4.3_scene_and_object.md#obj:setchildren)
+[obj:setdata](4.3_scene_and_object.md#obj:setdata)
+[obj:setmat](4.3_scene_and_object.md#obj:setmat)
+[obj:setparent](4.3_scene_and_object.md#obj:setparent)
+[obj:setpos](4.3_scene_and_object.md#obj:setpos)
+[obj:setrot](4.3_scene_and_object.md#obj:setrot)
+[obj:setscale](4.3_scene_and_object.md#obj:setscale)
+[obj:setvertices](4.3_scene_and_object.md#obj:setvertices)
+[obj:tojson](4.3_scene_and_object.md#obj:tojson)
