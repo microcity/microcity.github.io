@@ -60,7 +60,6 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
 [scene.setenv](4.3_scene_and_object.md#scene.setenv)
 [scene.topolar](4.3_scene_and_object.md#scene.topolar)
 [scene.tovector](4.3_scene_and_object.md#scene.tovector)<br>
-obj:
 [obj:delete](4.3_scene_and_object.md#obj:delete)
 [obj:getchildren](4.3_scene_and_object.md#obj:getchildren)
 [obj:getdata](4.3_scene_and_object.md#obj:getdata)
