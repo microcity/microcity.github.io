@@ -44,8 +44,8 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
 [math.delmip](4.5_mixed_integer_programming.md#math.delmip)
 [math.delrow](4.5_mixed_integer_programming.md#math.delrow)
 [math.newmip](4.5_mixed_integer_programming.md#math.newmip)
-[math.random](4.5_mixed_integer_programming.md#math.random)
-[math.randomseed](4.5_mixed_integer_programming.md#math.randomseed)
+[math.random](4.4_discrete_event_simulation.md#math.random)
+[math.randomseed](4.4_discrete_event_simulation.md#math.randomseed)
 [math.solve](4.5_mixed_integer_programming.md#math.solve)
 - os:
 [os.download](4.2_operation_system.md#os.download)
