@@ -132,7 +132,7 @@
     let hashIndex = url.indexOf('#');
     if (hashIndex !== -1){
         let hash = url.substring(hashIndex);
-        let selector = hash.replace('.', '\\.').replace(':', '\\:');
+        let selector = 'a' + hash.replace('.', '\\.').replace(':', '\\:');
         let anchor = document.querySelector(selector);
         if (anchor)
             anchor.scrollIntoView();

@@ -20,8 +20,8 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
   - [4.4 Discrete Event Simulation](4.4_discrete_event_simulation.md)
   - [4.5 Mixed Integer Programming](4.5_mixed_integer_programming.md)
 - Appendix
-  - <a href="" onclick="window.open('https://www.lua.org/manual/5.4/contents.html', 'luaref')">Lua Reference Manual</a>
-  - <a href="" onclick="window.open('https://microcity.gitee.io/book', 'book')">From Data to Logistics Models</a>
+  - <a href="https://www.lua.org/manual/5.4/contents.html" target="_blank">Lua Reference Manual</a>
+  - <a href="https://microcity.gitee.io/book" target="_blank">From Data to Logistics Models</a>
 
 ## Index of Functions
 - coroutine:

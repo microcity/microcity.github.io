@@ -23,7 +23,7 @@
   "getready": "4.2_operation_system.md#os.getready",
   "upload": "4.2_operation_system.md#os.upload",
   "sleep": "4.2_operation_system.md#os.sleep",
-  "scene": "4.3_scene_and_object.md",
+  "scene": "4.3_scene_and_object.md#scene",
   "addobj": "4.3_scene_and_object.md#scene.addobj",
   "getobj": "4.3_scene_and_object.md#scene.getobj",
   "render": "4.3_scene_and_object.md#scene.render",
