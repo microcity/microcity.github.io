@@ -358,24 +358,39 @@ async function findFunc(){
           }
           
           const link = data2[word]; // 查询选中的lua函数
-          if (link === undefined || link == btns['doc'].link)
-            btns['doc'].onclick();
-          else
+          if (link === undefined){
+            if(docframe.style['display'] === 'none')
+              btns['doc'].onclick();
+          }else
             window.open("https://www.lua.org/manual/5.4/manual.html#"+link, "luaref");
-          btns['doc'].link = link;
-          })
-          .catch(error => console.error('Error:', error));
-      } else if (link == btns['doc'].link) {
-        btns['doc'].onclick();
+        })
+        .catch(error => console.error('Error:', error));
       } else {
         markdown('/doc/' + link, 'docframe');
         if(docframe.style['display'] === 'none')
           btns['doc'].onclick();
       }
-      btns['doc'].link = link;
   })
   .catch(error => console.error('Error:', error));
 }
+
+function escape(){
+  if(newdialog.open)
+    newdialog.close();
+  else if(downdialog.open)
+    downdialog.close();
+  else if(docframe.style['display'] != 'none')
+    btns['doc'].onclick();
+  else if(btns['code'].active)
+    btns['code'].onclick();
+}
+
+aceeditor.commands.addCommand({
+  name: 'esc',
+  bindKey: {win: 'ESC',  mac: 'ESC'},
+  exec: escape,
+  readOnly: true, // false if this command should not apply in readOnly mode
+});
 
 aceeditor.commands.addCommand({
   name: 'new',
@@ -577,6 +592,9 @@ self.onkeydown = (e) => {
   }else if(e.key === 'F11'){
     e.preventDefault();
     self.stepout();
+  }else if(e.key === 'Escape'){
+    e.preventDefault();
+    escape();
   }
 }
 
