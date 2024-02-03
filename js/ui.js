@@ -333,6 +333,50 @@ aceeditor.on("guttermousedown", function(e) {
   localStorage.setItem("bps", JSON.stringify(lua.bps));
 });
 
+async function findFunc(){
+  fetch('/js/mwfuncs.json') // 搜索内置函数
+  .then(response => response.json())
+  .then(data => {
+      let cursorPosition = aceeditor.getCursorPosition(); // 获取当前光标位置
+      let wordRange = aceeditor.session.getWordRange(cursorPosition.row, cursorPosition.column); // 获取光标所在位置的单词的范围
+      let word = aceeditor.session.getTextRange(wordRange); // 获取光标所在位置的单词
+
+      const link = data[word]; // 查询选中的文本
+    
+      if (link === undefined){
+        fetch('/js/luafuncs.json') // 搜索lua函数
+        .then(response2 => response2.json())
+        .then(data2 => {
+          // 检查word前面的字符是否为"."
+          let cursorPosition = { row: wordRange.start.row, column: wordRange.start.column - 1 };
+          var beforeWordChar = aceeditor.session.getTextRange({ start: cursorPosition, end: wordRange.start });
+          if (beforeWordChar === '.') {
+              // 如果前一个字符为"."，获取"."前的单词
+              cursorPosition.column--;
+              wordRange = aceeditor.session.getWordRange(cursorPosition.row, cursorPosition.column);
+              word = aceeditor.session.getTextRange(wordRange) + '.' + word;
+          }
+          
+          const link = data2[word]; // 查询选中的lua函数
+          if (link === undefined || link == btns['doc'].link)
+            btns['doc'].onclick();
+          else
+            window.open("https://www.lua.org/manual/5.4/manual.html#"+link, "luaref");
+          btns['doc'].link = link;
+          })
+          .catch(error => console.error('Error:', error));
+      } else if (link == btns['doc'].link) {
+        btns['doc'].onclick();
+      } else {
+        markdown('/doc/' + link, 'docframe');
+        if(docframe.style['display'] === 'none')
+          btns['doc'].onclick();
+      }
+      btns['doc'].link = link;
+  })
+  .catch(error => console.error('Error:', error));
+}
+
 aceeditor.commands.addCommand({
   name: 'new',
   bindKey: {win: 'Ctrl-B',  mac: 'Command-B'},
@@ -355,7 +399,7 @@ aceeditor.commands.addCommand({
 aceeditor.commands.addCommand({
   name: 'help',
   bindKey: {win: 'F1',  mac: 'F1'},
-  exec: btns['doc'].onclick,
+  exec: findFunc,
   readOnly: true, // false if this command should not apply in readOnly mode
 });
 
@@ -511,7 +555,7 @@ self.onkeydown = (e) => {
       btns['save'].onclick(false);
   }else if(e.key === "F1"){
     e.preventDefault();
-    btns['doc'].onclick();
+    findFunc();
   }else if(e.key === 'F5'){
     e.preventDefault();
     btns['play'].onclick();
