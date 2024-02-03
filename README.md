@@ -1,5 +1,5 @@
 # MicroCity Web
-An Online Logistics Modeling Tool
+An Online Spatial Modeling Tool
 
 ![simulation](./doc/img/terminal_simulation.apng)
 
