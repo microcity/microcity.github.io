@@ -1,6 +1,6 @@
 # Documentation
 
-MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desktop version of <a href="https://github.com/microcity/" target="_blank">MicroCity</a>.
+MicroCity Web is **An Online Spatial Modeling Tool** reassembled from the desktop version of <a href="https://github.com/microcity/" target="_blank">MicroCity</a>.
 
 ## Table of Contents
 - 1 Introduction
@@ -21,7 +21,7 @@ MicroCity Web is **An Online Logistics Modeling Tool** reassembled from the desk
   - [4.5 Mixed Integer Programming](4.5_mixed_integer_programming.md)
 - Appendix
   - <a href="https://www.lua.org/manual/5.4/contents.html" target="_blank">Lua Reference Manual</a>
-  - <a href="https://microcity.gitee.io/book" target="_blank">From Data to Logistics Models</a>
+  - <a href="https://microcity.gitee.io/book" target="_blank">From Spatial Data to Logistics Models</a>
 
 ## Index of Functions
 - coroutine:
