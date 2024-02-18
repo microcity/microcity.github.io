@@ -354,13 +354,3 @@ if(self.location.hash == ''){
       Print({color:'red', text:`Can not load published code!`});
   }
 }
-  
-self.OpenNewWindow = function (){
-  // 获取当前网址
-  var currentUrl = window.location.href;
-  // 判断是否以https://microcity.gitee.io/开头
-  if (currentUrl.startsWith("https://microcity.gitee.io/"))
-    window.open("https://gitee.com/microcity/");
-  else
-    window.open("https://github.com/microcity/");
-}
