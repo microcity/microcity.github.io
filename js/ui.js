@@ -487,7 +487,11 @@ aceeditor.commands.addCommand({
       //去掉-保留--
       let userstr = comment.substring(1).replace(/['"\\]/g, '\\$&');
       worker.postMessage({fn:'SetVar', name:'commanding', value:true});
-      const code = await lua.run(`return os.chatcmpl('Generate Lua code', [=[${userstr}]=])`);
+      let code = await lua.run(`return os.chatcmpl('Generate Lua code', [=[${userstr}]=])`);
+      //只保留代码部分
+      let matches = [...code.matchAll(/```lua\n([\s\S]*?)```/g)];
+      if(matches.length > 0)
+        code = matches.map(match => match[1]).join('\n');
       aceeditor.removeToLineStart();
       aceeditor.insert(code);
       aceeditor.setReadOnly(false);
@@ -689,6 +693,7 @@ scene.reload = () => {
   const label = document.createElement("canvas").transferControlToOffscreen();
   worker.postMessage({fn: 'Init', canvas: offscreen, label: label}, [offscreen, label]);
   onresize();
+  SetChatAPI();
   worker.postMessage({fn:'SetVar', name:'bps', value:lua.bps});
   Print({color:'red', text:`The lua thread is killed!`});
 }

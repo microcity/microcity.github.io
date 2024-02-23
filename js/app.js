@@ -4,6 +4,27 @@ import {tarball} from '/js/tarball.js';
 
 self.lua = {state: '', file: null, rets:[], bps: aceeditor.session.getBreakpoints(0, 0), engine: false, loaded: false, debugwatch:{}};
 
+self.SetChatAPI = function (url, key, model){
+  if (!url)
+    url = localStorage.getItem('chat_url') || 'https://api.chatanywhere.tech/v1'
+  else
+    localStorage.setItem('chat_url', url);
+
+  if (!key)
+    key = localStorage.getItem('chat_key') || 'sk-2IYWOuCp7XW9NuO13kzpCsNdv1WcjvloYIafMpPLgFTOPyUq';
+  else
+    localStorage.setItem('chat_key', key);
+    
+  if (!model)
+    model = localStorage.getItem('chat_model') || 'gpt-3.5-turbo';
+  else
+    localStorage.setItem('chat_model', model);
+
+  worker.postMessage({fn:'SetVar', name:'chat_url', value:url});
+  worker.postMessage({fn:'SetVar', name:'chat_key', value:key});
+  worker.postMessage({fn:'SetVar', name:'chat_model', value:model});
+}
+
 self.BreakAt = function (data){
   if(data.row){
     lua.breakline = data.row;
@@ -286,6 +307,7 @@ scene.style['grid-column'] = '1 / -1';
 docframe.style['display'] = 'none';
 markdown('/doc/readme.md', 'docframe');
 SetState({state:'initializing'});
+SetChatAPI();
 
 //load lua code
 if(self.location.hash == ''){
