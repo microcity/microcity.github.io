@@ -47,13 +47,13 @@ MicroCity Web is **An Online Spatial Modeling Tool** reassembled from the deskto
 [mip:delrow](4.5_mixed_integer_programming.md#mip:delrow)
 [mip:solve](4.5_mixed_integer_programming.md#mip:solve)
 - os:
+[os.chatcmpl](4.2_operation_system.md#os.chatcmpl)
 [os.download](4.2_operation_system.md#os.download)
+[os.embedding](4.2_operation_system.md#os.embedding)
 [os.execute](4.2_operation_system.md#os.execute)
 [os.getready](4.2_operation_system.md#os.getready)
 [os.upload](4.2_operation_system.md#os.upload)
 [os.sleep](4.2_operation_system.md#os.sleep)
-[os.chatcmpl](4.2_operation_system.md#os.chatcmpl)
-[os.embedding](4.2_operation_system.md#os.embedding)
 - scene:
 [scene.addobj](4.3_scene_and_object.md#scene.addobj)
 [scene.getobj](4.3_scene_and_object.md#scene.getobj)
