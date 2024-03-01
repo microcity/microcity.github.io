@@ -69,11 +69,15 @@ header.oncontextmenu = (e) => {
   e.preventDefault();
 }
 
-btns['play'].onclick = () => {scene.reload(); runlua();}
+btns['play'].onclick = () => {
+  scene.reload(); 
+  if(!lua.engine) await new Promise(res => self.FinishModuleLoad = res); //如果模块没加载，等待模块加载完成
+  runlua();
+}
 btns['play'].oncontextmenu = () => debuglua();
 btns['pause'].onclick = () => pauselua();	
 btns['stop'].onclick = () => stoplua();
-btns['stop'].oncontextmenu = () => scene.reload();
+btns['stop'].oncontextmenu = () => scene.reload(true);
 
 btns['code'].onclick = function (){
   if(btns['code'].pass){
@@ -670,7 +674,7 @@ offcanvas.onwheel = (e) => {
   worker.postMessage({fn: 'OnMouseMove', buttons:4, deltay:e.deltaY});
 }
 
-scene.reload = () => {
+scene.reload = (kill) => {
   if(lua.breakline){
     aceeditor.session.removeGutterDecoration(lua.breakline - 1, "ace_gutter_debug_current");
     lua.breakline = null;
@@ -688,6 +692,7 @@ scene.reload = () => {
   disablebtn(btns['play']);
   disablebtn(btns['pause']);
   disablebtn(btns['stop']);
+  lua.engine = null;
   worker = new Worker('./js/worker.module.js', {type : 'module'});
   worker.onmessage = (e) => {self[e.data.fn](e.data);};
   const label = document.createElement("canvas").transferControlToOffscreen();
@@ -695,7 +700,7 @@ scene.reload = () => {
   onresize();
   SetChatAPI();
   worker.postMessage({fn:'SetVar', name:'bps', value:lua.bps});
-  Print({color:'red', text:`The lua thread is killed!`});
+  if(kill) Print({color:'red', text:`The lua thread is killed!`});
 }
 
 const newfrom = async function (file){
