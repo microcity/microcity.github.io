@@ -69,7 +69,7 @@ header.oncontextmenu = (e) => {
   e.preventDefault();
 }
 
-btns['play'].onclick = () => runlua();
+btns['play'].onclick = () => {scene.reload(); runlua();}
 btns['play'].oncontextmenu = () => debuglua();
 btns['pause'].onclick = () => pauselua();	
 btns['stop'].onclick = () => stoplua();
