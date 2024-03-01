@@ -70,8 +70,8 @@ header.oncontextmenu = (e) => {
 }
 
 btns['play'].onclick = async function (){
-  scene.reload(); 
-  if(!lua.engine) await new Promise(res => self.FinishModuleLoad = res); //如果模块没加载，等待模块加载完成
+  // scene.reload(); 
+  // if(!lua.engine) await new Promise(res => self.FinishModuleLoad = res); //如果模块没加载，等待模块加载完成
   runlua();
 }
 btns['play'].oncontextmenu = () => debuglua();
