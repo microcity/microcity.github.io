@@ -38,6 +38,7 @@ self.Init = async function(data){
   self.context = label.getContext('2d', {willReadFrequently: true});
   self.embedding = false;
   self.remotecallcount = 0;
+  self.prerendertime = performance.now();
   // self.createClient = createClient;
   // requestAnimationFrame(animate);
 }

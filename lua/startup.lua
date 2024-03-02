@@ -4,7 +4,7 @@ obj:setscale(5, 5, 5)           --scale up the cube to 5*5*5
 
 local x, y, z = 0, 0, 0         --initialize rotation variables
 while scene.render() do         --render the scene and check ui
-  x = x + 0.05
-  y = y + 0.05
+  x = x + 0.1
+  y = y + 0.1
   obj:setrot(x, y, z)           --set the rotation of the cube
 end
