@@ -4,6 +4,11 @@ import { RoomEnvironment } from '/js/RoomEnvironment.js';
 import '/js/scene.js';
 import {tarball} from '/js/tarball.js';
 
+// self.animate = function(timeStamp) {
+//     renderer.render( scene, camera );
+//     requestAnimationFrame((t) => animate(t));
+// }
+
 self.Init = async function(data){
   self.canvas = data.canvas;
   self.label = data.label;
@@ -34,6 +39,7 @@ self.Init = async function(data){
   self.embedding = false;
   self.remotecallcount = 0;
   // self.createClient = createClient;
+  // requestAnimationFrame(animate);
 }
 
 self.Select = function(obj){
