@@ -28,7 +28,6 @@ MicroCity Web is **An Online Spatial Modeling Tool** reassembled from the deskto
 [coroutine.qexec](4.4_discrete_event_simulation.md#coroutine.qexec)
 [coroutine.qtime](4.4_discrete_event_simulation.md#coroutine.qtime)
 [coroutine.queue](4.4_discrete_event_simulation.md#coroutine.queue)
-[coroutine.resume](4.4_discrete_event_simulation.md#coroutine.resume)
 - debug:
 [debug.cont](4.2_operation_system.md#debug.cont)
 [debug.debug](4.2_operation_system.md#debug.debug)

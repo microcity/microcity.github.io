@@ -2,7 +2,6 @@
   "qexec": "4.4_discrete_event_simulation.md#coroutine.qexec",
   "qtime": "4.4_discrete_event_simulation.md#coroutine.qtime",
   "queue": "4.4_discrete_event_simulation.md#coroutine.queue",
-  "resume": "4.4_discrete_event_simulation.md#coroutine.resume",
   "cont": "4.2_operation_system.md#debug.cont",
   "debug": "4.2_operation_system.md#debug.debug",
   "pause": "4.2_operation_system.md#debug.pause",
