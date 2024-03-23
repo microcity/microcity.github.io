@@ -310,7 +310,7 @@ SetState({state:'initializing'});
 SetChatAPI();
 
 //load lua code
-if(self.location.hash == ''){
+if(location.hash == ''){
   const bps = JSON.parse(localStorage.getItem("bps"));
   if(bps){
     bps.forEach((element, row) => {if(element) aceeditor.session.setBreakpoint(row);});
@@ -328,6 +328,30 @@ if(self.location.hash == ''){
   enablebtn(btns['code']);
   btns['code'].onclick();
   lua.loaded = true;
+}else if(location.hash.startsWith('#/')){
+  const base64 = location.hash.slice(2);
+  // Base64 解码以获取原始二进制数据
+  const blob = new Blob([Uint8Array.from(atob(base64), c => c.charCodeAt(0))], { type: "application/gzip" });
+  //解压文件
+  if(!lua.engine) await new Promise(res => self.FinishModuleLoad = res); //如果模块没加载，等待模块加载完成
+  const decompdata = await RemoteCall('UnpackFiles', blob);
+
+  const code = decompdata.code;
+  const pass = decompdata.pass;
+
+  if(code){
+    aceeditor.setValue(code, 1);
+    btns['code'].pass = pass;
+    onresize();
+    Print({color:'white', text:`Embeded project is loaded!`});
+    enablebtn(btns['code']);
+    lua.loaded = true;
+    if(document.getElementById('state').innerText == "ready")
+      enablebtn(btns['play']);
+  }else{
+      Print({color:'red', text:`Can not load embeded project!`});
+  }
+  
 }else{
   let code, pass;
   const id = location.hash.slice(1);
@@ -367,12 +391,12 @@ if(self.location.hash == ''){
     aceeditor.setValue(code, 1);
     btns['code'].pass = pass;
     onresize();
-    Print({color:'white', text:`Published code is loaded!`});
+    Print({color:'white', text:`Published project is loaded!`});
     enablebtn(btns['code']);
     lua.loaded = true;
     if(document.getElementById('state').innerText == "ready")
       enablebtn(btns['play']);
   }else{
-      Print({color:'red', text:`Can not load published code!`});
+      Print({color:'red', text:`Can not load published project!`});
   }
 }
