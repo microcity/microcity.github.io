@@ -346,6 +346,8 @@ if(location.hash == '' || location.hash.length <= 2){
     onresize();
     Print({color:'white', text:`Embeded project is loaded!`});
     enablebtn(btns['code']);
+    if(pass == '')
+      btns['code'].onclick();
     lua.loaded = true;
     if(document.getElementById('state').innerText == "ready")
       enablebtn(btns['play']);
@@ -394,6 +396,8 @@ if(location.hash == '' || location.hash.length <= 2){
     onresize();
     Print({color:'white', text:`Published project is loaded!`});
     enablebtn(btns['code']);
+    if(pass == '')
+      btns['code'].onclick();
     lua.loaded = true;
     if(document.getElementById('state').innerText == "ready")
       enablebtn(btns['play']);
