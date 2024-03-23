@@ -262,7 +262,7 @@ btns['pub'].onclick = async function (){
 }
 
 btns['pub'].oncontextmenu = async function (){
-  let pass = prompt("Confirm to publish and fill a password for editing: (can be empty)");
+  let pass = prompt("Confirm to embed and fill a password for editing: (can be empty)");
   if(pass != null){
     //获取虚拟文件系统的压缩blob
     const blob =  await RemoteCall('PackFiles', aceeditor.getValue(), pass);
