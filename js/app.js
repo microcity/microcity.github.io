@@ -328,7 +328,7 @@ if(location.hash == ''){
   enablebtn(btns['code']);
   btns['code'].onclick();
   lua.loaded = true;
-}else if(location.hash.startsWith('#/')){
+}else if(location.hash.length > 2 && location.hash.startsWith('#/')){
   const base64 = location.hash.slice(2);
   // Base64 解码以获取原始二进制数据
   const blob = new Blob([Uint8Array.from(atob(base64), c => c.charCodeAt(0))], { type: "application/gzip" });
@@ -352,7 +352,7 @@ if(location.hash == ''){
       Print({color:'red', text:`Can not load embeded project!`});
   }
   
-}else{
+}else if(location.hash.length > 2){
   let code, pass;
   const id = location.hash.slice(1);
   const token = atob(atob('WjJod1gxWTRjbGcxT1hCSFpHNXBRbGc0Y21wUFJXSlhSM2hUYlZwTlQzUkhTVEZoY25kVk5RPT0='));
