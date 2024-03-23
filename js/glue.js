@@ -4,28 +4,7 @@ export var Module = {
   onRuntimeInitialized: () => {
    	Module.runlua = Module.cwrap('runlua', 'string', ['string']);
     // Module.xcode = Module.cwrap('xcode', 'string', ['string', 'string']);
-    self.postMessage({fn: 'OnModuleLoaded', version:'240322'});
-
-    FS.mkdir('/usr');
-    FS.mount(IDBFS, {}, '/usr');
-    FS.chdir('/usr');
-    
-    FS.syncfs(true, function (err) {
-      if(err) console.error('Error syncing IDBFS:', err);
-    });
-    Module.FS = FS;
-    Module.IDBFS = IDBFS;
-  }
-};
-
-import * as THREE from '/js/three.module.min.js';
-export var Module = {
-	print: (txt) => self.postMessage({fn: 'Print', text: txt, color: 'white'}),
-  printErr: (err) => self.postMessage({fn: 'Print', text: err, color: 'red'}),
-  onRuntimeInitialized: () => {
-   	Module.runlua = Module.cwrap('runlua', 'string', ['string']);
-    // Module.xcode = Module.cwrap('xcode', 'string', ['string', 'string']);
-    self.postMessage({fn: 'OnModuleLoaded', version:'240322'});
+    self.postMessage({fn: 'OnModuleLoaded', version:'240323'});
 
     FS.mkdir('/usr');
     FS.mount(IDBFS, {}, '/usr');
