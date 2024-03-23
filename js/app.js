@@ -310,7 +310,7 @@ SetState({state:'initializing'});
 SetChatAPI();
 
 //load lua code
-if(location.hash == ''){
+if(location.hash == '' || location.hash.length <= 2){
   const bps = JSON.parse(localStorage.getItem("bps"));
   if(bps){
     bps.forEach((element, row) => {if(element) aceeditor.session.setBreakpoint(row);});
