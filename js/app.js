@@ -328,6 +328,7 @@ if(location.hash == '' || location.hash.length <= 2){
   enablebtn(btns['code']);
   btns['code'].onclick();
   lua.loaded = true;
+  
 }else if(location.hash.length > 2 && location.hash.startsWith('#/')){
   const base64 = location.hash.slice(2);
   // Base64 解码以获取原始二进制数据
