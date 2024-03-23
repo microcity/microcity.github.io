@@ -210,26 +210,6 @@ btns['save'].oncontextmenu = async function (){
 }
 
 btns['pub'].onclick = async function (){
-  let pass = prompt("Confirm to publish and fill a password for editing: (can be empty)");
-  if(pass != null){
-    //获取虚拟文件系统的压缩blob
-    const blob =  await RemoteCall('PackFiles', aceeditor.getValue(), pass);
-    //转换成base64放到url中
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-    reader.onload = async function(){
-      //获取文件的base64编码并保存到url中
-      const base64String = reader.result.split(",")[1];
-      location.hash = '#/'+base64String;
-      btns['code'].pass = pass;  
-      Print({color:'white', text:`The project is embeded in URL (${location.href.length} bytes).`});
-      //如果包含github发布文件的sha值则去除
-      location.sha = null;
-    };
-  }
-}
-
-btns['pub'].oncontextmenu = async function (){
   //通过文件sha值来判断是否已经是发布到github上的文件
   let id = location.sha && location.hash.slice(1) || Math.trunc(Date.now()/1000).toString(36);
   let pass = prompt("Confirm to publish and fill a password for editing: (can be empty)");
@@ -281,41 +261,25 @@ btns['pub'].oncontextmenu = async function (){
   }
 }
 
-// btns['pub'].oncontextmenu = async function(){
-//   const pickerOpts = {types: [{},], excludeAcceptAllOption: false, multiple: false};
-//   const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
-//   const file = await fileHandle.getFile();
-//   const reader = new FileReader();
-//   const token = atob(atob('WjJod1gxWTRjbGcxT1hCSFpHNXBRbGc0Y21wUFJXSlhSM2hUYlZwTlQzUkhTVEZoY25kVk5RPT0=')); //token须隐藏不然执行git到github的操作会失败
-//   reader.readAsDataURL(file);
-//   reader.onload = async function(){
-//     const base64String = reader.result.split(",")[1];
-//     try { 
-//       const response = await fetch(
-//         `https://api.github.com/repos/mixwind-1/mixwind-1.github.io/contents/${file.name}`,
-//         {
-//           method: "PUT",
-//           headers: {
-//             Accept: "application/vnd.github+json",
-//             Authorization: `Bearer ${token}`
-//           },
-//           body: JSON.stringify({
-//             message: "from microcity",
-//             content: base64String          //如果更新文件，还需要sha字段
-//           })
-//         }
-//       );
-//       // 可以在这里检查响应状态
-//       if (!response.ok) {
-//           throw new Error(`HTTP error! status: ${response.status}`);
-//       }
-//       Print({color:'white', text:`The file is shared with https://mixwind-1.github.io/${file.name}`});
-//     } catch (error) {
-//       // 处理错误，显示给用户
-//       Print({color:'red', text: error.message});
-//     }
-//   };
-// }
+btns['pub'].oncontextmenu = async function (){
+  let pass = prompt("Confirm to publish and fill a password for editing: (can be empty)");
+  if(pass != null){
+    //获取虚拟文件系统的压缩blob
+    const blob =  await RemoteCall('PackFiles', aceeditor.getValue(), pass);
+    //转换成base64放到url中
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onload = async function(){
+      //获取文件的base64编码并保存到url中
+      const base64String = reader.result.split(",")[1];
+      location.hash = '#/'+base64String;
+      btns['code'].pass = pass;  
+      Print({color:'white', text:`The project is embeded in URL (${location.href.length} bytes).`});
+      //如果包含github发布文件的sha值则去除
+      location.sha = null;
+    };
+  }
+}
 
 btns['doc'].onclick = function(){
   if(docframe.style['display'] === 'none'){
