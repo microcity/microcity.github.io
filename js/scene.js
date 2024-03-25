@@ -159,7 +159,7 @@ self.SetCam =  function (camtype){
   DisposeObj(self.camera);
   if(camtype=='ortho'){
     self.camera = new THREE.OrthographicCamera( -canvas.width/10, canvas.width/10, canvas.height/10, -canvas.height/10, -500, 10000 );
-    camera.position.set(0,0,20);
+    camera.position.set(0, 0, 1);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
   }else{
   	self.camera = new THREE.PerspectiveCamera( 75, canvas.width / canvas.height, 2, 3000 );
