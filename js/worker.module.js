@@ -39,6 +39,9 @@ self.Init = async function(data){
   self.embedding = false;
   self.remotecallcount = 0;
   self.prerendertime = performance.now();
+  self.embeddings = [];         //存储embedding和lua samples用来自动编程
+  self.luasamples = [];
+  InitEmbCodes();               //初始化embcodes
   // self.createClient = createClient;
   // requestAnimationFrame(animate);
 }
@@ -332,9 +335,56 @@ self.OnNewFS = function(data){
   }); 
 }
 
+self.InitEmbCodes = function(){
+  // 服务器上的文件路径
+  fetch('/lua/samples.emb')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.arrayBuffer();
+    })
+    .then(buffer => {
+      const floatArray = new Float32Array(buffer);
+      for (let i = 0; i < floatArray.length; i += 1024) {
+        embeddings.push(floatArray.subarray(i, i + 1024));  //每1024个浮点数作为子数组存入embeddings中
+      }
+    })
+    .catch(error => {
+      console.error('Fetching error:', error);
+    });
+
+  fetch('/lua/samples.lua')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.text();
+  })
+  .then(text => {
+    // 使用正则表达式匹配以--开头直到空行的文本段
+    luasamples = text.match(/--.+?(?=\r?\n\r?\n|$)/gs);
+  })
+  .catch(error => {
+    console.error('Fetching error:', error);
+  });
+}
+
 self.FindSimilarStr = function(embvec){
-  let str = "similar";
-  return str;
+  var returnstr = "";
+  function cosineSimilarity(vecA, vecB) {
+    const dotProduct = vecA.reduce((sum, value, index) => sum + value * vecB[index], 0);
+    const magnitudeA = Math.sqrt(vecA.reduce((sum, value) => sum + value * value, 0));
+    const magnitudeB = Math.sqrt(vecB.reduce((sum, value) => sum + value * value, 0));
+    return dotProduct / (magnitudeA * magnitudeB);
+  }
+  for (let i = 0; i < embeddings.length; i++) {
+    const similarity = cosineSimilarity(embvec, embeddings[i]);
+    console.log(similarity);
+    if(similarity > 0.4)
+      returnstr += luasamples[i] + "\n\n";
+  }
+  return returnstr;
 }
 
 //接受远程调用并返回结果

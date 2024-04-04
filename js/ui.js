@@ -468,16 +468,20 @@ aceeditor.commands.addCommand({
       aceeditor.setReadOnly(true);
       aceeditor.insert("\nGenerating code...");
       
-      // //去掉---只保留用户信息
-      // let input = comment.substring(3).replace(/['"\\]/g, '\\$&');
-      // worker.postMessage({fn:'SetVar', name:'commanding', value:true});
-      // worker.postMessage({fn:'SetVar', name:'embedding', value:true});
-      // const simstr = await lua.run(`return os.embedding([=[${input}]=])`);
+      //去掉---只保留用户信息
+      let input = comment.substring(3).replace(/['"\\]/g, '\\$&');
+      worker.postMessage({fn:'SetVar', name:'commanding', value:true});
+      worker.postMessage({fn:'SetVar', name:'embedding', value:true});
+      const simstr = await lua.run(`return os.embedding([=[${input}]=])`);
 
       //去掉-保留--
       let userstr = comment.substring(1).replace(/['"\\]/g, '\\$&');
       worker.postMessage({fn:'SetVar', name:'commanding', value:true});
-      let code = await lua.run(`return os.chatcmpl('Generate Lua code', [=[${userstr}]=])`);
+      let code;
+      if(simstr)
+        code = await lua.run(`return os.chatcmpl([=[${simstr} Based on above code generate following Lua code as less as possible]=], [=[${userstr}]=])`);
+      else
+        code = await lua.run(`return os.chatcmpl('Generate Lua code', [=[${userstr}]=])`);
       //只保留代码部分
       let matches = [...code.matchAll(/```lua\n([\s\S]*?)```/g)];
       if(matches.length > 0)
