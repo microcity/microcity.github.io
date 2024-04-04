@@ -380,7 +380,7 @@ self.FindSimilarStr = function(embvec){
   }
   for (let i = 0; i < embeddings.length; i++) {
     const similarity = cosineSimilarity(embvec, embeddings[i]);
-    console.log(similarity);
+    // console.log(similarity);
     if(similarity > 0.4)
       returnstr += luasamples[i] + "\n\n";
   }
