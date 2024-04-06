@@ -479,9 +479,9 @@ aceeditor.commands.addCommand({
       worker.postMessage({fn:'SetVar', name:'commanding', value:true});
       let code;
       if(simstr)
-        code = await lua.run(`return os.chatcmpl([=[${simstr} Based on above code generate following Lua code as less as possible]=], [=[${userstr}]=])`);
+        code = await lua.run(`return os.chatcmpl([=[${userstr}]=], [=[${simstr} Based on above code generate following Lua code as less as possible]=])`);
       else
-        code = await lua.run(`return os.chatcmpl('Generate Lua code', [=[${userstr}]=])`);
+        code = await lua.run(`return os.chatcmpl([=[${userstr}]=], 'Generate Lua code')`);
       //只保留代码部分
       let matches = [...code.matchAll(/```lua\n([\s\S]*?)```/g)];
       if(matches.length > 0)
