@@ -10,9 +10,9 @@ scene.addobj("polygon", {vertices={-1,-1,0, -1,1,0, 1,1,0, 1,-1,0}, size=0}) --a
 scene.addobj("label", {text="hello", size=5})                                --add a label
 scene.render()                                                               --render the scene
 
---random number generation
+--replace the default lua function math.randomseed and math.random for normal, exponential, poisson and uniform ramdom number generation
 local seed = math.randomseed(1, {dist = "normal", mu = 5, sigma = 3})        --set a seed for a normal (others: "exponential", "poisson" and "uniform") distribution random generator
-print(seed:random())                                                         --print out a random number
+seed:random()                                                                --generate a random number
 
 --mixwd integer programming 
 local mip = math.newmip()                   --create a integer programming
