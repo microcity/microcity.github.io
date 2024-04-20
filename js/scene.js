@@ -228,7 +228,7 @@ self.AddShape = function (sel, color, opacity, hcolor, size){
     shape.lineTo(vertices[i], vertices[i+1]);
   }
   const geometry = new THREE.ExtrudeGeometry(shape, {depth: size, bevelEnabled: false});
-  const material = new THREE.MeshMatcapMaterial( { color: color, opacity: opacity, transparent: true} );
+  const material = new THREE.MeshBasicMaterial( { color: color, opacity: opacity, transparent: true} );
   obj[++id] = new THREE.Mesh( geometry, material );
   obj[id].selectable = sel;
   obj[id].highlightcolor = new THREE.Color(hcolor);
