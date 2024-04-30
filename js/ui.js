@@ -71,7 +71,7 @@ header.oncontextmenu = (e) => {
 
 btns['play'].onclick = async function (){
   let mediaQuery = window.matchMedia("(orientation: portrait), (max-width: 720px)");
-  if (mediaQuery.matches && aceeditor.getValue().includes("scene") && !btns['code'].active) {
+  if (mediaQuery.matches && aceeditor.getValue().includes("scene") && btns['code'].active) {
     btns['code'].onclick();
   }
   runlua();
