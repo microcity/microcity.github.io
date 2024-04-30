@@ -70,8 +70,10 @@ header.oncontextmenu = (e) => {
 }
 
 btns['play'].onclick = async function (){
-  // scene.reload(); 
-  // if(!lua.engine) await new Promise(res => self.FinishModuleLoad = res); //如果模块没加载，等待模块加载完成
+  let mediaQuery = window.matchMedia("(orientation: portrait), (max-width: 720px)");
+  if (mediaQuery.matches && string.find(aceeditor.getValue(), "scene") && !btns['code'].active) {
+    btns['code'].onclick();
+  }
   runlua();
 }
 btns['play'].oncontextmenu = () => debuglua();
