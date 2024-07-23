@@ -43,6 +43,7 @@ self.onresize = () => {
     fn: 'Resize',
     width: scene.clientWidth,
     height: scene.clientHeight,
+    devicePixelRatio: window.devicePixelRatio,
   });
 }
 //transfer offcanvas

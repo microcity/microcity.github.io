@@ -142,6 +142,7 @@ self.DrawGrid = function (type){
 }
 
 self.Resize = function(data) {
+  renderer.setPixelRatio(data.devicePixelRatio);
 	renderer.setSize(data.width, data.height, false);
   if(camera.isPerspectiveCamera){
     camera.aspect = data.width / data.height;
