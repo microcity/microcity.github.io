@@ -16,7 +16,7 @@ self.SetChatAPI = function (url, key, model){
     localStorage.setItem('chat_key', key);
     
   if (!model)
-    model = localStorage.getItem('chat_model') || 'gpt-3.5-turbo';
+    model = localStorage.getItem('chat_model') || 'gpt-4o-mini';
   else
     localStorage.setItem('chat_model', model);
 
