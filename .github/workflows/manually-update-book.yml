@@ -1,4 +1,4 @@
-name: Update Subdirectory
+name: update book
 
 on:
   workflow_dispatch:  # 允许手动触发此工作流
