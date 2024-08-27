@@ -12,14 +12,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: recursive  # 递归更新子模块
-
-    - name: Ensure submodule is on the latest branch
-      run: |
-        cd book
-        git fetch origin
-        BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
-        git checkout $BRANCH
-    
+        
     - name: Update submodules
       run: |
         git submodule update --remote --recursive
