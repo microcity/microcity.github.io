@@ -15,9 +15,12 @@ jobs:
 
     - name: Update submodules
       run: |
-        git submodule update --remote --merge
+        git submodule update --remote
+        git submodule foreach 'git merge --allow-unrelated-histories'
         if [ -n "$(git status --porcelain)" ]; then
           git add .
           git commit -m "Manually triggered update of submodules"
           git push origin ${{ github.ref }}
+        else
+          echo "No changes to commit"
         fi
