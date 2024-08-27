@@ -23,5 +23,11 @@ jobs:
         git reset --hard origin/master  # 强制重置本地内容为远程分支内容
         cd ..
         git add book
-        git commit -m "Forced update of subdirectory from remote repository"
-        git push origin ${{ github.ref }}  # 推送更改到主仓库
+        
+    - name: Commit changes if any
+      run: |
+        git commit -m "Forced update of subdirectory from remote repository" || true
+
+    - name: Push changes
+      run: |
+        git push origin ${{ github.ref }}
