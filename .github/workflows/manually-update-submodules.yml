@@ -1,9 +1,7 @@
-name: Auto Update Submodules
+name: Manually Update Submodules
 
 on:
-  push:
-    paths:
-      - 'book/**'  # 监控子模块路径下的任何更改
+  workflow_dispatch:  # 手动触发工作流
 
 jobs:
   update-submodules:
@@ -15,11 +13,11 @@ jobs:
       with:
         submodules: recursive  # 递归更新子模块
 
-    - name: Check for submodule updates
+    - name: Update submodules
       run: |
         git submodule update --remote --merge
         if [ -n "$(git status --porcelain)" ]; then
           git add .
-          git commit -m "Auto-update submodules"
+          git commit -m "Manually triggered update of submodules"
           git push origin ${{ github.ref }}
         fi
