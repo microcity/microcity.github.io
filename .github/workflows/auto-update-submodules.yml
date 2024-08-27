@@ -3,7 +3,7 @@ name: Auto Update Submodules
 on:
   push:
     paths:
-      - 'path/to/your/submodule/**'  # 监控子模块路径下的任何更改
+      - 'book/**'  # 监控子模块路径下的任何更改
 
 jobs:
   update-submodules:
