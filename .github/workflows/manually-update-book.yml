@@ -1,4 +1,4 @@
-name: update book
+name: Update Subdirectory
 
 on:
   workflow_dispatch:  # 允许手动触发此工作流
@@ -11,11 +11,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Pull updates from remote repository into subdirectory
+    - name: Fetch and reset subdirectory to match remote
       run: |
         cd book
-        git pull https://github.com/microcity/book.git  # 拉取远程主分支内容
-        cd ..
-        git add book
-        git commit -m "Updated subdirectory with latest content from remote repository"
-        git push origin ${{ github.ref }}
+        git fetch origin main  # 获取远程主分支的最新内容
+        git reset --hard origin/main  # 强制重置本地内容为远程分支内容
+        cd ../..
+        git add path/to/subdirectory
+        git commit -m "Forced update of subdirectory from remote repository"
+        git push origin ${{ github.ref }}  # 推送更改到主仓库
