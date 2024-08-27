@@ -14,7 +14,7 @@ jobs:
     - name: Pull updates from remote repository into subdirectory
       run: |
         cd book
-        git pull origin main  # 拉取远程主分支内容
+        git pull https://github.com/microcity/book.git  # 拉取远程主分支内容
         cd ..
         git add book
         git commit -m "Updated subdirectory with latest content from remote repository"
