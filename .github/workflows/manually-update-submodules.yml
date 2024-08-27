@@ -1,0 +1,26 @@
+name: Manually Update Submodules
+
+on:
+  workflow_dispatch:  # 手动触发工作流
+
+jobs:
+  update-submodules:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive  # 递归更新子模块
+        
+    - name: Update submodules
+      run: |
+        git submodule update --remote --recursive
+        if [ -n "$(git status --porcelain)" ]; then
+          git add .
+          git commit -m "Manually triggered update of submodules"
+          git push origin ${{ github.ref }}
+        else
+          echo "No changes to commit"
+        fi
+
