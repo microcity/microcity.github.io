@@ -15,8 +15,8 @@ jobs:
       run: |
         cd book
         git fetch origin master  # 获取远程主分支的最新内容
-        git reset --hard origin/main  # 强制重置本地内容为远程分支内容
-        cd ../..
-        git add path/to/subdirectory
+        git reset --hard origin/master  # 强制重置本地内容为远程分支内容
+        cd ..
+        git add book
         git commit -m "Forced update of subdirectory from remote repository"
         git push origin ${{ github.ref }}  # 推送更改到主仓库
