@@ -1,26 +1,21 @@
-name: Manually Update Submodules
+name: Update Subdirectory
 
 on:
-  workflow_dispatch:  # 手动触发工作流
+  workflow_dispatch:  # 允许手动触发此工作流
 
 jobs:
-  update-submodules:
+  update-subdirectory:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-      with:
-        submodules: recursive  # 递归更新子模块
-        
-    - name: Update submodules
-      run: |
-        git submodule update --remote --recursive
-        if [ -n "$(git status --porcelain)" ]; then
-          git add .
-          git commit -m "Manually triggered update of submodules"
-          git push origin ${{ github.ref }}
-        else
-          echo "No changes to commit"
-        fi
 
+    - name: Pull updates from remote repository into subdirectory
+      run: |
+        cd book
+        git pull origin main  # 拉取远程主分支内容
+        cd ..
+        git add book
+        git commit -m "Updated subdirectory with latest content from remote repository"
+        git push origin ${{ github.ref }}
