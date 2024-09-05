@@ -6,12 +6,12 @@ self.lua = {state: '', file: null, rets:[], bps: aceeditor.session.getBreakpoint
 
 self.SetChatAPI = function (url, key, model){
   if (!url)
-    url = localStorage.getItem('chat_url') || 'https://api.chatanywhere.tech/v1'
+    url = localStorage.getItem('chat_url') || 'https://models.inference.ai.azure.com'
   else
     localStorage.setItem('chat_url', url);
 
   if (!key)
-    key = localStorage.getItem('chat_key') || 'sk-2IYWOuCp7XW9NuO13kzpCsNdv1WcjvloYIafMpPLgFTOPyUq';
+    key = localStorage.getItem('chat_key') || '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';
   else
     localStorage.setItem('chat_key', key);
     
