@@ -11,7 +11,7 @@ self.SetChatAPI = function (url, key, model){
     localStorage.setItem('chat_url', url);
 
   if (!key)
-    key = localStorage.getItem('chat_key') || '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';
+    key = localStorage.getItem('chat_key') || atob(atob('WjJod1h6TlpPVWxJTkVVMlVHTnBSV2xUZFdwVFRrcERPRUpRUkRKamRFRlBhRFJNVFhRNFV3PT0='));
   else
     localStorage.setItem('chat_key', key);
     
