@@ -27,7 +27,7 @@
   #commandbar{
     left: 50%;
     transform: translate(-50%);
-    width: 440px; /* firefox */
+    width: 495px; /* firefox */
   }
 }
 
@@ -143,6 +143,8 @@ html, body, #container {
   font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;
   font-size: 14px;
   line-height: 1.3;
+  background-color: white;
+  z-index: 3;
 }
 #docframe h1, h2, h3, h4, h5, h6{
   padding-bottom: 0.3em;
@@ -196,10 +198,22 @@ html, body, #container {
     font-size: 1.2em;
 }
 
+#figureframe {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  box-sizing: border-box;
+  padding: 0 0 0 12px;
+  overflow: auto;    /* 改用 auto 代替 overflow-y */
+  background-color: white;
+  z-index: 2;
+}
+
 #offcanvas {
   width: 100%;
   height: 100%;
   position: absolute;
+  z-index: 1; /* offcanvas:1, figureframe:2, docframe:3 */
 }
 
 .ace_gutter-cell.ace_breakpoint::before{ 

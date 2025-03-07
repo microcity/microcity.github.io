@@ -152,7 +152,7 @@ self.SetState = function(data){
       enablebtn(btns['new']);
       enablebtn(btns['open']);
       enablebtn(btns['save']);
-      enablebtn(btns['pub']);      
+      enablebtn(btns['pub']);
     }
   }
   document.getElementById('state').innerText = data.state;
@@ -305,6 +305,7 @@ disablebtn(btns['pub']);
 editor.style['display'] = 'none';
 scene.style['grid-column'] = '1 / -1';
 docframe.style['display'] = 'none';
+figureframe.style['display'] = 'none';
 markdown('/doc/readme.md', 'docframe');
 SetState({state:'initializing'});
 SetChatAPI();
@@ -326,6 +327,7 @@ if(location.hash == '' || location.hash.length <= 2){
     Print({color:'white', text:`Startup code is loaded!`});
   }
   enablebtn(btns['code']);
+  enablebtn(btns['fig']);
   btns['code'].onclick();
   lua.loaded = true;
   

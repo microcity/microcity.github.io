@@ -11,16 +11,19 @@ export const btns      = {
   "pub":    document.getElementById('pub'),
   "doc":    document.getElementById('doc'),
   "newclose":  document.getElementById('newclose'),
-  "downclose": document.getElementById('downclose')
+  "downclose": document.getElementById('downclose'),
+  "fig":    document.getElementById('fig')
 };
 
-export const editor    = document.getElementById('editor');
-export const aceeditor = ace.edit("editor");
-export const docframe  = document.getElementById('docframe');
-export const footer    = document.getElementById('footer');
-export const scene     = document.getElementById('scene');
-export var   offcanvas = document.getElementById('offcanvas');
-export var   worker    = new Worker('./js/worker.module.js', {type : 'module'});
+export const editor      = document.getElementById('editor');
+export const aceeditor   = ace.edit("editor");
+export const docframe    = document.getElementById('docframe');
+export const figframe    = document.getElementById('figframe');
+export const figureframe = document.getElementById('figureframe');
+export const footer      = document.getElementById('footer');
+export const scene       = document.getElementById('scene');
+export var   offcanvas   = document.getElementById('offcanvas');
+export var   worker      = new Worker('./js/worker.module.js', {type : 'module'});
 
 self.remotecallcount = 0;
 
@@ -285,15 +288,27 @@ btns['pub'].oncontextmenu = async function (){
 }
 
 btns['doc'].onclick = function(){
-  if(docframe.style['display'] === 'none'){
+  if(docframe.style.display === 'none'){
     btns['doc'].style['background-color'] = 'white';
     btns['doc'].style['filter'] = 'invert(0%)';
-    docframe.style['display'] = 'unset';
-    offcanvas.style['display'] = 'none'
+    docframe.style.display = 'block';
   }else{
     btns['doc'].removeAttribute('style');
-    docframe.style['display'] = 'none';
-    offcanvas.style['display'] = 'unset';
+    docframe.style.display = 'none';
+  }
+  self.dispatchEvent(new Event('resize'));
+}
+
+btns['fig'].onclick = function(){
+  if(figureframe.style.display === 'none'){
+    btns['fig'].style['background-color'] = 'white';
+    btns['fig'].style['filter'] = 'invert(0%)';
+    figureframe.style.display = 'block';
+    // 触发所有图表的重绘
+    charts.forEach(chart => chart.resize());
+  }else{
+    btns['fig'].removeAttribute('style');
+    figureframe.style.display = 'none';
   }
   self.dispatchEvent(new Event('resize'));
 }
@@ -374,6 +389,8 @@ function escape(){
     downdialog.close();
   else if(docframe.style['display'] != 'none')
     btns['doc'].onclick();
+  else if(figureframe.style['display'] != 'none')
+    btns['fig'].onclick();
   else if(btns['code'].active)
     btns['code'].onclick();
 }
@@ -732,3 +749,74 @@ document.addEventListener( "drop" , function (e) {
      e.stopPropagation();
      worker.postMessage({fn: 'onFilesUpload', files: e.dataTransfer.files});
 }, false );
+
+const charts = new Map();
+
+self.createChart = function (id, type, options) {
+  console.log("收到图表数据");
+  options.animation = false;
+  
+  if (!charts.has(id)) {
+    const div = document.createElement('div');
+    div.style.width = '100%';  // 宽度100%
+    div.style.height = '400px';
+    div.style.position = 'relative'; // 添加相对定位
+    div.style.minWidth = '300px';    // 设置最小宽度
+    div.id = id;
+    figureframe.appendChild(div);
+    console.log('已添加图表');
+    
+    const chart = echarts.init(div, null, {
+      renderer: 'svg'
+    });
+    
+    // 添加窗口大小改变时的自适应
+    window.addEventListener('resize', function() {
+      chart.resize();
+    });
+    
+    charts.set(id, chart);
+  }
+  const chart = charts.get(id);
+ 
+  // 添加工具箱配置，如果用户没有自定义工具箱
+  if (!options.toolbox) {
+    options.toolbox = {
+      show: true,
+      feature: {
+        saveAsImage: {
+          title: 'Save as Image',
+          pixelRatio: 2
+        }
+      }
+    };
+  } else if (options.toolbox && !options.toolbox.feature?.saveAsImage) {
+    // 用户有自定义工具箱但没有添加保存图片功能时
+    if (!options.toolbox.feature) {
+      options.toolbox.feature = {};
+    }
+    options.toolbox.feature.saveAsImage = {
+      title: 'Save as Image',
+      pixelRatio: 2
+    };
+  }
+  
+  chart.setOption(options);
+  // return chart;
+}
+
+self.updateChart = function (id, data) {
+  const chart = charts.get(id);
+  if (chart) {
+    chart.setOption(data);
+  }
+}
+
+self.removeChart = function (id) {
+  const chart = charts.get(id);
+  if (chart) {
+    chart.dispose();
+    charts.delete(id);
+    document.getElementById(id)?.remove();
+  }
+}
