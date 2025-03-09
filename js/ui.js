@@ -145,6 +145,8 @@ btns['new'].onclick = async function (){
   //   lua.file = null;
   //   localStorage.clear();
   // }
+
+  self.clearCharts();
 }
 btns['new'].oncontextmenu = function (){
   history.replaceState(null, null, ' ');
@@ -750,7 +752,7 @@ document.addEventListener( "drop" , function (e) {
      worker.postMessage({fn: 'onFilesUpload', files: e.dataTransfer.files});
 }, false );
 
-// 绘图
+// echart integration
 const charts = new Map();
 
 self.createChart = function (id, options) {
@@ -819,4 +821,16 @@ self.removeChart = function (id) {
     charts.delete(id);
     document.getElementById(id)?.remove();
   }
+}
+
+self.clearCharts = function () {
+  // 先销毁所有图表实例
+  for (const chart of charts.values()) {
+    chart.dispose();
+  }
+  charts.clear();
+  
+  // 只移除图表容器 div，保留其他元素
+  const chartDivs = figureframe.querySelectorAll('div[id]');
+  chartDivs.forEach(div => div.remove());
 }
