@@ -756,7 +756,6 @@ document.addEventListener( "drop" , function (e) {
 const charts = new Map();
 
 self.createChart = function (id, options) {
-  console.log("收到图表数据");
   options.animation = false;
   
   if (!charts.has(id)) {
@@ -766,7 +765,6 @@ self.createChart = function (id, options) {
     div.style.position = 'relative'; // 添加相对定位
     div.id = id;
     figureframe.appendChild(div);
-    console.log('已添加图表'); // debug
     
     const chart = echarts.init(div, null, {
       renderer: 'svg'
