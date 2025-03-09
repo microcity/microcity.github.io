@@ -11,7 +11,7 @@ local data = {
 }
 
 local options = CreateChartOptions(data, {name='x-axis'}, {name='y-axis'})
-print(options)
+print('options:', options..' ')  -- 最后的 ' ' 避免清屏
 
 CreateChartAdvanced('chart1', options)
 
@@ -36,6 +36,6 @@ CreateChart('chart3', data3, {
     data={'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'}
 })
 
--- 清空图表
+-- -- 清空图表
 -- os.sleep(2000)
 -- ClearCharts()
