@@ -808,7 +808,8 @@ self.createChart = function (id, options) {
 self.updateChart = function (id, data) {
   const chart = charts.get(id);
   if (chart) {
-    chart.setOption(data);
+    chart.setOption(data, {notMerge: false});
+    console.log('updateChart', id, data);
   }
 }
 
