@@ -750,9 +750,10 @@ document.addEventListener( "drop" , function (e) {
      worker.postMessage({fn: 'onFilesUpload', files: e.dataTransfer.files});
 }, false );
 
+// 绘图
 const charts = new Map();
 
-self.createChart = function (id, type, options) {
+self.createChart = function (id, options) {
   console.log("收到图表数据");
   options.animation = false;
   
@@ -761,10 +762,9 @@ self.createChart = function (id, type, options) {
     div.style.width = '100%';  // 宽度100%
     div.style.height = '400px';
     div.style.position = 'relative'; // 添加相对定位
-    div.style.minWidth = '300px';    // 设置最小宽度
     div.id = id;
     figureframe.appendChild(div);
-    console.log('已添加图表');
+    console.log('已添加图表'); // debug
     
     const chart = echarts.init(div, null, {
       renderer: 'svg'
