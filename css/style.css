@@ -204,7 +204,7 @@ html, body, #container {
   position: absolute;
   box-sizing: border-box;
   padding: 0 0 0 12px;
-  overflow: auto;    /* 改用 auto 代替 overflow-y */
+  overflow: auto;
   background-color: white;
   z-index: 2;
 }

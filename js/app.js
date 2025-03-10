@@ -303,7 +303,7 @@ disablebtn(btns['new']);
 disablebtn(btns['open']);
 disablebtn(btns['save']);
 disablebtn(btns['pub']);
-disablebtn(btns['fig']); // 确保按钮初始状态正确
+disablebtn(btns['fig']);
 
 editor.style['display'] = 'none';
 scene.style['grid-column'] = '1 / -1';

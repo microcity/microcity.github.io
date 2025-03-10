@@ -760,9 +760,9 @@ self.createChart = function (id, options) {
   
   if (!charts.has(id)) {
     const div = document.createElement('div');
-    div.style.width = '100%';  // 宽度100%
+    div.style.width = '100%';
     div.style.height = '400px';
-    div.style.position = 'relative'; // 添加相对定位
+    div.style.position = 'relative';
     div.id = id;
     figureframe.appendChild(div);
     
@@ -770,7 +770,7 @@ self.createChart = function (id, options) {
       renderer: 'svg'
     });
     
-    // 添加窗口大小改变时的自适应
+    // resize chart with window
     window.addEventListener('resize', function() {
       chart.resize();
     });
@@ -779,7 +779,7 @@ self.createChart = function (id, options) {
   }
   const chart = charts.get(id);
  
-  // 添加工具箱配置，如果用户没有自定义工具箱
+  // add toolbox
   if (!options.toolbox) {
     options.toolbox = {
       show: true,
@@ -791,7 +791,7 @@ self.createChart = function (id, options) {
       }
     };
   } else if (options.toolbox && !options.toolbox.feature?.saveAsImage) {
-    // 用户有自定义工具箱但没有添加保存图片功能时
+    // add saveAsImage
     if (!options.toolbox.feature) {
       options.toolbox.feature = {};
     }
@@ -823,13 +823,13 @@ self.removeChart = function (id) {
 }
 
 self.clearCharts = function () {
-  // 先销毁所有图表实例
+  // dispose all charts
   for (const chart of charts.values()) {
     chart.dispose();
   }
   charts.clear();
   
-  // 只移除图表容器 div，保留其他元素
+  // remove all divs
   const chartDivs = figureframe.querySelectorAll('div[id]');
   chartDivs.forEach(div => div.remove());
 }
