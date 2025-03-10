@@ -148,13 +148,13 @@ self.SetState = function(data){
     disablebtn(btns['pause']);
     disablebtn(btns['stop']);
     // enablebtn(btns['code']);
+    enablebtn(btns['fig']);
     if(!btns['code'].pass && btns['code'].active){
       enablebtn(btns['new']);
       enablebtn(btns['open']);
       enablebtn(btns['save']);
       enablebtn(btns['pub']);
     }
-    enablebtn(btns['fig']);
   }
   document.getElementById('state').innerText = data.state;
 }
@@ -303,7 +303,6 @@ disablebtn(btns['new']);
 disablebtn(btns['open']);
 disablebtn(btns['save']);
 disablebtn(btns['pub']);
-disablebtn(btns['fig']);
 
 editor.style['display'] = 'none';
 scene.style['grid-column'] = '1 / -1';
