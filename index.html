@@ -29,14 +29,19 @@
         <div id="open" 	   class="button" style = "filter:invert(50%); pointer-events:none;" title="Open/Upload">   <img src="img/open.svg" alt="open"/>      </div>
         <div id="save" 	   class="button" style = "filter:invert(50%); pointer-events:none;" title="Save/Download">  <img src="img/save.svg" alt="save"/>      </div>
         <div id="pub"      class="button" style = "filter:invert(50%); pointer-events:none;" title="Publish/Embed">	 <img src="img/publish.svg" alt="publish"/></div>
-        <div id="fig"      class="button" title="Fig"><img src="img/chart.svg" alt="figure"/></div>
     </div>
     <div id="doc" class="button" title="Documentation">  <img src="img/doc.svg" alt="doc"/>  </div>
   </div>
   <div id="editor"></div>
   <div id="scene">
     <div id="docframe"></div>
-    <div id="figureframe"><h2>Charts</h2></div>
+    <div id="figureframe" class="collapsed">
+      <div class="panel-header">
+        <p id="charts-toggle">Charts</p>
+      </div>
+      <div class="panel-content">
+      </div>
+    </div>
     <canvas id="offcanvas"></canvas>
   </div>
   <div id="footer">

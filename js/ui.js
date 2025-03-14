@@ -12,13 +12,11 @@ export const btns      = {
   "doc":    document.getElementById('doc'),
   "newclose":  document.getElementById('newclose'),
   "downclose": document.getElementById('downclose'),
-  "fig":    document.getElementById('fig')
 };
 
 export const editor      = document.getElementById('editor');
 export const aceeditor   = ace.edit("editor");
 export const docframe    = document.getElementById('docframe');
-export const figframe    = document.getElementById('figframe');
 export const figureframe = document.getElementById('figureframe');
 export const footer      = document.getElementById('footer');
 export const scene       = document.getElementById('scene');
@@ -145,8 +143,6 @@ btns['new'].onclick = async function (){
   //   lua.file = null;
   //   localStorage.clear();
   // }
-
-  self.clearCharts();
 }
 btns['new'].oncontextmenu = function (){
   history.replaceState(null, null, ' ');
@@ -301,20 +297,6 @@ btns['doc'].onclick = function(){
   self.dispatchEvent(new Event('resize'));
 }
 
-btns['fig'].onclick = function(){
-  if(figureframe.style.display === 'none'){
-    btns['fig'].style['background-color'] = 'white';
-    btns['fig'].style['filter'] = 'invert(0%)';
-    figureframe.style.display = 'block';
-    // 触发所有图表的重绘
-    charts.forEach(chart => chart.resize());
-  }else{
-    btns['fig'].removeAttribute('style');
-    figureframe.style.display = 'none';
-  }
-  self.dispatchEvent(new Event('resize'));
-}
-
 btns['newclose'].onclick = function (){
   newdialog.close();
 }
@@ -391,8 +373,6 @@ function escape(){
     downdialog.close();
   else if(docframe.style['display'] != 'none')
     btns['doc'].onclick();
-  else if(figureframe.style['display'] != 'none')
-    btns['fig'].onclick();
   else if(btns['code'].active)
     btns['code'].onclick();
 }
@@ -752,10 +732,38 @@ document.addEventListener( "drop" , function (e) {
      worker.postMessage({fn: 'onFilesUpload', files: e.dataTransfer.files});
 }, false );
 
+// charts ui control
+
+const chartsToggle = document.getElementById('charts-toggle');
+const panelContent = figureframe.querySelector('.panel-content');
+
+chartsToggle.onclick = function () {
+  panelContent.classList.toggle('collapsed');
+
+  // 如果展开了面板,重绘所有图表
+  if (!panelContent.classList.contains('collapsed')) {
+    charts.forEach(chart => chart.resize());
+  }
+}
+
+chartsToggle.oncontextmenu = function() {
+  clearCharts();
+}
+
+window.addEventListener('resize', function() {
+  if (!panelContent.classList.contains('collapsed')) {
+    charts.forEach(chart => chart.resize());
+  }
+});
+
 // echart integration
 const charts = new Map();
 
 self.createChart = function (id, options) {
+  if (figureframe.classList.contains('collapsed')) {
+    figureframe.classList.remove('collapsed');
+  }
+
   options.animation = false;
   
   if (!charts.has(id)) {
@@ -764,7 +772,7 @@ self.createChart = function (id, options) {
     div.style.height = '400px';
     div.style.position = 'relative';
     div.id = id;
-    figureframe.appendChild(div);
+    figureframe.querySelector('.panel-content').appendChild(div);
     
     const chart = echarts.init(div, null, {
       renderer: 'svg'
@@ -772,7 +780,9 @@ self.createChart = function (id, options) {
     
     // resize chart with window
     window.addEventListener('resize', function() {
-      chart.resize();
+      if (!panelContent.classList.contains('collapsed')) {
+        chart.resize();
+      }
     });
     
     charts.set(id, chart);

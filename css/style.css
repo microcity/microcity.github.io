@@ -7,7 +7,7 @@
   }
   #commandbar{
     right: 0;
-    width: 275px; /* firefox */
+    width: 220px; /* firefox */
   }
   .date{
     display: none;
@@ -27,7 +27,7 @@
   #commandbar{
     left: 50%;
     transform: translate(-50%);
-    width: 495px; /* firefox */
+    width: 440px; /* firefox */
   }
 }
 
@@ -66,6 +66,7 @@
 #scene { 
   grid-area: right;
   position: relative;
+  overflow: hidden;
 }
 
 #footer { 
@@ -199,14 +200,46 @@ html, body, #container {
 }
 
 #figureframe {
-  width: 100%;
-  height: 100%;
   position: absolute;
-  box-sizing: border-box;
-  padding: 0 0 0 12px;
-  overflow: auto;
-  background-color: white;
-  z-index: 2;
+  top: 0;
+  right: 0;
+  width: 300px;
+  background: white;
+  color: white;
+  border: 1px solid #000;
+  z-index: 1000;
+}
+
+#figureframe.collapsed {
+  display: none;
+}
+
+#charts-toggle {
+  margin: 0;
+  padding: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+#charts-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.panel-header {
+  background: #2a2a2a;
+  border-bottom: 1px solid #333;
+  cursor: pointer;
+  user-select: none;
+}
+
+.panel-content {
+  padding: 0 4px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.panel-content.collapsed {
+  display: none;
 }
 
 #offcanvas {
