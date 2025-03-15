@@ -210,8 +210,8 @@ html, body, #container {
   min-width: 200px;
   max-width: 100%;
   color: white;
-  border: 1px solid #000;
-  z-index: 1000;
+  border: 1px solid #2a2a2a;
+  z-index: 2;
 }
 
 #figureframe.collapsed {
@@ -245,14 +245,14 @@ html, body, #container {
 
 .panel-header {
   background: #2a2a2a;
-  border-bottom: 1px solid #333;
   cursor: pointer;
   user-select: none;
+  height: 30px;
 }
 
 .panel-content {
   padding: 0 4px;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 36px - 50px - 30px);
   overflow-y: auto;
 }
 

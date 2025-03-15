@@ -813,7 +813,7 @@ self.updateChart = function (id, data) {
   const chart = charts.get(id);
   if (chart) {
     chart.setOption(data, {notMerge: false});
-    console.log('updateChart', id, data);
+    // console.log('updateChart', id, data);
   }
 }
 
