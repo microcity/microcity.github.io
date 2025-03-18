@@ -205,6 +205,10 @@ html, body, #container {
   right: 0;
   width: 300px;
   background: white;
+  resize: horizontal;
+  overflow: auto;
+  min-width: 200px;
+  max-width: 100%;
   color: white;
   border: 1px solid #000;
   z-index: 1000;
@@ -212,6 +216,20 @@ html, body, #container {
 
 #figureframe.collapsed {
   display: none;
+}
+
+.drag-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  cursor: ew-resize;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.drag-handle:hover {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 #charts-toggle {

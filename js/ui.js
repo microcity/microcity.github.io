@@ -837,3 +837,46 @@ self.clearCharts = function () {
   const chartDivs = figureframe.querySelectorAll('div[id]');
   chartDivs.forEach(div => div.remove());
 }
+
+// Charts resize bar
+
+function initResizableFigureFrame() {
+  const figureframe = document.getElementById('figureframe');
+  const dragHandle = figureframe.querySelector('.drag-handle');
+  let startX, startWidth;
+
+  dragHandle.addEventListener('mousedown', initDrag);
+
+  function initDrag(e) {
+    startX = e.clientX;
+    startWidth = parseInt(window.getComputedStyle(figureframe).width, 10);
+    document.addEventListener('mousemove', doDrag);
+    document.addEventListener('mouseup', stopDrag);
+    e.preventDefault();
+  }
+
+  function doDrag(e) {
+    if (!figureframe.classList.contains('collapsed')) {
+      // 计算鼠标移动的距离
+      const dx = startX - e.clientX;
+      // 新宽度等于初始宽度加上移动距离
+      const newWidth = startWidth + dx;
+      
+      // 限制最小最大宽度
+      var maxWidth = figureframe.parentElement.clientWidth;
+      const finalWidth = Math.min(Math.max(200, newWidth), maxWidth);
+      figureframe.style.width = finalWidth + 'px';
+      
+      // 重新调整图表大小
+      charts.forEach(chart => chart.resize());
+    }
+  }
+
+  function stopDrag() {
+    document.removeEventListener('mousemove', doDrag);
+    document.removeEventListener('mouseup', stopDrag);
+  }
+}
+
+// 在适当的位置调用初始化函数
+initResizableFigureFrame();

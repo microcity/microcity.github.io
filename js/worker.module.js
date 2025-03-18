@@ -133,6 +133,7 @@ self.OnMouseMove = function(data) {
   	var tvectY = (new THREE.Vector3()).crossVectors(tvectX, relativeTarget).normalize();
 
   	if(data.buttons == 1){ //left mouse button
+      if(self.polarv == undefined) return;
       if(self.polarv.radius == 0){
     		relativeTarget.add(tvectX.multiplyScalar(deltaX).add(tvectY.multiplyScalar(deltaY)).multiplyScalar(0.005*RotationSpeed));
     		if ((new THREE.Vector3()).crossVectors(relativeTarget, upVector).length() > 0.01){
