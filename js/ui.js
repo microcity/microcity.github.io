@@ -795,19 +795,13 @@ self.createChart = function (id, options) {
       show: true,
       feature: {
         saveAsImage: {
-          title: 'Save as Image',
+          title: 'Save as SVG',
           pixelRatio: 2
+        },
+        dataView: {
+          readOnly: true
         }
-      }
-    };
-  } else if (options.toolbox && !options.toolbox.feature?.saveAsImage) {
-    // add saveAsImage
-    if (!options.toolbox.feature) {
-      options.toolbox.feature = {};
-    }
-    options.toolbox.feature.saveAsImage = {
-      title: 'Save as Image',
-      pixelRatio: 2
+      },
     };
   }
   
