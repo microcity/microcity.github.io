@@ -208,16 +208,24 @@ html, body, #container {
   overflow: hidden;
   min-width: 200px;
   max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
   color: white;
   border: 1px solid #2a2a2a;
+  box-sizing: border-box;
   z-index: 2;
 }
 
 #figureframe.collapsed {
+  max-height: 30px;
+}
+
+#figureframe.hidden{
   display: none;
 }
 
-.drag-handle {
+#handle-horizontal {
   position: absolute;
   left: 0;
   top: 0;
@@ -226,13 +234,25 @@ html, body, #container {
   cursor: ew-resize;
 }
 
-.drag-handle:hover {
-  background: rgba(0, 0, 0, 0.1);
+#handle-horizontal:hover,
+#handle-vertical:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+#handle-vertical {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  cursor: ns-resize;
+  background: transparent;
 }
 
 #charts-toggle {
   margin: 0;
-  padding: 4px;
+  line-height: 30px;
+  padding: 0 4px;
   cursor: pointer;
   user-select: none;
 }
@@ -241,20 +261,20 @@ html, body, #container {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.panel-header {
+#figure-header {
   background: #2a2a2a;
   cursor: pointer;
   user-select: none;
   height: 30px;
+  overflow: hidden;
+  flex: none;
 }
 
-.panel-content {
-  max-height: calc(100vh - 50px - 31px - 36px); 
+#figure-content {
+  /* max-height: calc(100%-30px);  */
   overflow-y: auto;
-}
-
-.panel-content.collapsed {
-  display: none;
+  scrollbar-gutter: stable;
+  flex: 1;
 }
 
 #offcanvas {

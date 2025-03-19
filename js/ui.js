@@ -734,24 +734,25 @@ document.addEventListener( "drop" , function (e) {
 
 // charts ui control
 
-const chartsToggle = document.getElementById('charts-toggle');
-const panelContent = figureframe.querySelector('.panel-content');
+const figureHeader = document.getElementById('figure-header');
+const figureContent = document.getElementById('figure-content');
 
-chartsToggle.onclick = function () {
-  panelContent.classList.toggle('collapsed');
+figureHeader.onclick = function () {
+  figureframe.classList.toggle('collapsed');
 
-  // 如果展开了面板,重绘所有图表
-  if (!panelContent.classList.contains('collapsed')) {
-    charts.forEach(chart => chart.resize());
-  }
+  if (figureframe.classList.contains('collapsed')) return;
+  if (figureContent.classList.contains('hidden')) return;
+
+  // panel expanded, resize charts
+  charts.forEach(chart => chart.resize());
 }
 
-chartsToggle.oncontextmenu = function() {
+figureHeader.oncontextmenu = function() {
   clearCharts();
 }
 
 window.addEventListener('resize', function() {
-  if (!panelContent.classList.contains('collapsed')) {
+  if (!figureContent.classList.contains('hidden')) {
     charts.forEach(chart => chart.resize());
   }
 });
@@ -760,8 +761,8 @@ window.addEventListener('resize', function() {
 const charts = new Map();
 
 self.createChart = function (id, options) {
-  if (figureframe.classList.contains('collapsed')) {
-    figureframe.classList.remove('collapsed');
+  if (figureframe.classList.contains('hidden')) {
+    figureframe.classList.remove('hidden');
   }
 
   options.animation = false;
@@ -769,8 +770,9 @@ self.createChart = function (id, options) {
   if (!charts.has(id)) {
     const div = document.createElement('div');
     div.style.height = '300px';
+    div.style.width = '100%';
     div.id = id;
-    figureframe.querySelector('.panel-content').appendChild(div);
+    figureframe.querySelector('#figure-content').appendChild(div);
     
     const chart = echarts.init(div, null, {
       renderer: 'svg'
@@ -825,49 +827,80 @@ self.clearCharts = function () {
   charts.clear();
   
   // remove all divs
-  const chartDivs = figureframe.querySelectorAll('div[id]');
+  const chartDivs = figureframe.querySelector('#figure-content').querySelectorAll('div[id]');
   chartDivs.forEach(div => div.remove());
 }
 
 // Charts resize bar
 
-function initResizableFigureFrame() {
-  const figureframe = document.getElementById('figureframe');
-  const dragHandle = figureframe.querySelector('.drag-handle');
-  let startX, startWidth;
+function initResizable() {
+  const handleH = figureframe.querySelector('#handle-horizontal');
+  const handleV = figureframe.querySelector('#handle-vertical');
+  const figureHeaderHeight = parseInt(window.getComputedStyle(figureHeader).height, 10);
+  let startX, startY, startWidth, startHeight;
+  let isDragging = false;
 
-  dragHandle.addEventListener('mousedown', initDrag);
-
-  function initDrag(e) {
+  handleH.addEventListener('mousedown', (e) => {
     startX = e.clientX;
     startWidth = parseInt(window.getComputedStyle(figureframe).width, 10);
+    isDragging = 'horizontal';
+    
     document.addEventListener('mousemove', doDrag);
     document.addEventListener('mouseup', stopDrag);
     e.preventDefault();
-  }
+    e.stopPropagation();
+  });
+
+  handleV.addEventListener('mousedown', (e) => {
+    startY = e.clientY;
+    startHeight = parseInt(window.getComputedStyle(figureContent).height, 10);
+    isDragging = 'vertical';
+    
+    document.addEventListener('mousemove', doDrag);
+    document.addEventListener('mouseup', stopDrag);
+    e.preventDefault();
+    e.stopPropagation();
+  });
 
   function doDrag(e) {
-    if (!figureframe.classList.contains('collapsed')) {
-      // 计算鼠标移动的距离
+    if (figureframe.classList.contains('hidden')) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isDragging === 'horizontal') {
       const dx = startX - e.clientX;
-      // 新宽度等于初始宽度加上移动距离
       const newWidth = startWidth + dx;
-      
-      // 限制最小最大宽度
-      var maxWidth = figureframe.parentElement.clientWidth;
-      const finalWidth = Math.min(Math.max(200, newWidth), maxWidth);
+      const maxWidth = figureframe.parentElement.clientWidth;
+      const finalWidth = Math.min(Math.max(figureframe.style.minWidth, newWidth), maxWidth);
       figureframe.style.width = finalWidth + 'px';
-      
-      // 重新调整图表大小
-      charts.forEach(chart => chart.resize());
+    } else if (isDragging === 'vertical') {
+      const dy = e.clientY - startY;
+      const newHeight = startHeight + figureHeaderHeight + dy;
+      const sceneHeight = figureframe.parentElement.clientHeight;
+      const finalHeight = Math.min(Math.max(figureHeaderHeight, newHeight), sceneHeight);
+      figureframe.style.height = finalHeight + 'px';
     }
+
+    charts.forEach(chart => chart.resize());
   }
 
   function stopDrag() {
-    document.removeEventListener('mousemove', doDrag);
-    document.removeEventListener('mouseup', stopDrag);
+    if (isDragging) {
+      isDragging = false;
+      document.removeEventListener('mousemove', doDrag);
+      document.removeEventListener('mouseup', stopDrag);
+    }
   }
+  
+  window.addEventListener('resize', () => {
+    const maxHeight = window.innerHeight;
+    const currentHeight = parseInt(window.getComputedStyle(figureContent).height, 10);
+    
+    if (currentHeight > maxHeight) {
+      figureContent.style.height = maxHeight + 'px';
+      charts.forEach(chart => chart.resize());
+    }
+  });
 }
 
-// 在适当的位置调用初始化函数
-initResizableFigureFrame();
+initResizable();
