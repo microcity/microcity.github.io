@@ -768,21 +768,12 @@ self.createChart = function (id, options) {
   
   if (!charts.has(id)) {
     const div = document.createElement('div');
-    div.style.width = '100%';
-    div.style.height = '400px';
-    div.style.position = 'relative';
+    div.style.height = '300px';
     div.id = id;
     figureframe.querySelector('.panel-content').appendChild(div);
     
     const chart = echarts.init(div, null, {
       renderer: 'svg'
-    });
-    
-    // resize chart with window
-    window.addEventListener('resize', function() {
-      if (!panelContent.classList.contains('collapsed')) {
-        chart.resize();
-      }
     });
     
     charts.set(id, chart);

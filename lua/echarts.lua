@@ -10,14 +10,14 @@ local data = {
     type = 'line'
 }
 
-local options = CreateChartOptions(data, {name='x-axis'}, {name='y-axis'})
+local options = CreateChartOptions(data, {name='x',nameLocation='middle'}, {name='y'})
 print('options:', options..' ')  -- The trailing ' ' prevents screen clearing
 
 CreateChartAdvanced('chart1', options)
 
 -- Create options first, then create scatter plot with dynamic update support
 local data2 = {data=data.data,type='scatter'}
-local options2 = CreateChartOptions(data2, {name='x-axis'}, {name='y-axis'})
+local options2 = CreateChartOptions(data2, {name='x'}, {name='y'})
 CreateChartAdvanced('chart2', options2)
 
 os.sleep(1000) -- Show dynamic modification

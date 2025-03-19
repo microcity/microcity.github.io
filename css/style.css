@@ -203,10 +203,9 @@ html, body, #container {
   position: absolute;
   top: 0;
   right: 0;
-  width: 300px;
+  width: 400px;
   background: white;
-  resize: horizontal;
-  overflow: auto;
+  overflow: hidden;
   min-width: 200px;
   max-width: 100%;
   color: white;
@@ -225,11 +224,10 @@ html, body, #container {
   bottom: 0;
   width: 4px;
   cursor: ew-resize;
-  background: rgba(0, 0, 0, 0.1);
 }
 
 .drag-handle:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 #charts-toggle {
@@ -251,8 +249,7 @@ html, body, #container {
 }
 
 .panel-content {
-  padding: 0 4px;
-  max-height: calc(100vh - 36px - 50px - 30px);
+  max-height: calc(100vh - 50px - 31px - 36px); 
   overflow-y: auto;
 }
 
