@@ -17,7 +17,7 @@ export const btns      = {
 export const editor      = document.getElementById('editor');
 export const aceeditor   = ace.edit("editor");
 export const docframe    = document.getElementById('docframe');
-export const figureframe = document.getElementById('figureframe');
+export const chartframe = document.getElementById('chartframe');
 export const footer      = document.getElementById('footer');
 export const scene       = document.getElementById('scene');
 export var   offcanvas   = document.getElementById('offcanvas');
@@ -732,27 +732,27 @@ document.addEventListener( "drop" , function (e) {
      worker.postMessage({fn: 'onFilesUpload', files: e.dataTransfer.files});
 }, false );
 
-// charts ui control
+// Charts ui control
 
-const figureHeader = document.getElementById('figure-header');
-const figureContent = document.getElementById('figure-content');
+const chartHeader = document.getElementById('chart-header');
+const chartContent = document.getElementById('chart-content');
 
-figureHeader.onclick = function () {
-  figureframe.classList.toggle('collapsed');
+chartHeader.onclick = function () {
+  chartframe.classList.toggle('collapsed');
 
-  if (figureframe.classList.contains('collapsed')) return;
-  if (figureContent.classList.contains('hidden')) return;
+  if (chartframe.classList.contains('collapsed')) return;
+  if (chartContent.classList.contains('hidden')) return;
 
   // panel expanded, resize charts
   charts.forEach(chart => chart.resize());
 }
 
-figureHeader.oncontextmenu = function() {
+chartHeader.oncontextmenu = function() {
   clearCharts();
 }
 
 window.addEventListener('resize', function() {
-  if (!figureContent.classList.contains('hidden')) {
+  if (!chartContent.classList.contains('hidden')) {
     charts.forEach(chart => chart.resize());
   }
 });
@@ -761,8 +761,8 @@ window.addEventListener('resize', function() {
 const charts = new Map();
 
 self.createChart = function (id, options) {
-  if (figureframe.classList.contains('hidden')) {
-    figureframe.classList.remove('hidden');
+  if (chartframe.classList.contains('hidden')) {
+    chartframe.classList.remove('hidden');
   }
 
   options.animation = false;
@@ -772,7 +772,7 @@ self.createChart = function (id, options) {
     div.style.height = '300px';
     div.style.width = '100%';
     div.id = id;
-    figureframe.querySelector('#figure-content').appendChild(div);
+    chartframe.querySelector('#chart-content').appendChild(div);
     
     const chart = echarts.init(div, null, {
       renderer: 'svg'
@@ -827,22 +827,22 @@ self.clearCharts = function () {
   charts.clear();
   
   // remove all divs
-  const chartDivs = figureframe.querySelector('#figure-content').querySelectorAll('div[id]');
+  const chartDivs = chartframe.querySelector('#chart-content').querySelectorAll('div[id]');
   chartDivs.forEach(div => div.remove());
 }
 
 // Charts resize bar
 
 function initResizable() {
-  const handleH = figureframe.querySelector('#handle-horizontal');
-  const handleV = figureframe.querySelector('#handle-vertical');
-  const figureHeaderHeight = parseInt(window.getComputedStyle(figureHeader).height, 10);
+  const handleH = chartframe.querySelector('#handle-horizontal');
+  const handleV = chartframe.querySelector('#handle-vertical');
+  const chartHeaderHeight = parseInt(window.getComputedStyle(chartHeader).height, 10);
   let startX, startY, startWidth, startHeight;
   let isDragging = false;
 
   handleH.addEventListener('mousedown', (e) => {
     startX = e.clientX;
-    startWidth = parseInt(window.getComputedStyle(figureframe).width, 10);
+    startWidth = parseInt(window.getComputedStyle(chartframe).width, 10);
     isDragging = 'horizontal';
     
     document.addEventListener('mousemove', doDrag);
@@ -853,7 +853,7 @@ function initResizable() {
 
   handleV.addEventListener('mousedown', (e) => {
     startY = e.clientY;
-    startHeight = parseInt(window.getComputedStyle(figureContent).height, 10);
+    startHeight = parseInt(window.getComputedStyle(chartContent).height, 10);
     isDragging = 'vertical';
     
     document.addEventListener('mousemove', doDrag);
@@ -863,22 +863,22 @@ function initResizable() {
   });
 
   function doDrag(e) {
-    if (figureframe.classList.contains('hidden')) return;
+    if (chartframe.classList.contains('hidden')) return;
     e.preventDefault();
     e.stopPropagation();
 
     if (isDragging === 'horizontal') {
       const dx = startX - e.clientX;
       const newWidth = startWidth + dx;
-      const maxWidth = figureframe.parentElement.clientWidth;
-      const finalWidth = Math.min(Math.max(figureframe.style.minWidth, newWidth), maxWidth);
-      figureframe.style.width = finalWidth + 'px';
+      const maxWidth = chartframe.parentElement.clientWidth;
+      const finalWidth = Math.min(Math.max(chartframe.style.minWidth, newWidth), maxWidth);
+      chartframe.style.width = finalWidth + 'px';
     } else if (isDragging === 'vertical') {
       const dy = e.clientY - startY;
-      const newHeight = startHeight + figureHeaderHeight + dy;
-      const sceneHeight = figureframe.parentElement.clientHeight;
-      const finalHeight = Math.min(Math.max(figureHeaderHeight, newHeight), sceneHeight);
-      figureframe.style.height = finalHeight + 'px';
+      const newHeight = startHeight + chartHeaderHeight + dy;
+      const sceneHeight = chartframe.parentElement.clientHeight;
+      const finalHeight = Math.min(Math.max(chartHeaderHeight, newHeight), sceneHeight);
+      chartframe.style.height = finalHeight + 'px';
     }
 
     charts.forEach(chart => chart.resize());
@@ -894,10 +894,10 @@ function initResizable() {
   
   window.addEventListener('resize', () => {
     const maxHeight = window.innerHeight;
-    const currentHeight = parseInt(window.getComputedStyle(figureContent).height, 10);
+    const currentHeight = parseInt(window.getComputedStyle(chartContent).height, 10);
     
     if (currentHeight > maxHeight) {
-      figureContent.style.height = maxHeight + 'px';
+      chartContent.style.height = maxHeight + 'px';
       charts.forEach(chart => chart.resize());
     }
   });
