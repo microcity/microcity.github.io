@@ -767,19 +767,47 @@ self.createChart = function (id, options) {
 
   options.animation = false;
   
-  if (!charts.has(id)) {
-    const div = document.createElement('div');
-    div.style.height = '300px';
-    div.style.width = '100%';
-    div.id = id;
-    chartframe.querySelector('#chart-content').appendChild(div);
+  // check if the container exists
+  let container = document.querySelector(`.chart-container #${id}`)?.parentElement;
+  
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'chart-container';
+    container.style.width = '100%';
     
-    const chart = echarts.init(div, null, {
+    const titleDiv = document.createElement('div'); 
+    titleDiv.className = 'chart-title';
+    titleDiv.textContent = options.title?.text || id;
+
+    const chartDiv = document.createElement('div');
+    chartDiv.style.height = '300px';
+    chartDiv.style.width = '100%';
+    chartDiv.id = id;
+
+    container.appendChild(titleDiv);
+    container.appendChild(chartDiv);
+    chartframe.querySelector('#chart-content').appendChild(container);
+    
+    const chart = echarts.init(chartDiv, null, {
       renderer: 'svg'
     });
     
     charts.set(id, chart);
+
+    titleDiv.onclick = () => {
+      chartDiv.style.display = chartDiv.style.display === 'none' ? 'block' : 'none';
+      titleDiv.classList.toggle('collapsed', chartDiv.style.display === 'none');
+      if (chartDiv.style.display === 'block') {
+        chart.resize();
+      }
+    };
+
+    titleDiv.oncontextmenu = (e) => {
+      e.preventDefault();
+      removeChart(id);
+    };
   }
+
   const chart = charts.get(id);
  
   // add toolbox
@@ -799,7 +827,6 @@ self.createChart = function (id, options) {
   }
   
   chart.setOption(options);
-  // return chart;
 }
 
 self.updateChart = function (id, data) {
@@ -815,7 +842,9 @@ self.removeChart = function (id) {
   if (chart) {
     chart.dispose();
     charts.delete(id);
-    document.getElementById(id)?.remove();
+    
+    const container = document.getElementById(id)?.parentElement;
+    container?.remove();
   }
 }
 
@@ -827,7 +856,7 @@ self.clearCharts = function () {
   charts.clear();
   
   // remove all divs
-  const chartDivs = chartframe.querySelector('#chart-content').querySelectorAll('div[id]');
+  const chartDivs = chartframe.querySelector('#chart-content').querySelectorAll('.chart-container');
   chartDivs.forEach(div => div.remove());
 }
 

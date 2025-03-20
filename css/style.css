@@ -241,7 +241,6 @@ html, body, #container {
   bottom: 0;
   height: 4px;
   cursor: ns-resize;
-  background: transparent;
 }
 
 #handle-horizontal:hover,
@@ -252,26 +251,67 @@ html, body, #container {
 #chart-title {
   margin: 0;
   line-height: 30px;
-  padding: 0 4px;
+  padding: 0 8px;
   cursor: pointer;
   user-select: none;
+  background-color: #2d3436;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.chart-title::before,
+#chart-title::before{
+  content: "▼";
+  display: inline-block;
+  font-size: 0.7em;
+  margin-right: 4px;
+  transition: transform 0.2s;
+}
+
+.chart-title.collapsed::before,
+#chartframe.collapsed #chart-title::before {
+  transform: rotate(-90deg);
 }
 
 #chart-title:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #373c3f;
+}
+
+.chart-container {
+  border-top: 1px solid #eceef0;
+  box-sizing: border-box;
+}
+
+.chart-title {
+  background-color: #f5f6f7;
+  padding: 4px 8px;
+  cursor: pointer;
+  user-select: none;
+  color: #2d3436;
+  font-size: 13px;
+  border-bottom: 1px solid #eceef0;
+}
+
+.chart-title:hover {
+  background-color: #eceef0;
+  transition: background-color 0.2s;
 }
 
 #chart-header {
-  background: #2a2a2a;
+  background: #2d3436;
   cursor: pointer;
   user-select: none;
   height: 30px;
   overflow: hidden;
   flex: none;
+  border-bottom: 1px solid #40454a;
 }
 
 #chart-content {
-  overflow-y: auto;
+  overflow: auto;
   scrollbar-gutter: stable;
   flex: 1;
 }
