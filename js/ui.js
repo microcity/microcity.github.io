@@ -12,14 +12,12 @@ export const btns      = {
   "doc":    document.getElementById('doc'),
   "newclose":  document.getElementById('newclose'),
   "downclose": document.getElementById('downclose'),
-  "fig":    document.getElementById('fig')
 };
 
 export const editor      = document.getElementById('editor');
 export const aceeditor   = ace.edit("editor");
 export const docframe    = document.getElementById('docframe');
-export const figframe    = document.getElementById('figframe');
-export const figureframe = document.getElementById('figureframe');
+export const chartframe = document.getElementById('chartframe');
 export const footer      = document.getElementById('footer');
 export const scene       = document.getElementById('scene');
 export var   offcanvas   = document.getElementById('offcanvas');
@@ -145,8 +143,6 @@ btns['new'].onclick = async function (){
   //   lua.file = null;
   //   localStorage.clear();
   // }
-
-  self.clearCharts();
 }
 btns['new'].oncontextmenu = function (){
   history.replaceState(null, null, ' ');
@@ -301,20 +297,6 @@ btns['doc'].onclick = function(){
   self.dispatchEvent(new Event('resize'));
 }
 
-btns['fig'].onclick = function(){
-  if(figureframe.style.display === 'none'){
-    btns['fig'].style['background-color'] = 'white';
-    btns['fig'].style['filter'] = 'invert(0%)';
-    figureframe.style.display = 'block';
-    // 触发所有图表的重绘
-    charts.forEach(chart => chart.resize());
-  }else{
-    btns['fig'].removeAttribute('style');
-    figureframe.style.display = 'none';
-  }
-  self.dispatchEvent(new Event('resize'));
-}
-
 btns['newclose'].onclick = function (){
   newdialog.close();
 }
@@ -391,8 +373,6 @@ function escape(){
     downdialog.close();
   else if(docframe.style['display'] != 'none')
     btns['doc'].onclick();
-  else if(figureframe.style['display'] != 'none')
-    btns['fig'].onclick();
   else if(btns['code'].active)
     btns['code'].onclick();
 }
@@ -752,27 +732,50 @@ document.addEventListener( "drop" , function (e) {
      worker.postMessage({fn: 'onFilesUpload', files: e.dataTransfer.files});
 }, false );
 
+// Charts ui control
+
+const chartHeader = document.getElementById('chart-header');
+const chartContent = document.getElementById('chart-content');
+
+chartHeader.onclick = function () {
+  chartframe.classList.toggle('collapsed');
+
+  if (chartframe.classList.contains('collapsed')) return;
+  if (chartContent.classList.contains('hidden')) return;
+
+  // panel expanded, resize charts
+  charts.forEach(chart => chart.resize());
+}
+
+chartHeader.oncontextmenu = function() {
+  clearCharts();
+}
+
+window.addEventListener('resize', function() {
+  if (!chartContent.classList.contains('hidden')) {
+    charts.forEach(chart => chart.resize());
+  }
+});
+
 // echart integration
 const charts = new Map();
 
 self.createChart = function (id, options) {
+  if (chartframe.classList.contains('hidden')) {
+    chartframe.classList.remove('hidden');
+  }
+
   options.animation = false;
   
   if (!charts.has(id)) {
     const div = document.createElement('div');
+    div.style.height = '300px';
     div.style.width = '100%';
-    div.style.height = '400px';
-    div.style.position = 'relative';
     div.id = id;
-    figureframe.appendChild(div);
+    chartframe.querySelector('#chart-content').appendChild(div);
     
     const chart = echarts.init(div, null, {
       renderer: 'svg'
-    });
-    
-    // resize chart with window
-    window.addEventListener('resize', function() {
-      chart.resize();
     });
     
     charts.set(id, chart);
@@ -785,19 +788,13 @@ self.createChart = function (id, options) {
       show: true,
       feature: {
         saveAsImage: {
-          title: 'Save as Image',
+          title: 'Save as SVG',
           pixelRatio: 2
+        },
+        dataView: {
+          readOnly: true
         }
-      }
-    };
-  } else if (options.toolbox && !options.toolbox.feature?.saveAsImage) {
-    // add saveAsImage
-    if (!options.toolbox.feature) {
-      options.toolbox.feature = {};
-    }
-    options.toolbox.feature.saveAsImage = {
-      title: 'Save as Image',
-      pixelRatio: 2
+      },
     };
   }
   
@@ -809,7 +806,7 @@ self.updateChart = function (id, data) {
   const chart = charts.get(id);
   if (chart) {
     chart.setOption(data, {notMerge: false});
-    console.log('updateChart', id, data);
+    // console.log('updateChart', id, data);
   }
 }
 
@@ -830,6 +827,80 @@ self.clearCharts = function () {
   charts.clear();
   
   // remove all divs
-  const chartDivs = figureframe.querySelectorAll('div[id]');
+  const chartDivs = chartframe.querySelector('#chart-content').querySelectorAll('div[id]');
   chartDivs.forEach(div => div.remove());
 }
+
+// Charts resize bar
+
+function initResizable() {
+  const handleH = chartframe.querySelector('#handle-horizontal');
+  const handleV = chartframe.querySelector('#handle-vertical');
+  const chartHeaderHeight = parseInt(window.getComputedStyle(chartHeader).height, 10);
+  let startX, startY, startWidth, startHeight;
+  let isDragging = false;
+
+  handleH.addEventListener('mousedown', (e) => {
+    startX = e.clientX;
+    startWidth = parseInt(window.getComputedStyle(chartframe).width, 10);
+    isDragging = 'horizontal';
+    
+    document.addEventListener('mousemove', doDrag);
+    document.addEventListener('mouseup', stopDrag);
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  handleV.addEventListener('mousedown', (e) => {
+    startY = e.clientY;
+    startHeight = parseInt(window.getComputedStyle(chartContent).height, 10);
+    isDragging = 'vertical';
+    
+    document.addEventListener('mousemove', doDrag);
+    document.addEventListener('mouseup', stopDrag);
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  function doDrag(e) {
+    if (chartframe.classList.contains('hidden')) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isDragging === 'horizontal') {
+      const dx = startX - e.clientX;
+      const newWidth = startWidth + dx;
+      const maxWidth = chartframe.parentElement.clientWidth;
+      const finalWidth = Math.min(Math.max(chartframe.style.minWidth, newWidth), maxWidth);
+      chartframe.style.width = finalWidth + 'px';
+    } else if (isDragging === 'vertical') {
+      const dy = e.clientY - startY;
+      const newHeight = startHeight + chartHeaderHeight + dy;
+      const sceneHeight = chartframe.parentElement.clientHeight;
+      const finalHeight = Math.min(Math.max(chartHeaderHeight, newHeight), sceneHeight);
+      chartframe.style.height = finalHeight + 'px';
+    }
+
+    charts.forEach(chart => chart.resize());
+  }
+
+  function stopDrag() {
+    if (isDragging) {
+      isDragging = false;
+      document.removeEventListener('mousemove', doDrag);
+      document.removeEventListener('mouseup', stopDrag);
+    }
+  }
+  
+  window.addEventListener('resize', () => {
+    const maxHeight = window.innerHeight;
+    const currentHeight = parseInt(window.getComputedStyle(chartContent).height, 10);
+    
+    if (currentHeight > maxHeight) {
+      chartContent.style.height = maxHeight + 'px';
+      charts.forEach(chart => chart.resize());
+    }
+  });
+}
+
+initResizable();
