@@ -5,7 +5,7 @@ print('charts.lua: table2json.lua loaded')
 
 local CHART_OPTIONS_DEFAULT = [[
   {
-    series: [%s],
+    series: %s,
     xAxis: %s,
     yAxis: %s,
     title: %s,
