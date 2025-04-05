@@ -221,6 +221,11 @@ html, body, #container {
   max-height: 30px;
 }
 
+#chartframe.collapsed > #handle-vertical {
+  display: none;
+  pointer-events: none;
+}
+
 #chartframe.hidden{
   display: none;
 }
@@ -283,6 +288,26 @@ html, body, #container {
 .chart-container {
   border-top: 1px solid #eceef0;
   box-sizing: border-box;
+  position: relative;
+}
+
+.chart-resizer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  cursor: ns-resize;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.chart-title.collapsed ~ .chart-resizer {
+  pointer-events: none;
+}
+
+.chart-resizer:hover {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .chart-title {

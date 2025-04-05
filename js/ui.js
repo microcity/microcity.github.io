@@ -747,7 +747,8 @@ chartHeader.onclick = function () {
   charts.forEach(chart => chart.resize());
 }
 
-chartHeader.oncontextmenu = function() {
+chartHeader.oncontextmenu = function(e) {
+  e.preventDefault();
   clearCharts();
 }
 
@@ -784,8 +785,13 @@ self.createChart = function (id, options) {
     chartDiv.style.width = '100%';
     chartDiv.id = id;
 
+    // 添加底部拖动条
+    const resizerDiv = document.createElement('div');
+    resizerDiv.className = 'chart-resizer';
+
     container.appendChild(titleDiv);
     container.appendChild(chartDiv);
+    container.appendChild(resizerDiv);
     chartframe.querySelector('#chart-content').appendChild(container);
     
     const chart = echarts.init(chartDiv, null, {
@@ -793,6 +799,32 @@ self.createChart = function (id, options) {
     });
     
     charts.set(id, chart);
+
+    // 添加拖动事件监听
+    let startY, startHeight;
+    
+    resizerDiv.addEventListener('mousedown', (e) => {
+      startY = e.clientY;
+      startHeight = parseInt(window.getComputedStyle(chartDiv).height, 10);
+      
+      function onMouseMove(e) {
+        const dy = e.clientY - startY;
+        const newHeight = Math.max(100, startHeight + dy); // 最小高度100px
+        chartDiv.style.height = newHeight + 'px';
+        chart.resize();
+      }
+      
+      function onMouseUp() {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+      
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+      
+      e.preventDefault();
+      e.stopPropagation();
+    });
 
     titleDiv.onclick = () => {
       chartDiv.style.display = chartDiv.style.display === 'none' ? 'block' : 'none';
