@@ -11,6 +11,7 @@ local CHART_OPTIONS_DEFAULT = [[
     title: %s,
     legend: %s,
     tooltip: %s
+    %s
   }
 ]]
 
@@ -21,8 +22,9 @@ local CHART_OPTIONS_DEFAULT = [[
 -- title: table
 -- legend: table
 -- tooltip: table
+-- others: table
 -- return: options
-function CreateChartOptions(series, xAxis, yAxis, title, legend, tooltip)
+function CreateChartOptions(series, xAxis, yAxis, title, legend, tooltip, others)
     if type(series) == 'nil' then
         print(debug.traceback())
     end
@@ -47,18 +49,19 @@ function CreateChartOptions(series, xAxis, yAxis, title, legend, tooltip)
     title = convert2json(title)
     legend = convert2json(legend)
     tooltip = convert2json(tooltip, "{trigger:'axis',axisPointer:{type:'cross'}}")
+    others = convert2json(others, "")
 
-    return string.format(CHART_OPTIONS_DEFAULT, series, xAxis, yAxis, title, legend, tooltip)
+    return string.format(CHART_OPTIONS_DEFAULT, series, xAxis, yAxis, title, legend, tooltip, others)
 end
 
 -- 根据给定的options创建图表
 -- chartId: string
 -- options: string
-function CreateChartAdvanced(chartId, options)
+function CreateChartAdvanced(chartId, options_json_string)
     assert(chartId ~= nil, "chartId can't be nil")
-    assert(options ~= nil, "options can't be nil")
+    assert(options_json_string ~= nil, "options_json_string can't be nil")
 
-    local command = string.format("RemoteCall('createChart', '%s', %s)", chartId, options)
+    local command = string.format("RemoteCall('createChart', '%s', %s)", chartId, options_json_string)
     -- print('CreateChart: command:\n' .. command)
     os.execute(command)
 end
@@ -85,6 +88,23 @@ function UpdateChart(chartId, options)
     local command = string.format("RemoteCall('updateChart', '%s', %s)", chartId, options)
 
     -- print('UpdateChart: command:\n', command)
+    os.execute(command)
+end
+
+function AppendChartData(chartId, data)
+    assert(chartId ~= nil, "chartId can't be nil")
+    assert(data ~= nil, "data can't be nil")
+
+    -- 转换data到JSON
+    local data_json = table2json(data)
+
+    -- 构造RemoteCall命令
+    local command = string.format("RemoteCall('appendChartData', '%s', %s)",
+        chartId,
+        data_json
+    )
+
+    -- 执行命令
     os.execute(command)
 end
 

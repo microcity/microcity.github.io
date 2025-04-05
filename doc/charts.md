@@ -1,4 +1,4 @@
-# MicroCity Web 图表功能说明文档
+# MicroCity Web 图表功能说明
 
 ## 1. 概述
 
@@ -36,16 +36,21 @@ MicroCity Web 提供了基于[ECharts](https://echarts.apache.org/zh/index.html)
   - 数据视图：查看图表数据
   - 下载图片：将图表保存为图片文件
 
-### 2.2 创建简单图表
+### 2.2 引入库文件
 
-使用`CreateChart`函数创建基本图表：
+后续示例中默认已经引入了绘图库
 
 ```lua
 -- 引入图表库
 os.upload('/lua/lib/charts.lua')
 require('charts')
+```
 
+### 2.3 创建简单图表
 
+使用`CreateChart`函数创建基本图表：
+
+```lua
 -- 创建简单折线图
 local chartId = "SimpleLineChart" -- 图表唯一标识符
 local series = {
@@ -87,7 +92,7 @@ local xAxis = {data = {"周一", "周二", "周三", "周四", "周五", "周六
 CreateChart(chartId, series, xAxis)
 ```
 
-## 3. API 参考
+## 3. 函数列表
 
 ### 3.1 CreateChart
 
@@ -130,7 +135,21 @@ UpdateChart(chartId, options)
 - `chartId`：字符串，要更新的图表标识符
 - `options`：字符串或表，要更新的配置选项
 
-### 3.4 ClearCharts
+### 3.4 AppendChartData
+
+向已存在的图表追加新的数据点。特别适用于数据点不断添加的场景。
+
+```lua
+AppendChartData(chartId, data)
+```
+
+**参数**：
+
+- `chartId`：字符串，要更新的图表标识符
+- `data`：表，包含要追加的数据。对于多系列图表，data 应该是一个数组，其中每个元素对应一个系列的数据点
+
+
+### 3.5 ClearCharts
 
 清除所有图表。
 
@@ -205,11 +224,11 @@ CreateChart("scatterChart", series, {}, {})
 
 ### 5.1 动态更新图表
 
-您可以使用`UpdateChart`函数动态更新图表内容：
+使用`UpdateChart`函数动态更新图表内容
 
 ```lua
 -- 创建初始图表
-local chartId = "dynamicChart"
+local chartId = "UpdateChart Demo"
 local series = {{name = "实时数据", type = "line", data = {5, 20, 36}}}
 local xAxis = {data={1, 2, 3}}
 CreateChart(chartId, series, xAxis, {})
@@ -220,6 +239,59 @@ local newOptions = {
   xAxis = {data = {1, 2, 3, 4, 5}}
 }
 UpdateChart(chartId, newOptions)
+```
+
+使用`AppendChartData`函数可以向图表中追加新的数据点
+
+```lua
+local chartId = "envChart"
+local series = {
+  {
+    name = "温度",
+    type = "line",
+    data = {{0,23}, {1,24}, {2,25}}
+  },
+  {
+    name = "湿度",
+    type = "line",
+    data = {{0,45}, {1,46}, {2,47}}
+  }
+}
+CreateChart(chartId, series)
+
+-- 单次追加新的数据点
+AppendChartData(chartId, {{3,26}, {3,48}}) -- 添加温度26和湿度48的新数据点
+```
+
+使用`AppendChartData`函数持续添加数据点
+
+```lua
+local data = {
+    {
+        data = {},
+        type = 'line'
+    },
+    {
+        data = {},
+        type = 'line'
+    }
+}
+
+CreateChart('RealtimeChart', data, {name = 'x' }, { name = 'y' })
+
+local id1 = 1
+local id2 = 1
+while scene.render() do
+    local num1 = math.random() * 100 + 1000
+    local num2 = math.random() * 100 + 1000
+
+    print(num1, num2)
+    AppendChartData('RealtimeChart', {{id1,num1}, {id2,num2}})
+
+    id1 = id1 + 1
+    id2 = id2 + 1
+    os.sleep(500)
+end
 ```
 
 ### 5.2 使用完整 ECharts 配置
