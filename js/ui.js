@@ -865,7 +865,6 @@ self.updateChart = function (id, data) {
   const chart = charts.get(id);
   if (chart) {
     chart.setOption(data, {notMerge: false});
-    // console.log('updateChart', id, data);
   }
 }
 
@@ -891,9 +890,6 @@ self.appendChartData = function (id, data) {
     // console.log('data i:', i, data[i]);
     // console.log('series.data:', series.data);
     series.data.push(data[i]);
-
-    // 合并后的数据
-    // console.log('appendChartData', id, i, series);
   }
   chart.setOption(options, { notMerge: false });
 }
