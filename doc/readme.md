@@ -21,7 +21,7 @@ MicroCity Web is **An Online Spatial Modeling Tool** reassembled from the deskto
   - [4.5 Mixed Integer Programming](4.5_mixed_integer_programming.md)
 - Appendix
   - <a href="https://www.lua.org/manual/5.4/contents.html" target="_blank">Lua Reference Manual</a>
-  - <a href="./book" target="_blank">Textbook: Logistics Network Modeling</a>
+  - <a href="./book" target="_blank">Textbook: Logistics System Optimization</a>
 
 ## Index of Functions
 - coroutine:
